@@ -85,9 +85,10 @@
 			>
 				<ShareIcon size="24" />
 			</button>
-			<button on:click={() => (showSelectBlock = true)}
-				><icon><svelte:component this={Icons[typeText]} /></icon> {typeText}</button
-			>
+			<button class="block-type" on:click={() => (showSelectBlock = true)}>
+				<icon><svelte:component this={Icons[typeText]} /></icon>
+				{typeText}
+			</button>
 			<button class="close" on:click={closeOptionsModal}><Close size="32" /></button>
 		</top>
 		<img src={block?.image || '/splitkit300.png'} alt="the artwork for this block" />
@@ -193,10 +194,6 @@
 		align-items: center;
 	}
 
-	top p {
-		display: flex;
-	}
-
 	top p icon {
 		padding-right: 4px;
 		position: relative;
@@ -214,6 +211,12 @@
 		padding: 0;
 		margin: 0;
 		box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.5);
+	}
+
+	top .block-type {
+		display: flex;
+		box-shadow: none;
+		background-color: transparent;
 	}
 
 	button.share {
