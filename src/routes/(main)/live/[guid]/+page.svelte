@@ -94,12 +94,9 @@
 	function setAmount(value) {
 		amount = value;
 	}
-	const redirectUrl =
-		`https://getalby.com/oauth?client_id=${albyClientId}` +
-		`&response_type=code&redirect_uri=${$page.url.href}/live` +
-		$page.params.guid
-			? $page.params.guid
-			: '' + `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
+	let redirectUrl = `https://getalby.com/oauth?client_id=${albyClientId}`;
+	redirectUrl += `&response_type=code&redirect_uri=${$page.url.href}`;
+	redirectUrl += `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 
 	function closeInfoModal() {
 		showInfoModal = false;
@@ -169,6 +166,7 @@
 					showModal = true;
 					activeBlock = clone(block);
 				} else {
+					console.log(redirectUrl);
 					goto(redirectUrl);
 				}
 			}}>Boost 🚀</button

@@ -4,16 +4,17 @@
 	import { page } from '$app/stores';
 	import AccountIcon from '$lib/icons/Account.svelte';
 
-	import { user, catalog, albyClientId } from '$/stores';
+	import { user, albyClientId, remoteServer } from '$/stores';
 
 	let expandMenu = false;
 
-	function logout() {
-		$user = { loggedIn: false };
-		fetch('/api/alby/logout').then((data) => {
-			goto('/');
-		});
-		$catalog = [];
+	async function logout() {
+		const res = await fetch(remoteServer + '/api/alby/logout', { credentials: 'include' });
+
+		const data = await res.json();
+		console.log(data);
+		$user = data;
+		goto('/');
 	}
 
 	const redirectUrl =
