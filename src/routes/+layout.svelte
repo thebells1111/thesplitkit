@@ -16,7 +16,7 @@
 		// $user.loggedIn = true;
 		if (code) {
 			console.log('checking Alby code');
-			let redirect_uri = $page.url.href.split($page.url.search)[0];
+			let redirect_uri = $page.url.href.split('/?')[0].split('?')[0];
 			// redirect_uri = redirect_uri.slice(0, -1);
 
 			let res = await fetch(
@@ -33,11 +33,12 @@
 				$albyReady = true;
 			}
 		} else if (!$user.loggedIn) {
+			console.log('refresh');
 			let res = await fetch(remoteServer + '/api/alby/refresh', {
 				credentials: 'include'
 			});
+
 			let data = await res.json();
-			console.log(data);
 			if (data.lightning_address) {
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
@@ -55,6 +56,7 @@
 
 			$albyReady = true;
 		} else {
+			console.log('user already logged in');
 			$albyReady = true;
 		}
 		$loaded = true;

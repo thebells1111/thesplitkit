@@ -4,13 +4,26 @@
 
 	import { remoteServer, mainSettings, liveBlocks } from '$/stores';
 	import { page } from '$app/stores';
+	import DefaultSplits from './DefaultSplits.svelte';
+	import Jukebox from './Jukebox.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
 	let savedSettings = {};
 	let updateAllSplits = false;
 
-	$: console.log($mainSettings);
+	$: compareSettings($mainSettings);
+
+	function compareSettings() {
+		if (JSON.stringify($mainSettings) !== JSON.stringify(savedSettings)) {
+			savedSettings = clone($mainSettings);
+			if (initialized) {
+				mainUnsaved = true;
+			} else {
+				initialized = true;
+			}
+		}
+	}
 
 	function saveSettings() {
 		fetch(remoteServer + '/api/sk/savesettings', {
@@ -47,86 +60,17 @@
 
 		mainUnsaved = false;
 	}
-
-	$: {
-		if ($mainSettings.splits < 0) $mainSettings.splits = 0;
-		if ($mainSettings.splits > 100) $mainSettings.splits = 100;
-	}
-
-	function preventCertainInput(event) {
-		// Prevent 'e' and '-' from being inputted
-		if (event.key === 'e' || event.key === '-') {
-			event.preventDefault();
-		}
-	}
-
-	$: compareSettings($mainSettings);
-
-	function compareSettings() {
-		if (JSON.stringify($mainSettings) !== JSON.stringify(savedSettings)) {
-			savedSettings = clone($mainSettings);
-			if (initialized) {
-				mainUnsaved = true;
-			} else {
-				initialized = true;
-			}
-		}
-	}
-
-	function handleUpdateSplits() {}
 </script>
 
 <button class="save" class:unsaved={mainUnsaved} on:click={saveSettings}>
 	<Save size="32" />
 </button>
 
-<p>Default value split for active block:</p>
-<split-container>
-	<label>
-		<input
-			type="checkbox"
-			bind:value={updateAllSplits}
-			on:input={() => (mainUnsaved = true)}
-		/>Update all splits
-	</label>
-	<percent>
-		<input
-			type="number"
-			bind:value={$mainSettings.splits}
-			min="0"
-			max="100"
-			on:keydown={preventCertainInput}
-		/> %
-	</percent>
-</split-container>
+<DefaultSplits bind:mainUnsaved bind:updateAllSplits />
+<Jukebox bind:mainUnsaved />
 
 <style>
-	split-container {
-		display: flex;
-	}
-	p {
-		margin: 0;
-		padding: 0;
-		font-weight: bold;
-	}
-
-	split-container label {
-		margin-right: 16px;
-	}
-
-	percent {
-		align-self: flex-end;
-		margin-left: 16px;
-	}
-
-	percent input {
-		width: 50px;
-		padding: 4px;
-		text-align: right;
-	}
-
-	button,
-	a {
+	button {
 		background-color: hsl(0, 0%, 96%);
 		color: var(--color-text-0);
 		display: flex;

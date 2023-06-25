@@ -4,18 +4,18 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import Share from '$lib/Share/Share.svelte';
-	import Filter from '../../broadcaster/[guid]/Filter.svelte';
+	import Filter from '$lib/EventsHeader/Filter.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
-	import MainHeader from './MainHeader.svelte';
+	import EventsHeader from '$lib/EventsHeader/EventsHeader.svelte';
 	import Dashboard from './Dashboard.svelte';
-	import MainSettings from '../../broadcaster/[guid]/MainSettings.svelte';
-	import EditOptions from '../../creator/[guid]/EditOptions.svelte';
+	import MainSettings from '$lib/Settings/MainSettings/MainSettings.svelte';
+	import EditOptions from '$lib/Creator/EditOptions.svelte';
 	import PromoEditor from '$lib/PromoEditor/PromoEditor.svelte';
-	import SelectBlock from '../../creator/[guid]/SelectBlock.svelte';
+	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
 	import { remoteServer, liveBlocks, defaultBlockGuid, mainSettings, activeGuid } from '$/stores';
 
 	let showShareModal = false;
-	let showMainSettingsModal = false;
+	let showMainSettingsModal = true;
 	let showFilterModal = false;
 	let showOptionsModal = false;
 	let filterType = 'off';
@@ -241,7 +241,7 @@
 	}
 </script>
 
-<MainHeader
+<EventsHeader
 	bind:showShareModal
 	bind:showMainSettingsModal
 	bind:showFilterModal

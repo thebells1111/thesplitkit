@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import io from 'socket.io-client';
 	import clone from 'just-clone';
 	import Info from '$lib/icons/Info.svelte';
 	import Close from '$lib/icons/Close.svelte';

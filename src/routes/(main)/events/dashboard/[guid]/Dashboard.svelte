@@ -2,9 +2,8 @@
 	import { onMount } from 'svelte';
 	import io from 'socket.io-client';
 	import clone from 'just-clone';
-	import AddBlocks from '$lib/icons/AddBlocks.svelte';
 	import DashboardBlockCard from './DashboardBlockCard.svelte';
-	import Person from '../../broadcaster/[guid]/Person.svelte';
+	import Person from './Person.svelte';
 
 	import { tick } from 'svelte';
 	import { page } from '$app/stores';

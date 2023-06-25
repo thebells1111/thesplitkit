@@ -91,6 +91,7 @@
 
 	img {
 		width: 50px;
+		aspect-ratio: auto;
 	}
 
 	h3,

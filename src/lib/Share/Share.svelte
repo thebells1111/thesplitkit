@@ -3,7 +3,6 @@
 	import QRCode from 'qrcode';
 	import { saveAs } from 'file-saver';
 	import { page } from '$app/stores';
-	console.log($page);
 
 	export let liveGuid;
 	export let eventGuid;

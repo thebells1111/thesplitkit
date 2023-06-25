@@ -1,5 +1,5 @@
 <script>
-	import BlockSettings from '../../broadcaster/[guid]/BlockSettings/BlockSettings.svelte';
+	import BlockSettings from '$lib/Settings/BlockSettings/BlockSettings.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
 
@@ -128,7 +128,7 @@
 
 {#if showSettingsModal}
 	<Modal bind:showModal={showSettingsModal}>
-		<BlockSettings bind:block {activeBlockGuid}/>
+		<BlockSettings bind:block {activeBlockGuid} />
 	</Modal>
 {/if}
 
@@ -191,6 +191,8 @@
 
 	img {
 		width: 60px;
+		height: 60px;
+		object-fit: cover;
 	}
 
 	h3,
