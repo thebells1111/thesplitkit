@@ -5,7 +5,8 @@
 	import { remoteServer, mainSettings, liveBlocks } from '$/stores';
 	import { page } from '$app/stores';
 	import DefaultSplits from './DefaultSplits.svelte';
-	import Jukebox from './Jukebox.svelte';
+	import BroadcastMode from './BroadcastMode.svelte';
+	import PlaylistSettings from './PlaylistSettings.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
@@ -67,7 +68,11 @@
 </button>
 
 <DefaultSplits bind:mainUnsaved bind:updateAllSplits />
-<Jukebox bind:mainUnsaved />
+<BroadcastMode bind:mainUnsaved />
+
+{#if $mainSettings?.broadcastMode === 'playlist'}
+	<PlaylistSettings bind:mainUnsaved />
+{/if}
 
 <style>
 	button {

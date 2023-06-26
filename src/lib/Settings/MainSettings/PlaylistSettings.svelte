@@ -1,8 +1,7 @@
 <script>
 	import { mainSettings } from '$/stores';
 
-	let jukeboxEnabled = $mainSettings.jukeboxEnabled || false;
-	$: $mainSettings.jukeboxEnabled = jukeboxEnabled;
+	let jukeboxEnabled = false;
 </script>
 
 <label

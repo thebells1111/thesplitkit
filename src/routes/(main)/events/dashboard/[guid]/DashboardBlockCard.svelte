@@ -9,19 +9,20 @@
 	import PersonIcon from '$lib/icons/Person.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
-	import { defaultBlockGuid } from '$/stores';
+	import { defaultBlockGuid, mainSettings } from '$/stores';
 	export let block = {};
 	export let index;
-	export let broadcastingBlockIndex;
+	export let broadcastingBlockGuid;
 	export let showSettingsModal = false;
 	export let activeBlockGuid;
 	export let showOptionsModal = true;
+	export let broadcastTimeRemaining;
 	export let handleBroadcast = () => {};
-	export let broadcastMethod = '';
 
-	function broadcast(block, index) {
-		broadcastingBlockIndex = index;
-		handleBroadcast(block);
+	function broadcast(block) {
+		if (broadcastingBlockGuid !== block.blockGuid) {
+			handleBroadcast(block);
+		}
 	}
 
 	const Icons = {
@@ -68,7 +69,7 @@
 
 {#if block}
 	<div
-		class:active={broadcastingBlockIndex === index}
+		class:active={broadcastingBlockGuid === block.blockGuid}
 		class:warning={block.value.destinations.reduce(
 			(acc, person) => acc + parseFloat(person.fee ? 0 : person.split),
 			0
@@ -91,15 +92,27 @@
 		</card-info>
 		<bottom-container>
 			<time-container>
-				{#if ['playlist', 'post'].find((v) => v === broadcastMethod)}
+				{#if $mainSettings?.broadcastMode === 'playlist'}
 					<duration>
 						<strong>Duration:</strong>
-						<span>{block.duration ? formatTime(block.duration) : ''}</span>
+
+						{#if $mainSettings?.broadcastMode === 'playlist' && !block.duration}
+							<warning>This block has no duration.</warning>
+						{:else}
+							<span>{block.duration ? formatTime(block.duration) : ''}</span>
+						{/if}
 					</duration>
 					<start-time>
 						<strong>Start:</strong>
 						<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
 					</start-time>
+
+					{#if broadcastingBlockGuid === block.blockGuid}
+						<time-remaing>
+							<strong>Time Remaining:</strong>
+							{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : formatTime(0)}
+						</time-remaing>
+					{/if}
 				{/if}
 			</time-container>
 			<button-container>
@@ -123,6 +136,9 @@
 		<block-value
 			>{block.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to default block</block-value
 		>
+		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl}
+			<warning>This block has no audio file.</warning>
+		{/if}
 	</div>
 {/if}
 
@@ -248,6 +264,13 @@
 
 	block-value {
 		display: block;
+		width: 100%;
+		text-align: center;
+	}
+
+	warning {
+		font-weight: bold;
+		color: red;
 		width: 100%;
 		text-align: center;
 	}

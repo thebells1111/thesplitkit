@@ -1,26 +1,38 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import io from 'socket.io-client';
 	import clone from 'just-clone';
 	import DashboardBlockCard from './DashboardBlockCard.svelte';
 	import Person from './Person.svelte';
+	import PlayIcon from '$lib/icons/PlayArrow.svelte';
+	import PauseIcon from '$lib/icons/Pause.svelte';
 
-	import { tick } from 'svelte';
 	import { page } from '$app/stores';
 	import {
 		remoteServer,
 		socket,
 		activeBroadcastGuid,
 		liveBlocks,
-		defaultBlockGuid
+		defaultBlockGuid,
+		mainSettings
 	} from '$/stores';
 	export let blocks = [];
 	export let filterType;
 	export let showOptionsModal = false;
 	export let activeBlockGuid;
 
-	let broadcastingBlockIndex;
+	let broadcastingBlockGuid;
+	let player;
+	let broadcastTimeRemaining;
+	let broadcastIntervalStartTime;
+	let broadcastTimeInterval;
 	export let guid = $page.params.guid;
+
+	$: if (player && !$mainSettings?.broadcastMode === 'playlist') {
+		player.src = null;
+	}
+
+	$: console.log(player);
 
 	onMount(async () => {
 		if (!$liveBlocks?.length) {
@@ -54,9 +66,72 @@
 		});
 	}
 
-	function handleBroadcast(block) {
-		const serverData = processBlock(clone(block));
-		$socket.emit('valueBlock', { valueGuid: guid, serverData });
+	async function handleBroadcast(block) {
+		let serverData;
+		broadcastIntervalStartTime = null;
+		clearInterval(broadcastTimeInterval);
+		await tick();
+
+		if ($mainSettings?.broadcastMode === 'playlist' && block) {
+			let nextBlock = getNextBlock(block);
+			if (block.enclosureUrl) {
+				if (player) {
+					player.src = block.enclosureUrl;
+					player.onended = () => {
+						handleBroadcast(nextBlock);
+					};
+					player.ontimeupdate = () => {
+						if (block?.duration && player?.currentTime) {
+							broadcastTimeRemaining = block.duration - player.currentTime;
+						}
+					};
+				}
+				broadcastBlock(block);
+			} else {
+				if (player) {
+					player.src = null;
+				}
+				if (block.duration) {
+					broadcastIntervalStartTime = new Date().getTime();
+					broadcastTimeInterval = setInterval(nextInterval.bind(this, nextBlock), 250);
+					broadcastBlock(block);
+				} else {
+					handleBroadcast(nextBlock);
+				}
+			}
+		} else {
+			broadcastBlock(block);
+		}
+
+		function nextInterval(nextBlock) {
+			broadcastTimeRemaining =
+				(broadcastIntervalStartTime + block.duration * 1000 - new Date().getTime()) / 1000;
+			if (broadcastTimeRemaining <= 0) {
+				handleBroadcast(nextBlock);
+			}
+		}
+
+		function broadcastBlock(block) {
+			if (block) {
+				serverData = processBlock(clone(block));
+				broadcastingBlockGuid = block.blockGuid;
+			} else {
+				broadcastingBlockGuid = null;
+				broadcastTimeRemaining = null;
+				serverData = {};
+			}
+
+			$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		}
+	}
+
+	function getNextBlock(block) {
+		let index = $liveBlocks.findIndex((v) => v.blockGuid === block?.blockGuid);
+		if (index > -1 && index < $liveBlocks.length - 1) {
+			return $liveBlocks[index + 1];
+		} else {
+			return null;
+		}
 	}
 
 	function addFees(destinations) {
@@ -115,21 +190,28 @@
 			>Connect to Live Value Server</button
 		>
 	{/if}
+	{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl)}
+		<warning>Playlist Mode Error - Fix Blocks with no enclosure url or duration</warning>
+	{/if}
+
+	<audio autoplay controls bind:this={player} class:hidden={player?.src} />
+
 	<top>
 		<transparent-spacer />
 	</top>
 
 	{#if filterType === 'person'}
-		<Person {blocks} bind:broadcastingBlockIndex {handleBroadcast} />
+		<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
 	{:else}
 		<blocks>
 			{#each blocks as block, index}
 				<DashboardBlockCard
 					{block}
 					{index}
-					bind:broadcastingBlockIndex
+					bind:broadcastingBlockGuid
 					bind:activeBlockGuid
 					bind:showOptionsModal
+					{broadcastTimeRemaining}
 					{handleBroadcast}
 				/>
 			{/each}
@@ -178,5 +260,14 @@
 		width: 250px;
 		background-image: linear-gradient(to bottom, hsl(277, 100%, 44%), hsl(277, 100%, 26.7%));
 		color: var(--color-text-1);
+	}
+
+	warning {
+		font-weight: bold;
+		color: red;
+	}
+
+	audio {
+		width: 100%;
 	}
 </style>

@@ -1,10 +1,9 @@
 <script>
 	export let blocks = [];
 	export let handleBroadcast = () => {};
-	export let broadcastingBlockIndex;
+	export let broadcastingBlockGuid;
 
-	function broadcast(block, index) {
-		broadcastingBlockIndex = index;
+	function broadcast(block) {
 		handleBroadcast(block);
 	}
 
@@ -27,7 +26,7 @@
 	{#each blocks as block, index}
 		<person>
 			<button
-				class:active={broadcastingBlockIndex === index}
+				class:active={broadcastingBlockGuid === block.blockGuid}
 				on:click={broadcast.bind(this, block, index)}
 			>
 				<img src={block.image || '/splitkit300.png'} alt="person's headshot" />

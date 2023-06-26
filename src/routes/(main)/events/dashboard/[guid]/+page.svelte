@@ -3,6 +3,7 @@
 	import clone from 'just-clone';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 	import Share from '$lib/Share/Share.svelte';
 	import Filter from '$lib/EventsHeader/Filter.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
@@ -12,10 +13,16 @@
 	import EditOptions from '$lib/Creator/EditOptions.svelte';
 	import PromoEditor from '$lib/PromoEditor/PromoEditor.svelte';
 	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
-	import { remoteServer, liveBlocks, defaultBlockGuid, mainSettings, activeGuid } from '$/stores';
+	import {
+		remoteServer,
+		liveBlocks,
+		defaultBlockGuid,
+		mainSettings,
+		activePageGuid
+	} from '$/stores';
 
 	let showShareModal = false;
-	let showMainSettingsModal = true;
+	let showMainSettingsModal = false;
 	let showFilterModal = false;
 	let showOptionsModal = false;
 	let filterType = 'off';
@@ -44,8 +51,11 @@
 	}
 
 	onMount(async () => {
-		if (!$liveBlocks.length) {
+		if (!$liveBlocks.length || $activePageGuid !== guid) {
 			loadBlocks();
+			$activePageGuid = guid;
+			console.log('reload');
+			setTimeout(() => (mainUnsaved = false), 500);
 		}
 	});
 
@@ -134,9 +144,6 @@
 			}
 		};
 
-		showEditor = true;
-		showSelectBlock = false;
-
 		newBlock.eventGuid = $page.params.guid;
 		newBlock.eventAPI = 'https://curiohoster.com/api/sk/event/lookup';
 
@@ -158,8 +165,17 @@
 			$defaultBlockGuid = blockGuid;
 		}
 
+		activeBlockGuid = blockGuid;
+
 		$liveBlocks = $liveBlocks.concat(newBlock);
 		mainUnsaved = true;
+
+		setTimeout(() => {
+			console.log(newBlock.blockGuid);
+			console.log(activeBlockGuid);
+			showSelectBlock = false;
+			showEditor = true;
+		}, 0);
 	}
 
 	async function addFeed(block, type, channel) {
@@ -209,6 +225,7 @@
 			} while (!isBlockGuidUnique(blockGuid, $liveBlocks));
 
 			newBlock.blockGuid = blockGuid;
+			activeBlockGuid = blockGuid;
 			newBlock.settings = {
 				split: $mainSettings.splits
 			};
@@ -220,24 +237,6 @@
 			$liveBlocks = $liveBlocks.concat(newBlock);
 			mainUnsaved = true;
 		}
-	}
-
-	function getMediaDuration(url) {
-		return new Promise((resolve, reject) => {
-			const audio = new Audio();
-			audio.preload = 'metadata'; // Load only metadata, not the entire file
-			audio.src = url;
-
-			audio.onloadedmetadata = () => {
-				resolve(audio.duration);
-				audio.remove();
-			};
-
-			audio.onerror = (error) => {
-				reject(error);
-				audio.remove();
-			};
-		});
 	}
 </script>
 

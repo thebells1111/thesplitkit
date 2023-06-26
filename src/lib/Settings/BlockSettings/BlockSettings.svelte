@@ -1,22 +1,31 @@
 <script>
 	import clone from 'just-clone';
 	import Save from '$lib/icons/Save.svelte';
+	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 
-	import { remoteServer, liveBlocks } from '$/stores';
+	import { remoteServer, liveBlocks, mainSettings } from '$/stores';
 	import { page } from '$app/stores';
 
 	import Duration from './Duration.svelte';
 	import StartTime from './StartTime.svelte';
+	import Enclosure from './Enclosure.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
 	let savedSettings = {};
 
 	export let block = { settings: { split: 95 } };
-	export let broadcastMethod = '';
 	$: console.log(block);
 
-	function saveBlocks() {
+	async function saveBlocks() {
+		if (block.enclosureUrl && !block.duration) {
+			try {
+				block.duration = await getMediaDuration(block.enclosureUrl);
+			} catch (error) {
+				block.duration = 0;
+			}
+		}
+
 		let activeIndex = $liveBlocks.findIndex((v) => v.blockGuid === block.blockGuid);
 		if (activeIndex > -1) {
 			$liveBlocks[activeIndex] = block;
@@ -88,9 +97,10 @@
 	>
 </label>
 
-{#if ['playlist', 'post'].find((v) => v === broadcastMethod)}
+{#if $mainSettings?.broadcastMode === 'playlist'}
 	<Duration bind:block />
 	<StartTime bind:block />
+	<Enclosure bind:block bind:mainUnsaved />
 {/if}
 
 <style>
