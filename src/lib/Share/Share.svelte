@@ -3,16 +3,22 @@
 	import QRCode from 'qrcode';
 	import { saveAs } from 'file-saver';
 	import { page } from '$app/stores';
+	import CopyIcon from '$lib/icons/Copy.svelte';
+	import LinkIcon from '$lib/icons/Link.svelte';
+	import Modal from '$lib/Modal/Modal.svelte';
 
 	export let liveGuid;
 	export let eventGuid;
 	export let blockGuid;
 	let guid;
 	let code = '';
+	let podcastCode = '';
+	let showPodcastModal = true;
 
 	if (liveGuid) {
 		guid = liveGuid;
 		code = `${$page.url.origin}/live/${liveGuid}`;
+		podcastCode = `https://curiohoster.com/event?event_id=${liveGuid}`;
 	}
 
 	if (eventGuid && blockGuid) {
@@ -87,13 +93,49 @@
 			<button class="dl-qr" on:click={saveQRCode}>Download QR Code</button>
 		</button-row>
 
-		<input type="url" disabled value={code} />
-		<button class="dl-link" on:click={copyLinkToClipboard}>Copy Link to Clipboard</button>
+		<copy-link-row>
+			<input type="url" disabled value={code} />
+			<button class="dl-link" on:click={copyLinkToClipboard}>
+				<copy-link-icon>
+					<CopyIcon size="32" />
+					<link-icon>
+						<LinkIcon />
+					</link-icon>
+				</copy-link-icon>
+			</button>
+		</copy-link-row>
 		<!-- <button class="dl-link" on:click={() => (showButtonModal = true)}
 			>Create Embeddable Button</button
 		> -->
 		<input type="file" bind:this={fileInput} webkitdirectory />
+		<button class="podcast-link" on:click={() => (showPodcastModal = true)}
+			>Get Podcast Link
+		</button>
 	</div>
+{/if}
+
+{#if showPodcastModal}
+	<Modal bind:showModal={showPodcastModal}>
+		<podcast-code>
+			<h2>
+				Copy the tag below and paste into the {`<podcast:liveItem>`}
+				of your podcast feed
+			</h2>
+
+			<code-block>
+				<code>
+					{`<podcast:liveValue uri="${podcastCode}" protocol="socket.io"/>`}
+				</code>
+			</code-block>
+
+			<h2>or copy the link below in your Sovereign Feeds Live Value Link</h2>
+			<code-block>
+				<code>
+					{`${podcastCode}`}
+				</code>
+			</code-block>
+		</podcast-code>
+	</Modal>
 {/if}
 
 <style>
@@ -115,10 +157,17 @@
 	input[type='file'] {
 		display: none;
 	}
+
+	copy-link-row {
+		display: flex;
+		align-items: center;
+		width: calc(100%);
+	}
 	input[type='url'] {
-		width: 300px;
 		padding: 8px;
-		max-width: calc(100% - 32px);
+		height: 1em;
+		flex: 1;
+		margin-right: 4px;
 	}
 
 	button {
@@ -133,6 +182,7 @@
 		background-color: rgb(0, 57, 180);
 		color: white;
 		box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.5);
+		position: relative;
 	}
 
 	.dl-qr {
@@ -141,6 +191,45 @@
 
 	.dl-link {
 		background-color: rgb(105, 0, 180);
+		width: 50px;
+		height: 50px;
+		border-radius: 50px;
+		margin: 0;
+	}
+
+	link-icon {
+		background-color: rgb(105, 0, 180);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 20px;
+		height: 20px;
+		border-radius: 15px;
+		position: absolute;
+		bottom: 4px;
+		right: 4px;
+	}
+
+	.podcast-link {
+		background-color: rgb(180, 0, 153);
+	}
+
+	h2 {
+		text-align: center;
+	}
+
+	podcast-code {
+		margin: 8px;
+	}
+
+	code-block {
+		display: block;
+		background-color: rgb(245, 245, 245);
+		color: black;
+		padding: 10px;
+		border-radius: 5px;
+		white-space: pre-wrap;
+		word-wrap: break-word;
 	}
 
 	@media (max-width: 799px) {

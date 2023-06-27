@@ -134,7 +134,8 @@
 			</button-container>
 		</bottom-container>
 		<block-value
-			>{block.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to default block</block-value
+			>{block.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to this block
+			when active</block-value
 		>
 		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl}
 			<warning>This block has no audio file.</warning>
@@ -226,12 +227,11 @@
 	time-container {
 		display: flex;
 		flex-direction: column;
-		width: 50%;
+		flex: 1;
 	}
 
 	button-container {
 		display: flex;
-		width: calc(50% - 8px);
 		justify-content: flex-end;
 	}
 

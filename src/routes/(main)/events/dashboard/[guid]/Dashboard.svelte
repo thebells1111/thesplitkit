@@ -190,7 +190,7 @@
 			>Connect to Live Value Server</button
 		>
 	{/if}
-	{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl)}
+	{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
 		<warning>Playlist Mode Error - Fix Blocks with no enclosure url or duration</warning>
 	{/if}
 
@@ -240,10 +240,11 @@
 	transparent-spacer {
 		display: block;
 		height: 20px;
-		width: 100%;
+		width: calc(100% - 8px);
 		background: linear-gradient(to top, transparent, white);
 		position: absolute;
 		bottom: -20px;
+		z-index: 3;
 	}
 
 	blocks {
@@ -253,6 +254,7 @@
 		overflow: auto;
 		padding-top: 18px;
 		margin-bottom: 0px;
+		padding-bottom: 16px;
 	}
 
 	.socket-connect {
@@ -268,6 +270,8 @@
 	}
 
 	audio {
-		width: 100%;
+		width: calc(100% - 16px);
+		height: 40px;
+		min-height: 40px;
 	}
 </style>
