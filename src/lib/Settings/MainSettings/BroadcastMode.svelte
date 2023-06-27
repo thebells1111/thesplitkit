@@ -19,3 +19,19 @@
 		<option value="podcast">Podcast</option>
 	</select>
 </div>
+
+<style>
+	div {
+		margin: 8px;
+	}
+	label {
+		font-size: 1.2em;
+		font-weight: bold;
+		color: var(--color-theme-blue);
+	}
+
+	select {
+		padding: 4px;
+		font-size: 1.1em;
+	}
+</style>

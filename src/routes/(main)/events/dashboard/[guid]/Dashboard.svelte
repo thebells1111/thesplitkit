@@ -191,10 +191,14 @@
 		>
 	{/if}
 	{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
-		<warning>Playlist Mode Error - Fix Blocks with no enclosure url or duration</warning>
+		<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
+	{:else if $mainSettings?.broadcastMode === 'podcast' && $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid).type !== 'podcast'}
+		<warning>Podcast Mode Error - Your default block needs to be your podcast</warning>
 	{/if}
 
-	<audio autoplay controls bind:this={player} class:hidden={player?.src} />
+	{#if $mainSettings?.broadcastMode === 'playlist'}
+		<audio autoplay controls bind:this={player} class:hidden={player?.src} />
+	{/if}
 
 	<top>
 		<transparent-spacer />

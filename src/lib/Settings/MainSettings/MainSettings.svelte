@@ -71,7 +71,7 @@
 <BroadcastMode bind:mainUnsaved />
 
 {#if $mainSettings?.broadcastMode === 'playlist'}
-	<PlaylistSettings bind:mainUnsaved />
+	<!-- <PlaylistSettings bind:mainUnsaved /> -->
 {/if}
 
 <style>

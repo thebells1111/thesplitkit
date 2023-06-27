@@ -13,7 +13,7 @@
 	let guid;
 	let code = '';
 	let podcastCode = '';
-	let showPodcastModal = true;
+	let showPodcastModal = false;
 
 	if (liveGuid) {
 		guid = liveGuid;

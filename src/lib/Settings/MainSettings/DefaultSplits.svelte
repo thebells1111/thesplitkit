@@ -18,7 +18,7 @@
 </script>
 
 <default-split>
-	<p>Default value split for active block:</p>
+	<h3>Default value split for active block:</h3>
 	<split-container>
 		<percent>
 			<input
@@ -37,23 +37,29 @@
 			/>Update all splits
 		</label>
 	</split-container>
+	<p>The remaining {100 - Number($mainSettings.splits)}% will go to your default block.</p>
 </default-split>
 
 <style>
 	default-split {
-		margin: 4px;
+		margin: 8px;
 	}
 	split-container {
 		display: flex;
-		width: 280px;
-		justify-content: space-between;
+		width: 100%;
+		justify-content: center;
 		align-items: center;
 	}
-	p {
+	p,
+	h3 {
 		margin: 0;
 		padding: 0;
 		font-weight: bold;
 		text-align: center;
+	}
+
+	h3 {
+		color: var(--color-theme-blue);
 	}
 
 	split-container label {
@@ -63,6 +69,7 @@
 	percent {
 		align-self: flex-end;
 		margin-left: 16px;
+		margin-right: 45px;
 	}
 
 	percent input {
