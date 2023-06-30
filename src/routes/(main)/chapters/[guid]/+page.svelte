@@ -14,7 +14,8 @@
 
 	const guid = $page.params.guid;
 
-    let blocks
+	let blocks;
+	let chapters = [];
 
 	onMount(loadBlocks);
 
@@ -22,7 +23,23 @@
 		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
 		const data = await res.json();
 		console.log(data);
-        blocks=data.blocks
+		blocks = data.blocks;
+
+		if (blocks) {
+			chapters = blocks.map((v) => {
+				if (v.startTime) {
+					return {
+						title: v.title,
+						img: v.image,
+						startTime: v.startTime,
+						url: v?.link?.url,
+						endTime: v.duration ? v.startTime + v.duration : undefined
+					};
+				}
+			});
+		}
+
+		console.log(chapters);
 	}
 </script>
 
