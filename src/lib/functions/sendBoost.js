@@ -48,15 +48,15 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 		}
 	}
 
-	// let res = await fetch(remoteServer + '/api/alby/boost', {
-	// 	method: 'POST',
-	// 	credentials: 'include',
-	// 	headers: { 'Content-Type': 'application/json' },
-	// 	body: JSON.stringify(payments)
-	// });
+	let res = await fetch(remoteServer + '/api/alby/boost', {
+		method: 'POST',
+		credentials: 'include',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(payments)
+	});
 
-	// let data = await res.json();
-	// return data;
+	let data = await res.json();
+	return data;
 
 	async function processDestination(block, dest, amount) {
 		let record = getBaseRecord(block, satAmount, boostagram, senderName);
