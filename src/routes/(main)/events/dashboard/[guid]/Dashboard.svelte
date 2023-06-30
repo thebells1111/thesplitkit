@@ -4,6 +4,9 @@
 	import clone from 'just-clone';
 	import DashboardBlockCard from './DashboardBlockCard.svelte';
 	import Person from './Person.svelte';
+	import formatTime from '$lib/functions/formatTime.js';
+	import ResetIcon from '$lib/icons/Refresh.svelte';
+	import TimerIcon from '$lib/icons/Timer.svelte';
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
 
@@ -14,7 +17,8 @@
 		activeBroadcastGuid,
 		liveBlocks,
 		defaultBlockGuid,
-		mainSettings
+		mainSettings,
+		timeStamp
 	} from '$/stores';
 	export let blocks = [];
 	export let filterType;
@@ -24,7 +28,7 @@
 	let broadcastingBlockGuid;
 	let player;
 	let broadcastTimeRemaining;
-	let broadcastIntervalStartTime;
+	let broadcastIntervalTimer;
 	let broadcastTimeInterval;
 	export let guid = $page.params.guid;
 
@@ -68,7 +72,7 @@
 
 	async function handleBroadcast(block) {
 		let serverData;
-		broadcastIntervalStartTime = null;
+		broadcastIntervalTimer = null;
 		clearInterval(broadcastTimeInterval);
 		await tick();
 
@@ -92,7 +96,7 @@
 					player.src = null;
 				}
 				if (block.duration) {
-					broadcastIntervalStartTime = new Date().getTime();
+					broadcastIntervalTimer = new Date().getTime();
 					broadcastTimeInterval = setInterval(nextInterval.bind(this, nextBlock), 250);
 					broadcastBlock(block);
 				} else {
@@ -105,7 +109,7 @@
 
 		function nextInterval(nextBlock) {
 			broadcastTimeRemaining =
-				(broadcastIntervalStartTime + block.duration * 1000 - new Date().getTime()) / 1000;
+				(broadcastIntervalTimer + block.duration * 1000 - new Date().getTime()) / 1000;
 			if (broadcastTimeRemaining <= 0) {
 				handleBroadcast(nextBlock);
 			}
@@ -115,6 +119,11 @@
 			if (block) {
 				serverData = processBlock(clone(block));
 				broadcastingBlockGuid = block.blockGuid;
+				if ($timeStamp) {
+					let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
+					foundBlock.startTime = $timeStamp;
+					$liveBlocks = $liveBlocks;
+				}
 			} else {
 				broadcastingBlockGuid = null;
 				broadcastTimeRemaining = null;
@@ -182,6 +191,40 @@
 
 		return block;
 	}
+
+	let startTime = 0;
+	let pauseTime = 0;
+	let totalPausedTime = 0;
+	let interval;
+	let isRunning = false;
+
+	function handleTimer() {
+		isRunning = !isRunning;
+
+		if (isRunning) {
+			startTime = startTime ? startTime : performance.now();
+			if (pauseTime) {
+				totalPausedTime += performance.now() - pauseTime;
+				pauseTime = 0; // reset pauseTime
+			}
+
+			interval = setInterval(() => {
+				const now = performance.now();
+				const deltaTime = now - startTime - totalPausedTime;
+				$timeStamp = deltaTime / 1000; // update the elapsed time in seconds
+			}, 25);
+		} else {
+			pauseTime = performance.now(); // capture the time when timer is paused
+			clearInterval(interval);
+		}
+	}
+
+	function handleResetTimer() {
+		let confirmation = confirm('Do you want to reset your timer?');
+		if (confirmation) {
+			$timeStamp = 0;
+		}
+	}
 </script>
 
 <div>
@@ -198,6 +241,28 @@
 
 	{#if $mainSettings?.broadcastMode === 'playlist'}
 		<audio autoplay controls bind:this={player} class:hidden={player?.src} />
+	{/if}
+
+	{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
+		<time-stamp>
+			<button class="timer-button" on:click={handleTimer}>
+				<TimerIcon size="36" />
+
+				{#if isRunning}
+					<pause>
+						<PauseIcon size="20" />
+					</pause>
+				{:else}
+					<play>
+						<PlayIcon size="20" />
+					</play>
+				{/if}
+			</button>
+			<timer>{formatTime($timeStamp, true)}</timer>
+			<button class="reset-button" on:click={handleResetTimer}>
+				<ResetIcon size="32" />
+			</button>
+		</time-stamp>
 	{/if}
 
 	<top>
@@ -277,5 +342,45 @@
 		width: calc(100% - 16px);
 		height: 40px;
 		min-height: 40px;
+	}
+
+	time-stamp {
+		display: flex;
+		width: calc(100% - 32px);
+		margin: 8px 0;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	time-stamp button {
+		background-color: white;
+		color: red;
+		width: 42px;
+		height: 42px;
+		padding: 0;
+		overflow: hidden;
+	}
+
+	time-stamp .timer-button {
+		color: var(--color-text-0);
+
+		position: relative;
+	}
+
+	pause,
+	play {
+		position: absolute;
+		background-color: white;
+		border-radius: 24px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		bottom: 0px;
+		right: 0px;
+	}
+
+	timer {
+		font-size: 1.1em;
+		font-weight: bold;
 	}
 </style>

@@ -1,5 +1,5 @@
 <script>
-	import { mainSettings } from '$/stores';
+	import { mainSettings, timeStamp } from '$/stores';
 	export let mainUnsaved;
 	let selectedOption = $mainSettings?.broadcastMode || 'manual'; // Default selected option
 
@@ -8,6 +8,13 @@
 		selectedOption = event.target.value;
 		$mainSettings.broadcastMode = selectedOption;
 		mainUnsaved = true;
+
+		if (selectedOption === 'manual' && $timeStamp) {
+			let confirmation = confirm('Do you want to reset your timer?');
+			if (confirmation) {
+				$timeStamp = 0;
+			}
+		}
 	}
 </script>
 

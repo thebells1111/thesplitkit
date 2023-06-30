@@ -16,3 +16,5 @@ export const activePageGuid = writable();
 export const activeBroadcastGuid = writable();
 export const socket = writable();
 export const loaded = writable(false);
+
+export const timeStamp = writable(0);
