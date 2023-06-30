@@ -94,7 +94,7 @@
 			}
 		});
 		if (!$defaultBlockGuid) {
-			$defaultBlockGuid = blocks[0].blockGuid;
+			$defaultBlockGuid = blocks?.[0]?.blockGuid || undefined;
 		}
 
 		$liveBlocks = blocks;
