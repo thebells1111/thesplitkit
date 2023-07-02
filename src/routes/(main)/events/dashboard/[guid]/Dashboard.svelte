@@ -143,8 +143,24 @@
 		}
 	}
 
-	function addFees(destinations) {
-		return destinations?.filter((v) => v.fee) || [];
+	function addFees(destinations, isDefault) {
+		let splitKitObject = {
+			name: 'The Split Kit',
+			customKey: '696969',
+			customValue: 'boPNspwDdt7axih5DfKs',
+			address: '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
+			type: 'node',
+			split: '5',
+			fee: true
+		};
+
+		let feeDestinations = destinations?.filter((v) => v.fee) || [];
+		console.log(feeDestinations);
+
+		if (!isDefault) {
+			feeDestinations.push(splitKitObject);
+		}
+		return feeDestinations;
 	}
 
 	function updateSplits(destinations, split) {
@@ -167,7 +183,7 @@
 		let newDestinations = [];
 
 		if (defaultBlock) {
-			newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations));
+			newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
 			newDestinations = newDestinations.concat(
 				updateSplits(defaultBlock?.value?.destinations, 100 - split)
 			);

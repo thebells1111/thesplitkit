@@ -53,6 +53,8 @@
 	}
 
 	onMount(async () => {
+		console.log($liveBlocks);
+		console.log($activePageGuid);
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
 			loadBlocks();
 			$activePageGuid = guid;

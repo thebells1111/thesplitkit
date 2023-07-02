@@ -7,26 +7,23 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 	let splitsDestinations = destinations.filter((v) => !v.fee);
 
 	let splitKitObject = {
+		name: 'The Split Kit',
 		customKey: '696969',
 		customValue: 'boPNspwDdt7axih5DfKs',
 		address: '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
-		name: 'The Split Kit',
+		type: 'node',
 		split: '5',
 		fee: true
 	};
 
-	if (addIndex) {
-		splitKitObject.split = '4';
-		feesDestinations = feesDestinations.concat([
-			splitKitObject,
-			{
-				name: 'Podcastindex.org',
-				address: '03ae9f91a0cb8ff43840e3c322c4c61f019d8c1c3cea15a25cfc425ac605e61a4a',
-				split: 1,
-				fee: true
-			}
-		]);
-	} else {
+	if (
+		!feesDestinations.some(
+			(item) =>
+				item.customKey === splitKitObject.customKey &&
+				item.customValue === splitKitObject.customValue &&
+				item.address === splitKitObject.address
+		)
+	) {
 		feesDestinations = feesDestinations.concat(splitKitObject);
 	}
 
