@@ -24,6 +24,7 @@
 		<option value="manual">Manual</option>
 		<option value="playlist">Playlist</option>
 		<option value="podcast">Podcast</option>
+		<option value="chapters">Chapters Creator</option>
 	</select>
 </div>
 

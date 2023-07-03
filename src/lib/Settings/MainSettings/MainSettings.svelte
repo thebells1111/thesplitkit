@@ -7,6 +7,7 @@
 	import DefaultSplits from './DefaultSplits.svelte';
 	import BroadcastMode from './BroadcastMode.svelte';
 	import PlaylistSettings from './PlaylistSettings.svelte';
+	import ChaptersSettings from './ChaptersSettings.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
@@ -72,6 +73,10 @@
 
 {#if $mainSettings?.broadcastMode === 'playlist'}
 	<!-- <PlaylistSettings bind:mainUnsaved /> -->
+{/if}
+
+{#if $mainSettings?.broadcastMode === 'chapters'}
+	<ChaptersSettings bind:mainUnsaved />
 {/if}
 
 <style>
