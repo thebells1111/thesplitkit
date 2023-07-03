@@ -267,7 +267,7 @@
 
 {#if showShareModal}
 	<Modal bind:showModal={showShareModal}>
-		<Share liveGuid={guid} />
+		<Share liveGuid={guid} shareEvent="true" />
 	</Modal>
 {/if}
 

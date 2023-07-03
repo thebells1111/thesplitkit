@@ -1,15 +1,10 @@
-<script>	
+<script>
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
 
-	import {
-		remoteServer,
-		liveBlocks,
-		defaultBlockGuid,
-		mainSettings,
-		activePageGuid
-	} from '$/stores';
+	import { remoteServer, liveBlocks, activePageGuid } from '$/stores';
+	import CopyIcon from '$lib/icons/Copy.svelte';
+	import LinkIcon from '$lib/icons/Link.svelte';
 
 	const guid = $page.params.guid;
 	$activePageGuid = guid;
@@ -21,10 +16,14 @@
 
 	onMount(loadBlocks);
 
+	$: console.log($liveBlocks);
+
 	async function loadBlocks() {
-		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
-		const data = await res.json();
-		$liveBlocks = data.blocks;
+		if (!$liveBlocks?.length) {
+			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
+			const data = await res.json();
+			$liveBlocks = data.blocks;
+		}
 
 		console.log($liveBlocks);
 
@@ -93,48 +92,162 @@
 		}
 	}
 
-	// <podcast:valueTimeSplit startTime="60" duration="237" remotePercentage="95">
-	//                <podcast:remoteItem itemGuid="https://podcastindex.org/podcast/4148683#1" feedGuid="a94f5cc9-8c58-55fc-91fe-a324087a655b" medium="music" />
-	//             </podcast:valueTimeSplit>
+	function copyText() {
+		navigator.clipboard.writeText(xmlText);
+		alert('Copied to clipboard');
+	}
 
-	// <podcast:valueTimeSplit startTime="63" duration="388">
-	//                 <podcast:valueRecipient name="Jimbob (Guest)" type="node" address="02dd306e68c46681aa21d88a436fb35355a8579dd30201581cefa17cb179fc4c15" split="10" />
-	//             </podcast:valueTimeSplit>
+	let instructionText = `
+     
+        
+    />
+`;
 </script>
 
-<button
-	on:click={() => {
-		goto(`/events/dashboard/${guid}`);
-	}}>Back</button
->
-
 {#if badStartBlocks?.length || badValueBlocks?.length}
-	<p>Go back and fix these blocks.</p>
-
-	{#if badStartBlocks?.length}
-		<p>These blocks need a start time.</p>
-		<ul>
-			{#each badStartBlocks as block}
-				<li>{block.title}</li>
-			{/each}
-		</ul>
-	{/if}
-
-	{#if badValueBlocks?.length}
-		<p>These blocks need a value block</p>
-		<ul>
-			{#each badValueBlocks as block}
-				<li>{block.title}</li>
-			{/each}
-		</ul>
-	{/if}
+	<warning-container>
+		<h3>Go back and fix these blocks.</h3>
+		{#if badStartBlocks?.length}
+			<p>These blocks need a start time.</p>
+			<ul>
+				{#each badStartBlocks as block}
+					<li>{block.title}</li>
+				{/each}
+			</ul>
+		{/if}
+		{#if badValueBlocks?.length}
+			<p>These blocks need a value block</p>
+			<ul>
+				{#each badValueBlocks as block}
+					<li>{block.title}</li>
+				{/each}
+			</ul>
+		{/if}
+	</warning-container>
 {:else}
+	<instruction-block>
+		<h4>
+			In your feed, paste the Value Time Splits in the {`<podcast:value>`} tag of your episode.
+		</h4>
+		<p class="instructions">
+			{`<podcast:value type="lightning" method="keysend" suggested="0.00000005000" >`}
+		</p>
+		<p class="instructions indent-1">
+			{`<podcast:valueRecipient`}
+		</p>
+		<p class="instructions indent-2">
+			{`name="Podcastindex.org"`}
+		</p>
+		<p class="instructions indent-2">
+			{`type="node"`}
+		</p>
+		<p class="instructions indent-2">
+			{`address="03ae9f91a0cb8ff43840e3c322c4c61f019d8c1c3cea15a25cfc425ac605e61a4a"`}
+		</p>
+		<p class="instructions indent-2">
+			{`split="72"`}
+		</p>
+		<p class="instructions indent-1">
+			{`/>`}
+		</p>
+		<p class="instructions indent-1 paste">Paste your value time splits here.</p>
+		<p class="instructions">
+			{`</podcast:value>`}
+		</p>
+	</instruction-block>
+	<h3>Value Time Splits</h3>
 	<textarea>{xmlText}</textarea>
+	<button class="dl-link" on:click={copyText}>
+		<copy-link-icon class="multi-icon">
+			<CopyIcon size="32" />
+		</copy-link-icon>
+	</button>
 {/if}
 
 <style>
+	instruction-block {
+		align-self: flex-start;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		margin: 8px;
+		overflow: hidden;
+	}
 	textarea {
 		display: block;
 		flex: 1;
+		width: calc(100% - 42px);
+		border-radius: 8px;
+		padding: 8px;
+		margin: 8px 16px 16px 16px;
+		resize: none;
+	}
+
+	button {
+		width: 200px;
+		font-weight: 700;
+		border-radius: 20px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid transparent;
+		height: 32px;
+		color: white;
+		box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.5);
+		position: absolute;
+		bottom: 24px;
+		right: 20px;
+		background-color: var(--color-theme-blue);
+		width: 50px;
+		height: 50px;
+		border-radius: 50px;
+		margin: 0;
+	}
+
+	.instructions {
+		padding: 0;
+		margin: 0;
+		align-self: flex-start;
+		font-size: 0.9em;
+	}
+
+	.indent-1 {
+		padding-left: 16px;
+	}
+	.indent-2 {
+		padding-left: 32px;
+	}
+
+	.paste {
+		color: red;
+		font-weight: bold;
+	}
+
+	h3 {
+		margin: 0;
+		text-align: center;
+	}
+
+	h4 {
+		margin: 0;
+		text-align: center;
+		width: calc(100% - 8px);
+		margin: 4px 16px 8px 0px;
+	}
+
+	warning-container {
+		display: block;
+	}
+
+	warning-container h3 {
+		margin: 0;
+		width: 100%;
+		color: red;
+	}
+
+	warning-container p {
+		color: var(--color-theme-blue);
+		margin: 4px;
 	}
 </style>

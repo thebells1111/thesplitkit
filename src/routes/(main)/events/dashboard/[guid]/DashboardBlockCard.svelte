@@ -253,13 +253,13 @@
 		background-color: hsl(38, 100%, 61%);
 	}
 	button.tuner {
-		color: var(--color-text-1);
-		background-color: rgb(0, 132, 180);
+		color: hsl(278, 100%, 92%);
+		background-color: hsl(277, 100%, 44%);
 	}
 
 	button.broadcast {
-		color: hsl(278, 100%, 92%);
-		background-color: hsl(277, 100%, 44%);
+		color: var(--color-text-1);
+		background-color: rgb(0, 132, 180);
 	}
 
 	block-value {

@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import AccountIcon from '$lib/icons/Account.svelte';
+	import MenuIcon from '$lib/icons/Menu.svelte';
 
 	import { user, albyClientId, remoteServer } from '$/stores';
 
@@ -29,7 +30,11 @@
 		expandMenu = true;
 	}}
 >
-	<AccountIcon size="40" />
+	{#if $user.loggedIn}
+		<MenuIcon size="40" />
+	{:else}
+		<AccountIcon size="40" />
+	{/if}
 </button>
 
 {#if expandMenu}
