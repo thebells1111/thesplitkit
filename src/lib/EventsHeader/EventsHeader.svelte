@@ -16,6 +16,7 @@
 
 	import clone from 'just-clone';
 	import Save from '$lib/icons/Save.svelte';
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
 	import { remoteServer, liveBlocks } from '$/stores';
 
@@ -23,6 +24,7 @@
 	export let mainUnsaved = false;
 	let initialized = false;
 	let savedBlocks = [];
+	let showSaved = false;
 
 	const Icons = {
 		music: MusicIcon,
@@ -45,7 +47,8 @@
 	}
 
 	function submitData() {
-		console.log('submit');
+		showSaved = true;
+		setTimeout(() => (showSaved = false), 500);
 		const newBlocks = $liveBlocks.map((block) => {
 			const newBlock = clone(block);
 			newBlock.line = newBlock.line
@@ -121,6 +124,12 @@
 		<Settings size="32" />
 	</button>
 </header>
+
+{#if showSaved}
+	<SaveModal>
+		<h2>Saved</h2>
+	</SaveModal>
+{/if}
 
 <style>
 	header {

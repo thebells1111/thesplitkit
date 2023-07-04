@@ -1,6 +1,7 @@
 <script>
 	import clone from 'just-clone';
 	import Save from '$lib/icons/Save.svelte';
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 
 	import { remoteServer, liveBlocks, mainSettings } from '$/stores';
@@ -14,10 +15,14 @@
 	let initialized = false;
 	let savedSettings = {};
 
+	let showSaved = false;
+
 	export let block = { settings: { split: 95 } };
 	$: console.log(block);
 
 	async function saveBlocks() {
+		showSaved = true;
+		setTimeout(() => (showSaved = false), 500);
 		if (block.enclosureUrl && !block.duration) {
 			try {
 				block.duration = await getMediaDuration(block.enclosureUrl);
@@ -101,6 +106,12 @@
 	<Duration bind:block />
 	<StartTime bind:block />
 	<Enclosure bind:block bind:mainUnsaved />
+{/if}
+
+{#if showSaved}
+	<SaveModal>
+		<h2>Saved</h2>
+	</SaveModal>
 {/if}
 
 <style>
