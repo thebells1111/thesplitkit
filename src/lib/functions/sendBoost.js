@@ -1,6 +1,7 @@
 import { remoteServer } from '$/stores';
 
-export default async function sendBoost({ block, satAmount, boostagram, senderName, addIndex }) {
+export default async function sendBoost({ block, satAmount, boostagram, senderName, isDefault }) {
+	console.log('boost: ', isDefault);
 	let destinations = block?.value?.destinations || [];
 
 	let feesDestinations = destinations.filter((v) => v.fee);
@@ -22,8 +23,10 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 				item.customKey === splitKitObject.customKey &&
 				item.customValue === splitKitObject.customValue &&
 				item.address === splitKitObject.address
-		)
+		) &&
+		!isDefault
 	) {
+		console.log(feesDestinations);
 		feesDestinations = feesDestinations.concat(splitKitObject);
 	}
 
@@ -45,6 +48,7 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 		}
 	}
 
+	console.log(payments);
 	let res = await fetch(remoteServer + '/api/alby/boost', {
 		method: 'POST',
 		credentials: 'include',
@@ -58,6 +62,7 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 	async function processDestination(block, dest, amount) {
 		let record = getBaseRecord(block, satAmount, boostagram, senderName);
 		record.name = dest.name;
+		console.log(record.name);
 		record.value_msat = amount * 1000;
 		let customRecords = { 7629169: JSON.stringify(record) };
 		if (dest.customKey) {

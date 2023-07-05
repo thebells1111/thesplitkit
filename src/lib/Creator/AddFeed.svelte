@@ -10,7 +10,7 @@
 	let episodeResults = [];
 
 	let indexQuery = '';
-	indexQuery = 'podcasting 2.0';
+	// indexQuery = 'podcasting 2.0';
 
 	async function searchPodcastIndex() {
 		selectedFeed = {};

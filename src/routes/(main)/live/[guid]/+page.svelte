@@ -12,21 +12,29 @@
 	import throwConfetti from '$lib/functions/throwConfetti';
 	import Modal from '$lib/Modal/Modal.svelte';
 
-	import { user, albyClientId, remoteServer } from '$/stores';
+	import {
+		user,
+		albyClientId,
+		remoteServer,
+		liveMode,
+		liveEnclosure,
+		defaultBlockGuid
+	} from '$/stores';
 	let boostagram = '';
 	let showInfoModal = false;
-	let fromIndex = true;
 	let amount = 1;
 	let btcPrice = 250000;
 	let showModal = false;
 	let senderName = 'anonymous';
 	let activeBlock = {};
 
-	let block = {};
+	let block;
+	let isDefault = true;
 	let loaded = false;
+	const guid = $page.params.guid;
+	let defaultBlock;
 
-	onMount(() => {
-		console.log($page.params.guid);
+	onMount(async () => {
 		const url = remoteServer + '/event?event_id=' + $page.params.guid;
 		const liveItemSocket = io.connect(url);
 
@@ -34,11 +42,34 @@
 			// You will need to adjust this part based on the actual format of the data sent by the server
 			console.log(data);
 			block = data;
+			isDefault = false;
+
+			if (!Object?.keys(block)?.length) {
+				block = defaultBlock;
+			}
+
+			if (block?.blockGuid && defaultBlock?.blockGuid) {
+				isDefault = block.blockGuid === defaultBlock.blockGuid;
+			}
 
 			fetchConversionRate();
 			senderName = localStorage.getItem('senderName') || 'anonymous';
 		});
 		loaded = true;
+		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
+		const data = await res.json();
+
+		$liveMode = data?.settings?.broadcastMode;
+		$liveEnclosure = data?.settings?.liveEnclosure;
+		defaultBlock = data.blocks.find((v) => v?.settings?.default);
+		if (!block) {
+			if ($liveMode === 'podcast' || $liveMode === 'playlist') {
+				block = defaultBlock;
+			}
+		}
+		if (block?.blockGuid && defaultBlock?.blockGuid) {
+			isDefault = block.blockGuid === defaultBlock.blockGuid;
+		}
 	});
 
 	async function fetchConversionRate() {
@@ -55,9 +86,8 @@
 	}
 
 	async function handleBoost() {
-		console.log(activeBlock);
-
-		sendBoost({ block: activeBlock, satAmount: amount, boostagram, senderName, fromIndex })
+		console.log('isDefaultBoost: ', isDefault);
+		sendBoost({ block: activeBlock, satAmount: amount, boostagram, senderName, isDefault })
 			.then((data) => {
 				console.log(data);
 			})
@@ -66,7 +96,6 @@
 			});
 
 		throwConfetti();
-		console.log('Boost button pressed');
 		localStorage.setItem('senderName', senderName);
 		$user.balance -= amount;
 	}
@@ -103,20 +132,20 @@
 	}
 
 	function getTitle(block) {
-		let text = block.title || block.feedTitle || '';
+		let text = block?.title || block?.feedTitle || '';
 		text = text === 'undefined' ? '' : text;
 		return DOMPurify.sanitize(text?.replace(/\r?\n/g, '<br/>'));
 	}
 
 	function getLine0(block) {
-		let text = block?.line?.[0] || block.itemTitle || '';
+		let text = block?.line?.[0] || block?.itemTitle || '';
 		text = text === 'undefined' ? '' : text;
 		text = text === 'Text - click to edit' ? '' : text;
 		return DOMPurify.sanitize(text?.replace(/\r?\n/g, '<br/>'));
 	}
 
 	function getLine1(block) {
-		let text = block?.line?.[1] || block.author || '';
+		let text = block?.line?.[1] || block?.author || '';
 		text = text === 'undefined' ? '' : text;
 		text = text === 'Text - click to edit' ? '' : text;
 		return DOMPurify.sanitize(text?.replace(/\r?\n/g, '<br/>'));
@@ -129,15 +158,15 @@
 		<image-container>
 			<img
 				class="image"
-				src={block.image || block.artwork || '/splitkit300.png'}
+				src={block?.image || block?.artwork || '/splitkit300.png'}
 				alt="live artwork"
 				width="300"
 				height="300"
 			/>
-			{#if Object.keys(block).length === 0}
+			{#if Object.keys(block || {})?.length === 0}
 				<h2>Standby for your host</h2>
 			{/if}
-			{#if block.description}
+			{#if block?.description}
 				<button
 					on:click={() => {
 						showInfoModal = true;

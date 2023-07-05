@@ -9,7 +9,8 @@
 	import PersonIcon from '$lib/icons/Person.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
-	import { defaultBlockGuid, mainSettings } from '$/stores';
+	import TimerIcon from '$lib/icons/Timer.svelte';
+	import { defaultBlockGuid, mainSettings, liveBlocks } from '$/stores';
 	export let block = {};
 	export let index;
 	export let broadcastingBlockGuid;
@@ -18,6 +19,7 @@
 	export let showOptionsModal = true;
 	export let broadcastTimeRemaining;
 	export let handleBroadcast = () => {};
+	export let updateStartTime = () => {};
 
 	function broadcast(block) {
 		if (broadcastingBlockGuid !== block.blockGuid) {
@@ -70,6 +72,7 @@
 {#if block}
 	<div
 		class:active={broadcastingBlockGuid === block.blockGuid}
+		class:default={$defaultBlockGuid === block.blockGuid}
 		class:warning={block.value.destinations.reduce(
 			(acc, person) => acc + parseFloat(person.fee ? 0 : person.split),
 			0
@@ -92,14 +95,22 @@
 		</card-info>
 		<bottom-container>
 			<time-container>
-				{#if $mainSettings?.broadcastMode === 'playlist'}
+				{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
 					<duration>
-						<strong>Duration:</strong>
-
-						{#if $mainSettings?.broadcastMode === 'playlist' && !block.duration}
-							<warning>This block has no duration.</warning>
+						{#if block.blockGuid === $defaultBlockGuid}
+							{#if block.duration}
+								<warning>Remove the duration for this block.</warning>
+							{:else}
+								<warning>Default Block. No duration needed.</warning>
+							{/if}
 						{:else}
-							<span>{block.duration ? formatTime(block.duration) : ''}</span>
+							<strong>Duration:</strong>
+
+							{#if ($mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) && !block.duration}
+								<warning>This block has no duration.</warning>
+							{:else}
+								<span>{block.duration ? formatTime(block.duration) : ''}</span>
+							{/if}
 						{/if}
 					</duration>
 					<start-time>
@@ -110,9 +121,14 @@
 					{#if broadcastingBlockGuid === block.blockGuid}
 						<time-remaing>
 							<strong>Time Remaining:</strong>
-							{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : formatTime(0)}
+							{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
 						</time-remaing>
 					{/if}
+				{:else if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
+					<start-time>
+						<strong>Start:</strong>
+						<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
+					</start-time>
 				{/if}
 			</time-container>
 			<button-container>
@@ -128,9 +144,15 @@
 				<button class="tuner" on:click={() => (showSettingsModal = true)}>
 					<TunerIcon size="27" />
 				</button>
-				<button class="broadcast" on:click={broadcast.bind(this, block, index)}
-					><BroadcastIcon size="32" /></button
-				>
+				{#if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
+					<button class="broadcast" on:click={updateStartTime.bind(this, block, index)}
+						><TimerIcon size="32" /></button
+					>
+				{:else}
+					<button class="broadcast" on:click={broadcast.bind(this, block, index)}
+						><BroadcastIcon size="32" /></button
+					>
+				{/if}
 			</button-container>
 		</bottom-container>
 		<block-value
@@ -165,8 +187,13 @@
 		margin-right: 4px;
 	}
 
+	div.default {
+		background-color: var(--color-theme-light-blue);
+		margin-bottom: 16px;
+	}
+
 	div.active {
-		background-color: antiquewhite;
+		background-color: var(--color-theme-light-yellow);
 	}
 
 	default {

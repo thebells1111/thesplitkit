@@ -53,12 +53,6 @@
 
 	let typeText = block?.type?.charAt(0)?.toUpperCase() + block?.type?.slice(1) || 'Chapter';
 
-	function handleCheck(e) {
-		console.log(block);
-		$defaultBlockGuid = block.blockGuid;
-		e.target.checked = $defaultBlockGuid === block.blockGuid;
-	}
-
 	function changeType(type) {
 		block.type = type;
 		typeText = type.charAt(0).toUpperCase() + type.slice(1);
@@ -115,13 +109,7 @@
 			<button class="delete" on:click={handleDelete}>
 				<Delete size="27" />
 			</button>
-			<label
-				><input
-					type="checkbox"
-					on:input={handleCheck}
-					checked={$defaultBlockGuid === block.blockGuid}
-				/>set as default block</label
-			>
+
 			{#if ['Chapter', 'Person'].find((v) => v === typeText)}
 				<button class="edit" on:click={handleEdit}>
 					<Edit size="32" />

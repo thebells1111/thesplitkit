@@ -32,8 +32,13 @@
 	let broadcastTimeInterval;
 	export let guid = $page.params.guid;
 
-	$: if (player && !$mainSettings?.broadcastMode === 'playlist') {
+	$: if (player && !['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)) {
 		player.src = null;
+	}
+
+	$: if (player && ['edit'].find((v) => v === $mainSettings?.broadcastMode)) {
+		player.autoplay = false;
+		player.src = $mainSettings?.editEnclosure;
 	}
 
 	$: console.log(player);
@@ -76,10 +81,15 @@
 		clearInterval(broadcastTimeInterval);
 		await tick();
 
-		if ($mainSettings?.broadcastMode === 'playlist' && block) {
+		if (
+			($mainSettings?.broadcastMode === 'playlist' ||
+				($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) &&
+			block
+		) {
 			let nextBlock = getNextBlock(block);
-			if (block.enclosureUrl) {
+			if ($mainSettings?.broadcastMode === 'playlist' && block.enclosureUrl) {
 				if (player) {
+					player.autoplay = true;
 					player.src = block.enclosureUrl;
 					player.onended = () => {
 						handleBroadcast(nextBlock);
@@ -99,6 +109,10 @@
 					broadcastIntervalTimer = new Date().getTime();
 					broadcastTimeInterval = setInterval(nextInterval.bind(this, nextBlock), 250);
 					broadcastBlock(block);
+				} else if ($mainSettings?.broadcastMode === 'podcast') {
+					broadcastTimeRemaining = 0;
+
+					broadcastBlock(block);
 				} else {
 					handleBroadcast(nextBlock);
 				}
@@ -111,7 +125,11 @@
 			broadcastTimeRemaining =
 				(broadcastIntervalTimer + block.duration * 1000 - new Date().getTime()) / 1000;
 			if (broadcastTimeRemaining <= 0) {
-				handleBroadcast(nextBlock);
+				if ($mainSettings?.broadcastMode === 'podcast') {
+					handleBroadcast();
+				} else {
+					handleBroadcast(nextBlock);
+				}
 			}
 		}
 
@@ -125,7 +143,11 @@
 					$liveBlocks = $liveBlocks;
 				}
 			} else {
-				broadcastingBlockGuid = null;
+				if ($mainSettings?.broadcastMode === 'podcast') {
+					broadcastingBlockGuid = $defaultBlockGuid;
+				} else {
+					broadcastingBlockGuid = null;
+				}
 				broadcastTimeRemaining = null;
 				serverData = {};
 			}
@@ -155,7 +177,6 @@
 		};
 
 		let feeDestinations = destinations?.filter((v) => v.fee) || [];
-		console.log(feeDestinations);
 
 		if (!isDefault) {
 			feeDestinations.push(splitKitObject);
@@ -177,19 +198,31 @@
 			block.blockGuid === $defaultBlockGuid
 				? undefined
 				: $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid);
-
 		let split = defaultBlock ? block.settings.split : 100;
 
 		let newDestinations = [];
 
-		if (defaultBlock) {
-			newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
-			newDestinations = newDestinations.concat(
-				updateSplits(defaultBlock?.value?.destinations, 100 - split)
-			);
+		if (['playlist', 'podcast'].find((v) => v === $mainSettings.broadcastMode)) {
+			if (defaultBlock) {
+				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
+				newDestinations = newDestinations.concat(
+					updateSplits(defaultBlock?.value?.destinations, 100 - split)
+				);
+				newDestinations = newDestinations.concat(addFees(block?.value?.destinations));
+				newDestinations = newDestinations.concat(updateSplits(block?.value?.destinations, split));
+			} else {
+				newDestinations = block?.value?.destinations ? block.value.destinations : [];
+			}
+		} else {
+			if (defaultBlock) {
+				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
+				newDestinations = newDestinations.concat(
+					updateSplits(defaultBlock?.value?.destinations, 100 - split, true)
+				);
+			}
+			newDestinations = newDestinations.concat(addFees(block?.value?.destinations));
+			newDestinations = newDestinations.concat(updateSplits(block?.value?.destinations, split));
 		}
-		newDestinations = newDestinations.concat(addFees(block?.value?.destinations));
-		newDestinations = newDestinations.concat(updateSplits(block?.value?.destinations, split));
 
 		delete block.settings;
 
@@ -241,6 +274,14 @@
 			$timeStamp = 0;
 		}
 	}
+
+	function updateStartTime(block) {
+		let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
+		foundBlock.startTime = player.currentTime;
+		console.log(player.currentTime);
+		$liveBlocks = $liveBlocks;
+		console.log('player: ', player);
+	}
 </script>
 
 <div>
@@ -255,7 +296,7 @@
 		<warning>Podcast Mode Error - Your default block needs to be your podcast</warning>
 	{/if}
 
-	{#if $mainSettings?.broadcastMode === 'playlist'}
+	{#if ['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)}
 		<audio autoplay controls bind:this={player} class:hidden={player?.src} />
 	{/if}
 
@@ -289,7 +330,7 @@
 		<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
 	{:else}
 		<blocks>
-			{#each blocks as block, index}
+			{#each blocks.filter((v) => v.blockGuid === $defaultBlockGuid) as block, index}
 				<DashboardBlockCard
 					{block}
 					{index}
@@ -298,6 +339,19 @@
 					bind:showOptionsModal
 					{broadcastTimeRemaining}
 					{handleBroadcast}
+					{updateStartTime}
+				/>
+			{/each}
+			{#each blocks.filter((v) => v.blockGuid !== $defaultBlockGuid) as block, index}
+				<DashboardBlockCard
+					{block}
+					{index}
+					bind:broadcastingBlockGuid
+					bind:activeBlockGuid
+					bind:showOptionsModal
+					{broadcastTimeRemaining}
+					{handleBroadcast}
+					{updateStartTime}
 				/>
 			{/each}
 		</blocks>

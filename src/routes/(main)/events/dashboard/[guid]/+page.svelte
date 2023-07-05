@@ -72,7 +72,7 @@
 		$mainSettings = data.settings || $mainSettings;
 
 		blocks.forEach((block) => {
-			if (block.default) {
+			if (block?.settings?.default) {
 				$defaultBlockGuid = block.blockGuid;
 			}
 			if (!block.link.text) {

@@ -3,7 +3,7 @@
 	import Save from '$lib/icons/Save.svelte';
 	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 
-	import { remoteServer, liveBlocks, mainSettings } from '$/stores';
+	import { remoteServer, liveBlocks, mainSettings, defaultBlockGuid } from '$/stores';
 	import { page } from '$app/stores';
 
 	import Duration from './Duration.svelte';
@@ -12,7 +12,8 @@
 
 	let mainUnsaved = false;
 	let initialized = false;
-	let savedSettings = {};
+	let savedBlock;
+	let initializedBlockGuid;
 
 	export let block = { settings: { split: 95 } };
 	$: console.log(block);
@@ -59,54 +60,89 @@
 		}
 	}
 
-	$: if (!block.settings) {
-		block.settings = { split: 95 };
-	}
+	$: compareBlock(block);
 
-	$: compareSettings(block.settings);
+	$: console.log(block.duration);
 
-	$: if (block.duration) {
-		mainUnsaved = true;
-	}
-
-	function compareSettings() {
-		if (JSON.stringify(block.settings) !== JSON.stringify(savedSettings)) {
-			savedSettings = clone(block.settings);
+	function compareBlock() {
+		if (JSON.stringify(block) !== JSON.stringify(savedBlock)) {
+			savedBlock = clone(block);
 			if (initialized) {
 				mainUnsaved = true;
 			} else {
 				initialized = true;
+				initializedBlockGuid = block.blockGuid;
+				if (!block.settings) {
+					block.settings = { split: 95 };
+				}
 			}
 		}
+	}
+
+	function handleCheck(e) {
+		let oldBlock = getBlock($defaultBlockGuid);
+		let block = getBlock(initializedBlockGuid);
+		oldBlock.settings.default = false;
+		block.settings.default = true;
+
+		$defaultBlockGuid = initializedBlockGuid;
+		mainUnsaved = true;
+
+		// Move block to the front of the $liveBlocks array
+		$liveBlocks = $liveBlocks.filter((v) => v.blockGuid !== initializedBlockGuid);
+		$liveBlocks.unshift(block);
+	}
+
+	function getBlock(blockGuid) {
+		let block = $liveBlocks.find((v) => v.blockGuid === blockGuid);
+		block.settings = block?.settings || {};
+		return block;
 	}
 </script>
 
 <button class="save" class:unsaved={mainUnsaved} on:click={saveBlocks}>
 	<Save size="32" />
 </button>
-<label>
-	<p>Default value split for active block:</p>
-	<percent
-		><input
-			type="number"
-			bind:value={block.settings.split}
-			min="0"
-			max="100"
-			on:keydown={preventCertainInput}
-		/>%</percent
-	>
-</label>
+<settings-container>
+	<label class="default-block">
+		<input
+			type="checkbox"
+			on:input={handleCheck}
+			checked={$defaultBlockGuid === initializedBlockGuid}
+		/>
+		<p>set as default block</p>
+	</label>
+	<label>
+		<p>Default value split for active block</p>
+		<percent
+			><input
+				type="number"
+				bind:value={block.settings.split}
+				min="0"
+				max="100"
+				on:keydown={preventCertainInput}
+			/>%</percent
+		>
+	</label>
+</settings-container>
 
-{#if $mainSettings?.broadcastMode === 'playlist'}
+{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
 	<Duration bind:block />
 	<StartTime bind:block />
 	<Enclosure bind:block bind:mainUnsaved />
 {/if}
 
 <style>
+	settings-container {
+		width: calc(100% - 16px);
+		margin: 8px;
+	}
 	label {
 		display: flex;
-		flex-direction: column;
+		align-items: center;
+		justify-content: flex-start;
+		width: 100%;
+		margin-bottom: 4px;
 	}
 
 	p {
@@ -120,13 +156,13 @@
 	}
 
 	percent input {
-		width: 50px;
-		padding: 4px;
+		width: 40px;
+		padding: 4px 0;
 		text-align: right;
+		margin-left: 8px;
 	}
 
-	button,
-	a {
+	button {
 		background-color: hsl(0, 0%, 96%);
 		color: var(--color-text-0);
 		display: flex;
