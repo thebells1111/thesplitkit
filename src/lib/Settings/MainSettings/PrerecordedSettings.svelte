@@ -14,7 +14,7 @@
 
 	function handleIncludeCheck(e) {
 		$mainSettings.editing = $mainSettings.editing || {};
-		$mainSettings.editing.includePodcast = e.target.checked;
+		$mainSettings.includeDefault = e.target.checked;
 		mainUnsaved = true;
 	}
 </script>
@@ -25,11 +25,7 @@
 		<input type="url" value={enclosureUrl} on:input={handleInput} />
 	</label>
 	<label class="checkbox">
-		<input
-			type="checkbox"
-			on:input={handleIncludeCheck}
-			checked={$mainSettings?.podcast?.includePodcast}
-		/>
+		<input type="checkbox" on:input={handleIncludeCheck} checked={$mainSettings?.includeDefault} />
 		<p>Include podcast block when exporting chapters and time value splits</p>
 	</label>
 </div>
