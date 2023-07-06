@@ -19,7 +19,7 @@
 	$: console.log(block);
 
 	async function saveBlocks() {
-		if (block.enclosureUrl && !block.duration) {
+		if (block.enclosureUrl && !block.duration && block.type === music) {
 			try {
 				block.duration = await getMediaDuration(block.enclosureUrl);
 			} catch (error) {
