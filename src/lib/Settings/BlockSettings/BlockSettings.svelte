@@ -95,6 +95,9 @@
 
 	function getBlock(blockGuid) {
 		let block = $liveBlocks.find((v) => v.blockGuid === blockGuid);
+		console.log($liveBlocks);
+		console.log(block);
+		block = block || {};
 		block.settings = block?.settings || {};
 		return block;
 	}

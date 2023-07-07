@@ -83,12 +83,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		height: 100%;
 	}
 	events-container {
 		display: block;
-		overflow: auto;
 		width: 100%;
 		max-width: 760px;
+		height: 100%;
 		overflow: auto;
 	}
 	h2 {

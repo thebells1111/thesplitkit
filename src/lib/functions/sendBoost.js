@@ -57,6 +57,7 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 	});
 
 	let data = await res.json();
+	console.log(data);
 	return data;
 
 	async function processDestination(block, dest, amount) {

@@ -205,8 +205,10 @@
 		if (['playlist', 'podcast'].find((v) => v === $mainSettings.broadcastMode)) {
 			if (defaultBlock) {
 				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
+				let splitDeduct = block?.value?.destinations?.length ? split : 0;
+				console.log(splitDeduct);
 				newDestinations = newDestinations.concat(
-					updateSplits(defaultBlock?.value?.destinations, 100 - split)
+					updateSplits(defaultBlock?.value?.destinations, 100 - splitDeduct)
 				);
 				newDestinations = newDestinations.concat(addFees(block?.value?.destinations));
 				newDestinations = newDestinations.concat(updateSplits(block?.value?.destinations, split));
@@ -216,8 +218,10 @@
 		} else {
 			if (defaultBlock) {
 				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
+				let splitDeduct = block?.value?.destinations?.length ? split : 0;
+				console.log(splitDeduct);
 				newDestinations = newDestinations.concat(
-					updateSplits(defaultBlock?.value?.destinations, 100 - split, true)
+					updateSplits(defaultBlock?.value?.destinations, 100 - splitDeduct, true)
 				);
 			}
 			newDestinations = newDestinations.concat(addFees(block?.value?.destinations));

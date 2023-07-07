@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 
 	let index = 1;
-	const MAX_INDEX = 36;
+	const MAX_INDEX = 35;
 	let imgInput;
 
 	$: src = `./tuts/tut${index}.jpg`;
@@ -48,22 +48,21 @@
 
 <style>
 	div {
-		height: calc(100% - 50px);
-
+		position: relative;
+		padding: 8px; /* This will effectively make the available space 16px less than the parent's width and height */
+		box-sizing: border-box; /* This makes sure that padding is included in the div's total width and height */
 		width: 100%;
-		background-color: antiquewhite;
+		height: calc(100% - 50px);
 		display: flex;
-		align-items: flex-start;
 		justify-content: center;
-		overflow: hidden;
 	}
-	img {
-		margin-top: 8px;
-		width: calc(100% - 16px);
+
+	div > img {
 		max-width: 360px;
-		max-height: calc(100% - 16px);
-		object-fit: cover;
-		overflow: hidden;
+		max-height: 100%;
+		width: calc(100% - 16px);
+		height: auto;
+		object-fit: contain; /* This property specifies how the image should be resized to fit its container while maintaining its aspect ratio */
 		border-radius: 8px;
 		box-shadow: 0 2px 8px 0px rgba(0, 0, 0, 0.75);
 	}
