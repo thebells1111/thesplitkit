@@ -113,7 +113,7 @@
 		<p>set as default block</p>
 	</label>
 	<label>
-		<p>Default value split for active block</p>
+		<p>Default value split for this block</p>
 		<percent
 			><input
 				type="number"

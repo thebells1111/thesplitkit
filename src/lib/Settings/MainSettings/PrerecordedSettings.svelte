@@ -26,7 +26,7 @@
 	</label>
 	<label class="checkbox">
 		<input type="checkbox" on:input={handleIncludeCheck} checked={$mainSettings?.includeDefault} />
-		<p>Include podcast block when exporting chapters and time value splits</p>
+		<p>Include podcast block when exporting chapters and time value splits (not recommended)</p>
 	</label>
 </div>
 

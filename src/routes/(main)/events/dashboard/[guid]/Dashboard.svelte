@@ -292,7 +292,7 @@
 	{/if}
 	{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
 		<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
-	{:else if $mainSettings?.broadcastMode === 'podcast' && $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid).type !== 'podcast'}
+	{:else if $mainSettings?.broadcastMode === 'podcast' && $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid)?.type !== 'podcast'}
 		<warning>Podcast Mode Error - Your default block needs to be your podcast</warning>
 	{/if}
 

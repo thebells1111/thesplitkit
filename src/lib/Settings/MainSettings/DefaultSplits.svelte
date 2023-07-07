@@ -7,6 +7,9 @@
 	$: {
 		if ($mainSettings.splits < 0) $mainSettings.splits = 0;
 		if ($mainSettings.splits > 100) $mainSettings.splits = 100;
+		if (!Number($mainSettings.splits)) {
+			$mainSettings.splits = 95;
+		}
 	}
 
 	function preventCertainInput(event) {
@@ -18,7 +21,7 @@
 </script>
 
 <default-split>
-	<h3>Default value split for active block:</h3>
+	<h3>Default value split for new blocks when active:</h3>
 	<split-container>
 		<percent>
 			<input
