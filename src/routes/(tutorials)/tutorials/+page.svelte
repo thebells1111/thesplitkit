@@ -49,6 +49,7 @@
 <style>
 	div {
 		height: calc(100% - 50px);
+
 		width: 100%;
 		background-color: antiquewhite;
 		display: flex;
@@ -59,6 +60,7 @@
 	img {
 		margin-top: 8px;
 		width: calc(100% - 16px);
+		max-width: 360px;
 		max-height: calc(100% - 16px);
 		object-fit: cover;
 		overflow: hidden;
