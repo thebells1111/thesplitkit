@@ -1,5 +1,6 @@
 <script>
 	import clone from 'just-clone';
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	import Save from '$lib/icons/Save.svelte';
 
 	import { remoteServer, mainSettings, liveBlocks } from '$/stores';
@@ -14,8 +15,10 @@
 	let initialized = false;
 	let savedSettings = {};
 	let updateAllSplits = false;
+	let showSaved = false;
 
 	$: compareSettings($mainSettings);
+	$: console.log(showSaved);
 
 	function compareSettings() {
 		if (JSON.stringify($mainSettings) !== JSON.stringify(savedSettings)) {
@@ -29,6 +32,8 @@
 	}
 
 	function saveSettings() {
+		showSaved = true;
+		setTimeout(() => (showSaved = false), 500);
 		fetch(remoteServer + '/api/sk/savesettings', {
 			method: 'POST',
 			credentials: 'include',
@@ -82,6 +87,11 @@
 
 {#if $mainSettings?.broadcastMode === 'podcast'}
 	<PodcastSettings bind:mainUnsaved />
+{/if}
+{#if showSaved}
+	<SaveModal>
+		<h2>Saved</h2>
+	</SaveModal>
 {/if}
 
 <style>

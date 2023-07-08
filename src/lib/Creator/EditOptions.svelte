@@ -27,7 +27,7 @@
 
 	function handleDelete() {
 		let confirmation = confirm(
-			'Are you sure you want to delete ' + block?.line?.[0] || 'this block?'
+			'Are you sure you want to delete ' + (block?.line?.[0] || 'this block?')
 		);
 		if (confirmation) {
 			$liveBlocks = $liveBlocks.filter((v) => v.blockGuid !== block.blockGuid);
@@ -100,6 +100,10 @@
 		{:else}
 			{#if block?.value?.destinations?.reduce((acc, person) => acc + parseFloat(person.fee ? 0 : person.split), 0) !== 100}
 				<h3 class="warning">Splits do not add up to 100%</h3>
+				{block?.value?.destinations?.reduce(
+					(acc, person) => acc + parseFloat(person.fee ? 0 : person.split),
+					0
+				)}
 			{/if}
 			{#if block?.value?.destinations?.some((item) => !item.address)}
 				<h3 class="warning">Value Blocks are missing addresses.</h3>

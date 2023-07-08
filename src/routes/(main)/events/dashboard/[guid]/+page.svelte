@@ -7,6 +7,7 @@
 	import Share from '$lib/Share/Share.svelte';
 	import Filter from '$lib/EventsHeader/Filter.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	import EventsHeader from '$lib/EventsHeader/EventsHeader.svelte';
 	import Dashboard from './Dashboard.svelte';
 	import MainSettings from '$lib/Settings/MainSettings/MainSettings.svelte';
@@ -33,6 +34,8 @@
 	let showSelectBlock = false;
 	let filteredBlocks = [];
 	let activeBlockGuid;
+	let showAdded = false;
+	let showSaved = false;
 
 	const guid = $page.params.guid;
 	$timeStamp = 0;
@@ -40,8 +43,6 @@
 	$: if (filterType && $liveBlocks) {
 		handleFilter();
 	}
-
-	$: console.log('unsaved: ', mainUnsaved);
 
 	function handleFilter() {
 		console.log('applying filter');
@@ -118,6 +119,9 @@
 	}
 
 	function saveState(editingBlock) {
+		console.log('saved');
+		showSaved = true;
+		setTimeout(() => (showSaved = false), 500);
 		editingBlock?.value?.destinations?.forEach((v) => (v.split = Number(v.split)));
 		const index = $liveBlocks.findIndex((v) => v.blockGuid === activeBlockGuid);
 		if (index > -1) {
@@ -185,6 +189,8 @@
 	async function addFeed(block, type, channel) {
 		let addBlock = true;
 
+		block.value = block?.value || channel?.value;
+
 		if (!block.value) {
 			addBlock = window.confirm(
 				"This Item doesn't have a value block. Do you still want to add it?"
@@ -192,6 +198,8 @@
 		}
 
 		if (addBlock) {
+			showAdded = true;
+			setTimeout(() => (showAdded = false), 500);
 			let newBlock = {};
 			newBlock.image = block?.artwork || block?.image || channel?.artwork || channel?.image;
 			if (channel) {
@@ -203,7 +211,14 @@
 			}
 
 			newBlock.description = block.description;
-			newBlock.value = block?.value || channel?.value;
+			newBlock.value = block?.value ||
+				channel?.value || {
+					model: {
+						type: 'lightning',
+						method: 'keysend'
+					},
+					destinations: []
+				};
 			newBlock.type = type;
 			newBlock.link = { text: '', url: '' };
 
@@ -211,7 +226,7 @@
 				newBlock.enclosureUrl = block.enclosureUrl;
 			}
 
-			newBlock.feedGuid = channel.podcastGuid || block.podcastGuid;
+			newBlock.feedGuid = channel?.podcastGuid || block?.podcastGuid;
 
 			newBlock.itemGuid = block.guid;
 
@@ -306,6 +321,18 @@
 		bind:showEditor
 		{activeBlockGuid}
 	/>
+{/if}
+
+{#if showAdded}
+	<SaveModal>
+		<h2>Added</h2>
+	</SaveModal>
+{/if}
+
+{#if showSaved}
+	<SaveModal>
+		<h2>Saved</h2>
+	</SaveModal>
 {/if}
 
 <style>
