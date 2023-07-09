@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import { remoteServer, user, catalog, albyReady, loaded } from '$/stores';
 
-	import Header from '$lib/Header/Header.svelte';
+	import Header from '$lib/MainHeader/Header.svelte';
 
 	onMount(() => {
 		loadAlby();

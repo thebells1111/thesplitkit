@@ -18,7 +18,7 @@
 	import Save from '$lib/icons/Save.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
-	import { remoteServer, liveBlocks } from '$/stores';
+	import { remoteServer, liveBlocks, defaultBlockGuid } from '$/stores';
 
 	export let filterType;
 	export let mainUnsaved = false;
@@ -111,8 +111,7 @@
 		{/if}
 		<Filter size="32" />
 	</button>
-
-	<button class="add-block" on:click={() => (showSelectBlock = true)}>
+	<button class="add-block" class:disabled={false} on:click={() => (showSelectBlock = true)}>
 		<AddBlocks size="36" />
 	</button>
 
@@ -162,6 +161,11 @@
 		border-radius: 30px;
 		color: var(--color-text-1);
 		background-color: rgb(0, 132, 180);
+	}
+
+	.disabled {
+		background-color: hsl(0, 0%, 92%);
+		color: hsl(0, 0%, 77%);
 	}
 
 	.filtered {

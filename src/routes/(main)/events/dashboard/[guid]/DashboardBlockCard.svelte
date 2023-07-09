@@ -67,6 +67,25 @@
 
 		return formattedTime;
 	}
+
+	function moveElement(index, direction) {
+		console.log(index);
+		console.log(direction);
+		console.log(index + direction);
+		console.log($liveBlocks);
+		if (index + direction >= $liveBlocks.length || index + direction < 1) {
+			// The element is already at the boundary (start/end), so do nothing.
+			// This is indexed at one to handle the default block
+			return;
+		}
+
+		// Swap the element at index with the one at index+direction
+		let temp = $liveBlocks[index];
+		let moved = $liveBlocks[index + direction];
+		$liveBlocks[index] = moved;
+		$liveBlocks[index + direction] = temp;
+		$liveBlocks = $liveBlocks;
+	}
 </script>
 
 {#if block}
@@ -93,7 +112,7 @@
 				<p>{block.line[0] === 'Text - click to edit' ? '' : block.line[0] || ''}</p>
 			</card-text>
 		</card-info>
-		<bottom-container>
+		<middle-container>
 			<time-container>
 				{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
 					<duration>
@@ -154,11 +173,23 @@
 					>
 				{/if}
 			</button-container>
+			<rearranger />
+		</middle-container>
+		<bottom-container>
+			<button
+				class="navigator up"
+				class:default={$defaultBlockGuid === block.blockGuid || index === 0}
+				on:click={moveElement.bind(this, index + 1, -1)}>▲</button
+			><block-value
+				>{block.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to this block
+				when active</block-value
+			>
+			<button
+				class="navigator down"
+				class:default={$defaultBlockGuid === block.blockGuid || index === $liveBlocks?.length - 2}
+				on:click={moveElement.bind(this, index + 1, 1)}>▼</button
+			>
 		</bottom-container>
-		<block-value
-			>{block.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to this block
-			when active</block-value
-		>
 		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl}
 			<warning>This block has no audio file.</warning>
 		{/if}
@@ -245,10 +276,18 @@
 		padding: 6px;
 	}
 
-	bottom-container {
+	middle-container {
 		display: flex;
 		justify-content: space-between;
 		width: 100%;
+	}
+
+	bottom-container {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		margin-top: 16px;
 	}
 
 	time-container {
@@ -300,6 +339,26 @@
 		color: red;
 		width: 100%;
 		text-align: center;
+	}
+
+	.navigator {
+		margin: 0;
+		height: initial;
+		box-shadow: none;
+		border-radius: 0;
+		display: flex;
+		align-items: flex-start;
+		justify-content: flex-start;
+		font-size: 1.2em;
+		background-color: transparent;
+	}
+
+	.navigator.down {
+		justify-content: flex-end;
+	}
+
+	.navigator.default {
+		visibility: hidden;
 	}
 
 	@media screen and (max-width: 399px) {

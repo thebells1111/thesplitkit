@@ -5,15 +5,16 @@
 	import { page } from '$app/stores';
 	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 	import Share from '$lib/Share/Share.svelte';
-	import Filter from '$lib/EventsHeader/Filter.svelte';
+	import Filter from './Header/Filter.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
-	import EventsHeader from '$lib/EventsHeader/EventsHeader.svelte';
+	import EventsHeader from './Header/Header.svelte';
 	import Dashboard from './Dashboard.svelte';
 	import MainSettings from '$lib/Settings/MainSettings/MainSettings.svelte';
 	import EditOptions from '$lib/Creator/EditOptions.svelte';
 	import PromoEditor from '$lib/PromoEditor/PromoEditor.svelte';
 	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
+	import AddFeed from '$lib/creator/AddFeed.svelte';
 	import {
 		remoteServer,
 		liveBlocks,
@@ -36,6 +37,8 @@
 	let activeBlockGuid;
 	let showAdded = false;
 	let showSaved = false;
+	let showAddDefaultModal = false;
+	let addDefaultType;
 
 	const guid = $page.params.guid;
 	$timeStamp = 0;
@@ -277,6 +280,8 @@
 		bind:unsaved
 		bind:showEditor
 		bind:activeBlockGuid
+		bind:showAddDefaultModal
+		bind:addDefaultType
 	/>
 </broadcast-blocks>
 
@@ -311,6 +316,16 @@
 {#if showSelectBlock}
 	<Modal bind:showModal={showSelectBlock} bind:unsaved>
 		<SelectBlock {addBlock} {addFeed} {activeBlockGuid} />
+	</Modal>
+{/if}
+
+{#if showAddDefaultModal}
+	<Modal bind:showModal={showAddDefaultModal} bind:unsaved>
+		{#if addDefaultType === 'podcast'}
+			<AddFeed {addFeed} />
+		{:else if addDefaultType === 'custom'}
+			<h2>Custom</h2>
+		{/if}
 	</Modal>
 {/if}
 

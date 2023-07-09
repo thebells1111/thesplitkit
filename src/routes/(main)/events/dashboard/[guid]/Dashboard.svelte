@@ -9,6 +9,7 @@
 	import TimerIcon from '$lib/icons/Timer.svelte';
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
+	import NoDefault from './NoDefault/NoDefault.svelte';
 
 	import { page } from '$app/stores';
 	import {
@@ -24,6 +25,8 @@
 	export let filterType;
 	export let showOptionsModal = false;
 	export let activeBlockGuid;
+	export let showAddDefaultModal;
+	export let addDefaultType;
 
 	let broadcastingBlockGuid;
 	let player;
@@ -289,76 +292,80 @@
 </script>
 
 <div>
-	{#if !$socket}
-		<button class="primary socket-connect" on:click={socketConnect}
-			>Connect to Live Value Server</button
-		>
-	{/if}
-	{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
-		<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
-	{:else if $mainSettings?.broadcastMode === 'podcast' && $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid)?.type !== 'podcast'}
-		<warning>Podcast Mode Error - Your default block needs to be your podcast</warning>
-	{/if}
-
-	{#if ['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)}
-		<audio autoplay controls bind:this={player} class:hidden={player?.src} />
-	{/if}
-
-	{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
-		<time-stamp>
-			<button class="timer-button" on:click={handleTimer}>
-				<TimerIcon size="36" />
-
-				{#if isRunning}
-					<pause>
-						<PauseIcon size="20" />
-					</pause>
-				{:else}
-					<play>
-						<PlayIcon size="20" />
-					</play>
-				{/if}
-			</button>
-			<timer>{formatTime($timeStamp, true)}</timer>
-			<button class="reset-button" on:click={handleResetTimer}>
-				<ResetIcon size="32" />
-			</button>
-		</time-stamp>
-	{/if}
-
-	<top>
-		<transparent-spacer />
-	</top>
-
-	{#if filterType === 'person'}
-		<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
+	{#if false}
+		<NoDefault bind:showAddDefaultModal bind:addDefaultType />
 	{:else}
-		<blocks>
-			{#each blocks.filter((v) => v.blockGuid === $defaultBlockGuid) as block, index}
-				<DashboardBlockCard
-					{block}
-					{index}
-					bind:broadcastingBlockGuid
-					bind:activeBlockGuid
-					bind:showOptionsModal
-					{broadcastTimeRemaining}
-					{handleBroadcast}
-					{updateStartTime}
-				/>
-			{/each}
-			{#each blocks.filter((v) => v.blockGuid !== $defaultBlockGuid) as block, index}
-				<DashboardBlockCard
-					{block}
-					{index}
-					bind:broadcastingBlockGuid
-					bind:activeBlockGuid
-					bind:showOptionsModal
-					{broadcastTimeRemaining}
-					{handleBroadcast}
-					{updateStartTime}
-				/>
-			{/each}
-		</blocks>
+		{#if !$socket}
+			<button class="primary socket-connect" on:click={socketConnect}
+				>Connect to Live Value Server</button
+			>
+		{/if}
+		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
+			<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
+		{:else if $mainSettings?.broadcastMode === 'podcast' && $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid)?.type !== 'podcast'}
+			<warning>Podcast Mode Error - Your default block needs to be your podcast</warning>
+		{/if}
+
+		{#if ['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)}
+			<audio autoplay controls bind:this={player} class:hidden={player?.src} />
+		{/if}
+
+		{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
+			<time-stamp>
+				<button class="timer-button" on:click={handleTimer}>
+					<TimerIcon size="36" />
+
+					{#if isRunning}
+						<pause>
+							<PauseIcon size="20" />
+						</pause>
+					{:else}
+						<play>
+							<PlayIcon size="20" />
+						</play>
+					{/if}
+				</button>
+				<timer>{formatTime($timeStamp, true)}</timer>
+				<button class="reset-button" on:click={handleResetTimer}>
+					<ResetIcon size="32" />
+				</button>
+			</time-stamp>
+		{/if}
+
+		<top>
+			<transparent-spacer />
+		</top>
+
+		{#if filterType === 'person'}
+			<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
+		{:else}
+			<blocks>
+				{#each blocks.filter((v) => v.blockGuid === $defaultBlockGuid) as block, index}
+					<DashboardBlockCard
+						{block}
+						{index}
+						bind:broadcastingBlockGuid
+						bind:activeBlockGuid
+						bind:showOptionsModal
+						{broadcastTimeRemaining}
+						{handleBroadcast}
+						{updateStartTime}
+					/>
+				{/each}
+				{#each blocks.filter((v) => v.blockGuid !== $defaultBlockGuid) as block, index}
+					<DashboardBlockCard
+						{block}
+						{index}
+						bind:broadcastingBlockGuid
+						bind:activeBlockGuid
+						bind:showOptionsModal
+						{broadcastTimeRemaining}
+						{handleBroadcast}
+						{updateStartTime}
+					/>
+				{/each}
+			</blocks>
+		{/if}
 	{/if}
 </div>
 
