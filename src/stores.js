@@ -20,3 +20,6 @@ export const loaded = writable(false);
 export const timeStamp = writable(0);
 export const liveMode = writable();
 export const liveEnclosure = writable();
+
+export const copiedBlock = writable();
+export const blocksList = writable();

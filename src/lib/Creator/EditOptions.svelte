@@ -2,6 +2,7 @@
 	import SelectBlock from './SelectBlock.svelte';
 	import Share from '$lib/Share/Share.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	import Close from '$lib/icons/Close.svelte';
 	import Edit from '$lib/icons/Edit.svelte';
 	import Delete from '$lib/icons/Delete.svelte';
@@ -10,13 +11,15 @@
 	import PersonIcon from '$lib/icons/Person.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
+	import CopyIcon from '$lib/icons/Copy.svelte';
+	import clone from 'just-clone';
 
-	import { defaultBlockGuid, liveBlocks } from '$/stores';
+	import { defaultBlockGuid, liveBlocks, copiedBlock } from '$/stores';
 
 	export let showOptionsModal = false;
 	export let block;
 	export let showEditor;
-	export let activeBlockGuid;
+	let showCopied = false;
 
 	let showShareModal = false;
 	let showSelectBlock = false;
@@ -37,6 +40,12 @@
 
 			showOptionsModal = false;
 		}
+	}
+
+	function handleCopy() {
+		showCopied = true;
+		$copiedBlock = clone(block);
+		setTimeout(() => (showCopied = false), 333);
 	}
 
 	function handleEdit() {
@@ -121,6 +130,9 @@
 			{:else}
 				<div style="width:40px" />
 			{/if}
+			<button class="copy" on:click={handleCopy}>
+				<CopyIcon size="27" />
+			</button>
 		</button-container>
 	</options-modal>
 </blurred-background>
@@ -135,6 +147,12 @@
 	<Modal bind:showModal={showSelectBlock}>
 		<SelectBlock {changeType} />
 	</Modal>
+{/if}
+
+{#if showCopied}
+	<SaveModal>
+		<h2>Copied</h2>
+	</SaveModal>
 {/if}
 
 <style>
@@ -270,8 +288,14 @@
 	}
 
 	button.edit {
+		min-height: 50px;
+		min-width: 50px;
 		color: var(--color-text-0);
 		background-color: hsl(38, 100%, 61%);
+	}
+
+	button.copy {
+		background-color: var(--color-theme-blue);
 	}
 
 	h3.warning {

@@ -14,7 +14,7 @@
 	import EditOptions from '$lib/Creator/EditOptions.svelte';
 	import PromoEditor from '$lib/PromoEditor/PromoEditor.svelte';
 	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
-	import AddFeed from '$lib/creator/AddFeed.svelte';
+	import AddFeed from '$lib/Creator/AddFeed.svelte';
 	import {
 		remoteServer,
 		liveBlocks,
@@ -315,7 +315,7 @@
 
 {#if showSelectBlock}
 	<Modal bind:showModal={showSelectBlock} bind:unsaved>
-		<SelectBlock {addBlock} {addFeed} {activeBlockGuid} />
+		<SelectBlock {addBlock} {addFeed} bind:showSelectBlock />
 	</Modal>
 {/if}
 

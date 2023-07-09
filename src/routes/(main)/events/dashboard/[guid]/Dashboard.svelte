@@ -19,7 +19,8 @@
 		liveBlocks,
 		defaultBlockGuid,
 		mainSettings,
-		timeStamp
+		timeStamp,
+		blocksList
 	} from '$/stores';
 	export let blocks = [];
 	export let filterType;
@@ -339,7 +340,7 @@
 		{#if filterType === 'person'}
 			<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
 		{:else}
-			<blocks>
+			<blocks bind:this={$blocksList}>
 				{#each blocks.filter((v) => v.blockGuid === $defaultBlockGuid) as block, index}
 					<DashboardBlockCard
 						{block}

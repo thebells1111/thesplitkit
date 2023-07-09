@@ -5,11 +5,19 @@
 	import PersonIcon from '$lib/icons/Person.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
+	import CopyIcon from '$lib/icons/Copy.svelte';
+	import clone from 'just-clone';
+
+	import { tick } from 'svelte';
+	import { v4 as uuidv4 } from 'uuid';
+
+	import { copiedBlock, liveBlocks, blocksList } from '$/stores';
 
 	export let addBlock = () => {};
 	export let addFeed = () => {};
 	export let blockType;
 	export let changeType = () => {};
+	export let showSelectBlock;
 
 	let modalsConfig = {
 		podcast: { show: false },
@@ -25,7 +33,7 @@
 		}
 	}
 
-	function handleSelect(type) {
+	async function handleSelect(type) {
 		resetModals();
 		changeType(type);
 
@@ -37,8 +45,41 @@
 				addBlock(type);
 			}
 		} else {
-			console.error(`Modal type ${type} is not defined`);
+			if (['paste'].find((v) => v === type)) {
+				await pasteBlock();
+			}
 		}
+	}
+
+	async function pasteBlock() {
+		showSelectBlock = false;
+		let blockGuid;
+		do {
+			blockGuid = generateBlockGuid();
+		} while (!isBlockGuidUnique(blockGuid, $liveBlocks));
+
+		let block = clone($copiedBlock);
+		block.blockGuid = blockGuid;
+
+		$liveBlocks = $liveBlocks.concat(block);
+		console.log($copiedBlock);
+
+		function generateBlockGuid() {
+			let uniqueId = uuidv4();
+			return uniqueId;
+		}
+
+		function isBlockGuidUnique(blockGuid, blocks) {
+			for (let block of blocks) {
+				if (block.blockGuid === blockGuid) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		await tick();
+		$blocksList.scrollTo({ top: $blocksList.scrollHeight, behavior: 'smooth' });
 	}
 </script>
 
@@ -74,6 +115,14 @@
 			</icon>
 			Person
 		</button>
+		{#if $copiedBlock}
+			<button on:click={handleSelect.bind(this, 'paste')}>
+				<icon>
+					<CopyIcon size="40" />
+				</icon>
+				Paste
+			</button>
+		{/if}
 	</div>
 {/if}
 
