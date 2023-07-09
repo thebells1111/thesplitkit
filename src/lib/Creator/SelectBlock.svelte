@@ -115,7 +115,7 @@
 			</icon>
 			Person
 		</button>
-		{#if $copiedBlock}
+		{#if $copiedBlock && !changeType}
 			<button on:click={handleSelect.bind(this, 'paste')}>
 				<icon>
 					<CopyIcon size="40" />

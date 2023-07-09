@@ -1,6 +1,7 @@
 <script>
 	import { onMount, beforeUpdate } from 'svelte';
 	import Delete from '$lib/icons/Delete.svelte';
+	import CopyIcon from '$lib/icons/Copy.svelte';
 	import { remoteServer, albyReady } from '$/stores';
 	import Eye from '$lib/icons/Eye.svelte';
 	import Event from '$lib/icons/Event.svelte';
@@ -47,6 +48,10 @@
 			console.log(data);
 		}
 	}
+
+	function handleCopy(event) {
+		console.log(event);
+	}
 </script>
 
 <container>
@@ -67,6 +72,11 @@
 						? '/events/dashboard/' + event.guid
 						: '/events/dashboard/' + event.guid}
 				>
+					<button class="copy" on:click|preventDefault={handleCopy.bind(this, event)}>
+						<icon>
+							<CopyIcon size="20" />
+						</icon>
+					</button>
 					<p>{event.eventName}</p>
 
 					<button on:click|preventDefault={deleteEvent.bind(this, event)}>
@@ -118,7 +128,7 @@
 	}
 
 	p {
-		margin: 0;
+		margin: 0 8px;
 		flex: 1;
 	}
 
@@ -143,6 +153,10 @@
 		height: 200px;
 		animation: fade-out 1s linear;
 		position: relative;
+	}
+
+	.copy {
+		background-color: var(--color-theme-blue);
 	}
 
 	@keyframes fade-out {
