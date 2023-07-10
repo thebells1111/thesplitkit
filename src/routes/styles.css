@@ -11,12 +11,13 @@
 	--color-theme-yellow: hsl(38, 100%, 61%);
 	--color-theme-purple:  hsl(277, 100%, 44%);
 	--color-theme-light-blue:  hsla(196, 100%, 35%, .1);
-	--color-theme-light-yellow: hsla(38, 100%, 61%, .1);
+	--color-theme-light-yellow: hsla(38, 100%, 61%, .1);	
+	--color-theme-light-purple: hsla(277, 100%, 35%, .1);
 	--color-theme-2: #4075a6;
 	--color-text: rgba(0, 0, 0, 0.7);
 	--color-text-0: rgba(0, 0, 0, 0.7);
 	--color-text-1: hsl(0, 0%, 98%);
-	--color-text-purple: hsl(278, 100%, 92%);;
+	--color-text-purple: hsl(278, 100%, 92%);
 	--column-width: 42rem;
 	--column-margin-top: 4rem;
 	--scrollbar-color: rgba(0, 0, 0, 0.6);
