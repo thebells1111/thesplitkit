@@ -21,7 +21,7 @@
 		'/(main)/chapters/[guid]'
 	].find((v) => v === route);
 
-	$: showPlayButton = ['/(main)/live/[guid]'].find((v) => v === route) && player.src;
+	$: showPlayButton = ['/(main)/live/[guid]'].find((v) => v === route) && player?.src;
 
 	$: if (['playlist', 'podcast'].find((v) => $liveMode === v) && $liveEnclosure) {
 		player = new Audio();
