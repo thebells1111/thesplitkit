@@ -20,8 +20,7 @@
 		liveBlocks,
 		defaultBlockGuid,
 		mainSettings,
-		activePageGuid,
-		timeStamp
+		activePageGuid
 	} from '$/stores';
 
 	let showShareModal = false;
@@ -41,7 +40,6 @@
 	let addDefaultType;
 
 	const guid = $page.params.guid;
-	$timeStamp = 0;
 
 	$: if (filterType && $liveBlocks) {
 		handleFilter();

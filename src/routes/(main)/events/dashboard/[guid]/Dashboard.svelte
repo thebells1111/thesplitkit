@@ -19,7 +19,6 @@
 		liveBlocks,
 		defaultBlockGuid,
 		mainSettings,
-		timeStamp,
 		blocksList
 	} from '$/stores';
 	export let blocks = [];
@@ -47,7 +46,7 @@
 
 	$: console.log(player);
 
-	onMount(async () => {
+	$: onMount(async () => {
 		if (!$liveBlocks?.length) {
 			loadSocket();
 		}
@@ -141,9 +140,9 @@
 			if (block) {
 				serverData = processBlock(clone(block));
 				broadcastingBlockGuid = block.blockGuid;
-				if ($timeStamp) {
+				if (timeStamp) {
 					let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
-					foundBlock.startTime = $timeStamp;
+					foundBlock.startTime = timeStamp;
 					$liveBlocks = $liveBlocks;
 				}
 			} else {
@@ -251,15 +250,25 @@
 
 	let startTime = 0;
 	let pauseTime = 0;
+	let timeStamp = 0;
 	let totalPausedTime = 0;
 	let interval;
 	let isRunning = false;
+	let resetTimer;
+
+	$: if ($mainSettings?.broadcastMode === 'manual' && timeStamp) {
+		let confirmation = confirm('Do you want to reset your timer?');
+		if (confirmation) {
+			timeStamp = 0;
+			resetTimer = true;
+		}
+	}
 
 	function handleTimer() {
 		isRunning = !isRunning;
 
 		if (isRunning) {
-			startTime = startTime ? startTime : performance.now();
+			startTime = startTime && startTime > 0 ? startTime : performance.now();
 			if (pauseTime) {
 				totalPausedTime += performance.now() - pauseTime;
 				pauseTime = 0; // reset pauseTime
@@ -267,8 +276,14 @@
 
 			interval = setInterval(() => {
 				const now = performance.now();
+				if (resetTimer) {
+					startTime = now;
+					pauseTime = 0;
+					totalPausedTime = 0;
+					resetTimer = false;
+				}
 				const deltaTime = now - startTime - totalPausedTime;
-				$timeStamp = deltaTime / 1000; // update the elapsed time in seconds
+				timeStamp = deltaTime / 1000; // update the elapsed time in seconds
 			}, 25);
 		} else {
 			pauseTime = performance.now(); // capture the time when timer is paused
@@ -279,7 +294,8 @@
 	function handleResetTimer() {
 		let confirmation = confirm('Do you want to reset your timer?');
 		if (confirmation) {
-			$timeStamp = 0;
+			timeStamp = 0;
+			resetTimer = true;
 		}
 	}
 
@@ -326,7 +342,7 @@
 						</play>
 					{/if}
 				</button>
-				<timer>{formatTime($timeStamp, true)}</timer>
+				<timer>{formatTime(timeStamp, true)}</timer>
 				<button class="reset-button" on:click={handleResetTimer}>
 					<ResetIcon size="32" />
 				</button>
