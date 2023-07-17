@@ -2,7 +2,9 @@
 	import Close from '$lib/icons/Close.svelte';
 	export let showModal;
 	export let unsaved = false;
+	export let onClose = () => {};
 	function closeModal() {
+		onClose();
 		if (unsaved) {
 			const userConfirmation = window.confirm('Your changes are unsaved. Do you want to continue?');
 			if (userConfirmation) {

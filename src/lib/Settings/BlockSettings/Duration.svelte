@@ -1,7 +1,6 @@
 <script>
 	export let block = {};
-	export let playingBlock = {};
-	export let activeBlockGuid = {};
+	export let mainUnsaved;
 
 	function formatTime(timeInSeconds) {
 		let totalMilliseconds = timeInSeconds * 1000;
@@ -57,6 +56,7 @@
 
 		item.duration = h * 3600 + m * 60 + s + ms / 1000;
 		block = item;
+		mainUnsaved = true;
 	};
 </script>
 

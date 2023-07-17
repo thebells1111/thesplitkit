@@ -1,4 +1,5 @@
 <script>
+	import { page } from '$app/stores';
 	import BlockSettings from '$lib/Settings/BlockSettings/BlockSettings.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
@@ -10,7 +11,10 @@
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
 	import TimerIcon from '$lib/icons/Timer.svelte';
-	import { defaultBlockGuid, mainSettings, liveBlocks } from '$/stores';
+	import { remoteServer, defaultBlockGuid, mainSettings, liveBlocks } from '$/stores';
+
+	import getMediaDuration from '$lib/functions/getMediaDuration.js';
+
 	export let block = {};
 	export let index;
 	export let broadcastingBlockGuid;
@@ -85,6 +89,35 @@
 		$liveBlocks[index] = moved;
 		$liveBlocks[index + direction] = temp;
 		$liveBlocks = $liveBlocks;
+	}
+
+	async function saveBlock(block) {
+		if (block.enclosureUrl && !block.duration) {
+			try {
+				block.duration = await getMediaDuration(block.enclosureUrl);
+			} catch (error) {
+				block.duration = 0;
+			}
+		}
+
+		let activeIndex = $liveBlocks.findIndex((v) => v.blockGuid === block.blockGuid);
+		if (activeIndex > -1) {
+			$liveBlocks[activeIndex] = block;
+		}
+
+		fetch(remoteServer + '/api/sk/saveblocks', {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ blocks: $liveBlocks, guid: $page.params.guid })
+		})
+			.then((response) => response.json())
+			.then((newData) => {
+				console.log(newData);
+			})
+			.catch((error) => console.error(error));
 	}
 </script>
 
@@ -197,7 +230,7 @@
 {/if}
 
 {#if showSettingsModal}
-	<Modal bind:showModal={showSettingsModal}>
+	<Modal bind:showModal={showSettingsModal} onClose={saveBlock.bind(this, block)}>
 		<BlockSettings bind:block {activeBlockGuid} />
 	</Modal>
 {/if}

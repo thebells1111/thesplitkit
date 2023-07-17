@@ -1,5 +1,6 @@
 <script>
 	export let block = {};
+	export let mainUnsaved;
 
 	const getHours = (t) => Math.floor(t / 3600) || 0;
 	const getMinutes = (t) => Math.floor((t % 3600) / 60) || 0;
@@ -23,6 +24,7 @@
 		}
 
 		block.startTime = h * 3600 + m * 60 + s + ms / 1000;
+		mainUnsaved = true;
 	};
 </script>
 

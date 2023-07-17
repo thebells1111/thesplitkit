@@ -222,6 +222,7 @@
 				};
 			newBlock.type = type;
 			newBlock.link = { text: '', url: '' };
+			newBlock.chaptersUrl = block?.chaptersUrl;
 
 			if (block.enclosureUrl) {
 				newBlock.enclosureUrl = block.enclosureUrl;

@@ -1,15 +1,12 @@
 <script>
 	import clone from 'just-clone';
-	import Save from '$lib/icons/Save.svelte';
-	import SaveModal from '$lib/Modal/SaveModal.svelte';
-	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 
-	import { remoteServer, liveBlocks, mainSettings, defaultBlockGuid } from '$/stores';
-	import { page } from '$app/stores';
+	import { liveBlocks, mainSettings, defaultBlockGuid } from '$/stores';
 
 	import Duration from './Duration.svelte';
 	import StartTime from './StartTime.svelte';
 	import Enclosure from './Enclosure.svelte';
+	import Clips from './Clips.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
@@ -20,38 +17,6 @@
 
 	export let block = { settings: { split: 95 } };
 	$: console.log(block);
-
-	async function saveBlocks() {
-		showSaved = true;
-		setTimeout(() => (showSaved = false), 500);
-		if (block.enclosureUrl && !block.duration) {
-			try {
-				block.duration = await getMediaDuration(block.enclosureUrl);
-			} catch (error) {
-				block.duration = 0;
-			}
-		}
-
-		let activeIndex = $liveBlocks.findIndex((v) => v.blockGuid === block.blockGuid);
-		if (activeIndex > -1) {
-			$liveBlocks[activeIndex] = block;
-		}
-
-		fetch(remoteServer + '/api/sk/saveblocks', {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ blocks: $liveBlocks, guid: $page.params.guid })
-		})
-			.then((response) => response.json())
-			.then((newData) => {
-				console.log(newData);
-			})
-			.catch((error) => console.error(error));
-		mainUnsaved = false;
-	}
 
 	$: {
 		if (block.settings.split < 0) block.settings.split = 0;
@@ -100,17 +65,12 @@
 
 	function getBlock(blockGuid) {
 		let block = $liveBlocks.find((v) => v.blockGuid === blockGuid);
-		console.log($liveBlocks);
-		console.log(block);
 		block = block || {};
 		block.settings = block?.settings || {};
 		return block;
 	}
 </script>
 
-<button class="save" class:unsaved={mainUnsaved} on:click={saveBlocks}>
-	<Save size="32" />
-</button>
 <settings-container>
 	<label class="default-block">
 		<input
@@ -137,13 +97,8 @@
 {#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
 	<Duration bind:block />
 	<StartTime bind:block />
-	<Enclosure bind:block bind:mainUnsaved />
-{/if}
-
-{#if showSaved}
-	<SaveModal>
-		<h2>Saved</h2>
-	</SaveModal>
+	<Enclosure bind:block />
+	<Clips bind:block />
 {/if}
 
 <style>
