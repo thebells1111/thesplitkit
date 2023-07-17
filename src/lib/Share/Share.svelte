@@ -123,23 +123,28 @@
 		</button-row>
 
 		<copy-link-row>
-			<input type="url" disabled value={code} />
-			<button class="dl-link" on:click={copyLinkToClipboard.bind(this, code)}>
-				<copy-link-icon class="multi-icon">
-					<CopyIcon size="32" />
-					<secondary-icon class="dl-link">
-						<LinkIcon />
-					</secondary-icon>
-				</copy-link-icon>
-			</button>
+			<h3>Sharable Link to View Your Event</h3>
+			<div>
+				<input type="url" disabled value={code} />
+				<button class="dl-link" on:click={copyLinkToClipboard.bind(this, code)}>
+					<copy-link-icon class="multi-icon">
+						<CopyIcon size="32" />
+						<secondary-icon class="dl-link">
+							<LinkIcon />
+						</secondary-icon>
+					</copy-link-icon>
+				</button>
+			</div>
 		</copy-link-row>
 		<!-- <button class="dl-link" on:click={() => (showButtonModal = true)}
 			>Create Embeddable Button</button
 		> -->
+
 		<input type="file" bind:this={fileInput} webkitdirectory />
 
 		<spacer />
 		{#if shareEvent}
+			<h3>Enhance Your Podcast</h3>
 			<button-row>
 				<button-container>
 					<button class="value-time-splits" on:click={() => (showRemoteValuesModal = true)}>
@@ -259,7 +264,17 @@
 	}
 
 	copy-link-row {
-		margin-top: 60px;
+		margin: 60px 0 0 0;
+		width: 100%;
+	}
+
+	h3 {
+		margin: 0;
+		text-align: center;
+		color: var(--color-theme-blue);
+	}
+
+	copy-link-row div {
 		display: flex;
 		align-items: center;
 		width: calc(100%);
