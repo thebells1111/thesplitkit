@@ -134,11 +134,9 @@
 	</label>
 </settings-container>
 
-{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
-	<Duration bind:block />
-	<StartTime bind:block />
-	<Enclosure bind:block bind:mainUnsaved />
-{/if}
+<Duration bind:block />
+<StartTime bind:block />
+<Enclosure bind:block bind:mainUnsaved />
 
 {#if showSaved}
 	<SaveModal>

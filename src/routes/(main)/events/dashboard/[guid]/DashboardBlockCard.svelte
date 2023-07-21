@@ -115,14 +115,8 @@
 		<middle-container>
 			<time-container>
 				{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
-					<duration>
-						{#if block.blockGuid === $defaultBlockGuid}
-							{#if block.duration}
-								<warning>Remove the duration for this block.</warning>
-							{:else}
-								<warning>Default Block. No duration needed.</warning>
-							{/if}
-						{:else}
+					{#if block.blockGuid !== $defaultBlockGuid}
+						<duration>
 							<strong>Duration:</strong>
 
 							{#if ($mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) && !block.duration}
@@ -130,24 +124,24 @@
 							{:else}
 								<span>{block.duration ? formatTime(block.duration) : ''}</span>
 							{/if}
-						{/if}
-					</duration>
-					<start-time>
-						<strong>Start:</strong>
-						<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
-					</start-time>
+						</duration>
+						<start-time>
+							<strong>Start:</strong>
+							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
+						</start-time>
 
-					{#if broadcastingBlockGuid === block.blockGuid}
-						<time-remaing>
-							<strong>Time Remaining:</strong>
-							{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
-						</time-remaing>
+						{#if broadcastingBlockGuid === block.blockGuid}
+							<time-remaing>
+								<strong>Time Remaining:</strong>
+								{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
+							</time-remaing>
+						{/if}
+					{:else if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
+						<start-time>
+							<strong>Start:</strong>
+							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
+						</start-time>
 					{/if}
-				{:else if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
-					<start-time>
-						<strong>Start:</strong>
-						<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
-					</start-time>
 				{/if}
 			</time-container>
 			<button-container>
@@ -160,9 +154,11 @@
 				>
 					<EditIcon size="27" /></button
 				>
-				<button class="tuner" on:click={() => (showSettingsModal = true)}>
-					<TunerIcon size="27" />
-				</button>
+				{#if block.blockGuid !== $defaultBlockGuid}
+					<button class="tuner" on:click={() => (showSettingsModal = true)}>
+						<TunerIcon size="27" />
+					</button>
+				{/if}
 				{#if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
 					<button class="broadcast" on:click={updateStartTime.bind(this, block, index)}
 						><TimerIcon size="32" /></button
