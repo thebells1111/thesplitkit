@@ -18,7 +18,7 @@
 	import Save from '$lib/icons/Save.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
-	import { remoteServer, liveBlocks, defaultBlockGuid } from '$/stores';
+	import { remoteServer, liveBlocks, defaultBlockGuid, changeDefault } from '$/stores';
 
 	export let filterType;
 	export let mainUnsaved = false;
@@ -111,7 +111,16 @@
 		{/if}
 		<Filter size="32" />
 	</button>
-	<button class="add-block" class:disabled={false} on:click={() => (showSelectBlock = true)}>
+	<button
+		class="add-block"
+		class:disabled={false}
+		on:click={() => {
+			showSelectBlock = true;
+			if (!$defaultBlockGuid) {
+				$changeDefault = true;
+			}
+		}}
+	>
 		<AddBlocks size="36" />
 	</button>
 

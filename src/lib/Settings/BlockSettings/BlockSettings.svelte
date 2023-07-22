@@ -49,20 +49,6 @@
 		}
 	}
 
-	function handleCheck(e) {
-		let oldBlock = getBlock($defaultBlockGuid);
-		let block = getBlock(initializedBlockGuid);
-		oldBlock.settings.default = false;
-		block.settings.default = true;
-
-		$defaultBlockGuid = initializedBlockGuid;
-		mainUnsaved = true;
-
-		// Move block to the front of the $liveBlocks array
-		$liveBlocks = $liveBlocks.filter((v) => v.blockGuid !== initializedBlockGuid);
-		$liveBlocks.unshift(block);
-	}
-
 	function getBlock(blockGuid) {
 		let block = $liveBlocks.find((v) => v.blockGuid === blockGuid);
 		block = block || {};
@@ -72,14 +58,6 @@
 </script>
 
 <settings-container>
-	<label class="default-block">
-		<input
-			type="checkbox"
-			on:input={handleCheck}
-			checked={$defaultBlockGuid === initializedBlockGuid}
-		/>
-		<p>set as default block</p>
-	</label>
 	<label>
 		<p>Default value split for this block</p>
 		<percent

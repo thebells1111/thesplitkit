@@ -88,7 +88,7 @@
 
 			{#if $copiedEvent}
 				<a class="copy" href={`/events/creator/${$copiedEvent.guid}`}>
-					<p>Paste Copied Event</p>
+					<p>Paste a copy of "{$copiedEvent.eventName}"</p>
 					<CopyIcon size="30" />
 				</a>
 			{/if}

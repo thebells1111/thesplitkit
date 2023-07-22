@@ -23,3 +23,4 @@ export const liveEnclosure = writable();
 export const copiedBlock = writable();
 export const copiedEvent = writable();
 export const blocksList = writable();
+export const changeDefault = writable(false);

@@ -11,12 +11,11 @@
 	import { tick } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
 
-	import { copiedBlock, liveBlocks, blocksList } from '$/stores';
+	import { copiedBlock, liveBlocks, blocksList, changeDefault } from '$/stores';
 
 	export let addBlock = () => {};
 	export let addFeed = () => {};
-	export let blockType;
-	export let changeType = () => {};
+	export let handleChangeType = null;
 	export let showSelectBlock;
 
 	let modalsConfig = {
@@ -35,10 +34,11 @@
 
 	async function handleSelect(type) {
 		resetModals();
-		changeType(type);
+		if (handleChangeType) {
+			handleChangeType(type);
+		}
 
 		if (modalsConfig.hasOwnProperty(type)) {
-			blockType = type;
 			modalsConfig[type].show = true;
 
 			if (['person', 'chapter'].find((v) => type === v)) {
@@ -88,6 +88,9 @@
 {:else if modalsConfig.music.show}
 	<AddMusic {addFeed} />
 {:else}
+	{#if $changeDefault}
+		<h1>Default Block</h1>
+	{/if}
 	<h2>Select Block Type</h2>
 
 	<div>
@@ -115,7 +118,7 @@
 			</icon>
 			Person
 		</button>
-		{#if $copiedBlock && !changeType}
+		{#if $copiedBlock && !handleChangeType}
 			<button on:click={handleSelect.bind(this, 'paste')}>
 				<icon>
 					<CopyIcon size="40" />
@@ -127,6 +130,13 @@
 {/if}
 
 <style>
+	h1 {
+		margin: 0;
+		color: var(--color-theme-purple);
+	}
+	h2 {
+		color: var(--color-theme-blue);
+	}
 	div {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);

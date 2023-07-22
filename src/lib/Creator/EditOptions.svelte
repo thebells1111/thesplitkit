@@ -14,7 +14,7 @@
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import clone from 'just-clone';
 
-	import { defaultBlockGuid, liveBlocks, copiedBlock } from '$/stores';
+	import { defaultBlockGuid, liveBlocks, copiedBlock, changeDefault } from '$/stores';
 
 	export let showOptionsModal = false;
 	export let block;
@@ -62,7 +62,7 @@
 
 	let typeText = block?.type?.charAt(0)?.toUpperCase() + block?.type?.slice(1) || 'Chapter';
 
-	function changeType(type) {
+	function handleChangeType(type) {
 		block.type = type;
 		typeText = type.charAt(0).toUpperCase() + type.slice(1);
 		showSelectBlock = false;
@@ -80,14 +80,26 @@
 			block?.value?.destinations?.some((item) => !item.address)}
 	>
 		<top>
-			<button
-				class="share"
-				on:click={() => {
-					showShareModal = true;
-				}}
-			>
-				<ShareIcon size="24" />
-			</button>
+			{#if $defaultBlockGuid === block?.blockGuid}
+				<button
+					class="change-default"
+					on:click={() => {
+						$changeDefault = true;
+						showOptionsModal = false;
+					}}
+				>
+					<p>Change Default</p>
+				</button>
+			{:else}
+				<button
+					class="share"
+					on:click={() => {
+						showShareModal = true;
+					}}
+				>
+					<ShareIcon size="24" />
+				</button>
+			{/if}
 			<button class="block-type" on:click={() => (showSelectBlock = true)}>
 				<icon><svelte:component this={Icons[typeText]} /></icon>
 				{typeText}
@@ -123,13 +135,10 @@
 				<Delete size="27" />
 			</button>
 
-			{#if ['Chapter', 'Person'].find((v) => v === typeText)}
-				<button class="edit" on:click={handleEdit}>
-					<Edit size="32" />
-				</button>
-			{:else}
-				<div style="width:40px" />
-			{/if}
+			<button class="edit" on:click={handleEdit}>
+				<Edit size="32" />
+			</button>
+
 			<button class="copy" on:click={handleCopy}>
 				<CopyIcon size="27" />
 			</button>
@@ -145,7 +154,7 @@
 
 {#if showSelectBlock}
 	<Modal bind:showModal={showSelectBlock}>
-		<SelectBlock {changeType} />
+		<SelectBlock {handleChangeType} />
 	</Modal>
 {/if}
 
@@ -302,7 +311,12 @@
 		color: red;
 	}
 
-	label {
-		cursor: pointer;
+	.change-default {
+		color: var(--color-text-purple);
+		background-color: var(--color-theme-purple);
+	}
+
+	.change-default p {
+		font-size: 0.75em;
 	}
 </style>

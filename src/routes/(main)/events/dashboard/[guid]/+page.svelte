@@ -20,7 +20,8 @@
 		liveBlocks,
 		defaultBlockGuid,
 		mainSettings,
-		activePageGuid
+		activePageGuid,
+		changeDefault
 	} from '$/stores';
 
 	let showShareModal = false;
@@ -36,13 +37,16 @@
 	let activeBlockGuid;
 	let showAdded = false;
 	let showSaved = false;
-	let showAddDefaultModal = false;
 	let addDefaultType;
 
 	const guid = $page.params.guid;
 
 	$: if (filterType && $liveBlocks) {
 		handleFilter();
+	}
+
+	$: if ($changeDefault) {
+		showSelectBlock = true;
 	}
 
 	function handleFilter() {
@@ -55,12 +59,11 @@
 	}
 
 	onMount(async () => {
-		console.log($liveBlocks);
-		console.log($activePageGuid);
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
-			loadBlocks();
+			$defaultBlockGuid = null;
+			await loadBlocks();
 			$activePageGuid = guid;
-			console.log('reload');
+
 			setTimeout(() => (mainUnsaved = false), 500);
 		}
 	});
@@ -76,6 +79,7 @@
 		blocks.forEach((block) => {
 			if (block?.settings?.default) {
 				$defaultBlockGuid = block.blockGuid;
+				$activePageGuid = guid;
 			}
 			if (!block.link.text) {
 				block.link.text = 'Link - click to edit';
@@ -166,22 +170,19 @@
 			split: $mainSettings.splits
 		};
 
-		if (!$liveBlocks.length) {
-			$defaultBlockGuid = blockGuid;
-		}
-
-		if (!$liveBlocks.length) {
-			$defaultBlockGuid = blockGuid;
-		}
-
 		activeBlockGuid = blockGuid;
-
-		$liveBlocks = $liveBlocks.concat(newBlock);
 		mainUnsaved = true;
 
+		if ($changeDefault) {
+			$defaultBlockGuid = blockGuid;
+			newBlock.settings.default = true;
+			$liveBlocks[0] = newBlock;
+			$changeDefault = false;
+		} else {
+			$liveBlocks = $liveBlocks.concat(newBlock);
+		}
+
 		setTimeout(() => {
-			console.log(newBlock.blockGuid);
-			console.log(activeBlockGuid);
 			showSelectBlock = false;
 			showEditor = true;
 		}, 0);
@@ -251,11 +252,14 @@
 				split: $mainSettings.splits
 			};
 
-			if (!$liveBlocks.length) {
+			if ($changeDefault) {
 				$defaultBlockGuid = blockGuid;
+				newBlock.settings.default = true;
+				$liveBlocks[0] = newBlock;
+				$changeDefault = false;
+			} else {
+				$liveBlocks = $liveBlocks.concat(newBlock);
 			}
-
-			$liveBlocks = $liveBlocks.concat(newBlock);
 			mainUnsaved = true;
 		}
 	}
@@ -270,19 +274,20 @@
 	bind:showSelectBlock
 	{filterType}
 />
-<broadcast-blocks>
-	<Dashboard
-		bind:blocks={filteredBlocks}
-		{filterType}
-		bind:showShareModal
-		bind:showOptionsModal
-		bind:unsaved
-		bind:showEditor
-		bind:activeBlockGuid
-		bind:showAddDefaultModal
-		bind:addDefaultType
-	/>
-</broadcast-blocks>
+{#if $activePageGuid === guid}
+	<broadcast-blocks>
+		<Dashboard
+			bind:blocks={filteredBlocks}
+			{filterType}
+			bind:showShareModal
+			bind:showOptionsModal
+			bind:unsaved
+			bind:showEditor
+			bind:activeBlockGuid
+			bind:addDefaultType
+		/>
+	</broadcast-blocks>
+{/if}
 
 {#if showShareModal}
 	<Modal bind:showModal={showShareModal}>
@@ -313,18 +318,8 @@
 {/if}
 
 {#if showSelectBlock}
-	<Modal bind:showModal={showSelectBlock} bind:unsaved>
+	<Modal bind:showModal={showSelectBlock} bind:unsaved onClose={() => ($changeDefault = false)}>
 		<SelectBlock {addBlock} {addFeed} bind:showSelectBlock />
-	</Modal>
-{/if}
-
-{#if showAddDefaultModal}
-	<Modal bind:showModal={showAddDefaultModal} bind:unsaved>
-		{#if addDefaultType === 'podcast'}
-			<AddFeed {addFeed} />
-		{:else if addDefaultType === 'custom'}
-			<h2>Custom</h2>
-		{/if}
 	</Modal>
 {/if}
 

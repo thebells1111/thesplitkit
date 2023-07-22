@@ -25,8 +25,6 @@
 	export let filterType;
 	export let showOptionsModal = false;
 	export let activeBlockGuid;
-	export let showAddDefaultModal;
-	export let addDefaultType;
 
 	let broadcastingBlockGuid;
 	let player;
@@ -309,8 +307,8 @@
 </script>
 
 <div>
-	{#if false}
-		<NoDefault bind:showAddDefaultModal bind:addDefaultType />
+	{#if !$defaultBlockGuid}
+		<NoDefault />
 	{:else}
 		{#if !$socket}
 			<button class="primary socket-connect" on:click={socketConnect}

@@ -222,6 +222,9 @@
 		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl}
 			<warning>This block has no audio file.</warning>
 		{/if}
+		{#if !block?.value?.destinations?.length}
+			<warning>This item has no value blocks</warning>
+		{/if}
 	</div>
 {/if}
 
@@ -248,23 +251,25 @@
 	}
 
 	div.default {
-		background-color: var(--color-theme-light-blue);
+		background-color: var(--color-theme-light-purple);
 		margin-bottom: 16px;
 	}
 
 	div.active {
-		background-color: var(--color-theme-light-yellow);
+		background-color: var(--color-theme-light-blue);
+		box-shadow: 0 0px 8px 1px rgba(0, 131, 179, 0.75);
 	}
 
 	default {
 		position: absolute;
 		top: -1px;
 		left: calc(50% - 50px);
-		color: gray;
+		color: var(--color-theme-purple);
+		font-weight: bold;
 	}
 	div.warning {
 		border: 1px solid red;
-		box-shadow: 0 2px 8px 0px rgba(254, 98, 98, 0.75);
+		box-shadow: 0 0px 8px 1px rgba(254, 98, 98, 0.75);
 	}
 
 	card-info {
