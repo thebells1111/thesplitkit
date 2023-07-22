@@ -204,7 +204,7 @@
 				</button>
 			</code-block>
 
-			<h2>or copy the link below in your Sovereign Feeds Live Value Link</h2>
+			<h2>or copy the link below in your <br />Sovereign Feeds<br /> Live Value Link</h2>
 			<code-block>
 				<code>
 					{`${podcastCode}`}
