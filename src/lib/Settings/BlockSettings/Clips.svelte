@@ -1,38 +1,60 @@
 <script>
-	import { remoteServer } from '$/stores';
-	let chaptersEnabled = false;
-	let clipsEnabled = false;
+	import TimeInputs from './TimeInputs.svelte';
 	export let block;
+	let player;
 
-	function fetchChapters() {
-		console.log(block);
-		if (clipsEnabled && chaptersEnabled && block?.chaptersUrl) {
-			fetch(remoteServer + '/api/proxy?url=' + block.chaptersUrl)
-				.then((response) => {
-					if (!response.ok) {
-						throw new Error('Network response was not OK');
-					}
-					return response.json();
-				})
-				.then((data) => {
-					block.chapters = data;
-					console.log(data);
-				})
-				.catch((error) => {
-					console.error('Error fetching chapter data:', error);
-					block.chapters = undefined;
-				});
+	function handleClipping(e) {
+		if (e.target.checked) {
+			block.soundBite = {
+				startTime: 0,
+				endTime: block.duration || 0,
+				duration: block.duration || 0
+			};
+		} else {
+			delete block.soundBite;
 		}
+		block = block;
+	}
+
+	$: if (block?.soundBite?.startTime > -1 && block?.soundBite?.endTime > -1) {
+		let duration = block?.soundBite?.endTime - block?.soundBite?.startTime;
+		block.soundBite.duration = duration > 0 ? duration : 0;
 	}
 </script>
 
-{#if block?.chaptersUrl}
+<div>
 	<label>
-		Enable Clipping
-		<input type="checkbox" bind:value={clipsEnabled} on:change={fetchChapters} />
+		<input type="checkbox" on:change={handleClipping} checked={block.soundBite} />
+		<h3>Enable Sound Bite Clipping</h3>
 	</label>
-	<label>
-		Enable Chapters from Clip
-		<input type="checkbox" bind:value={chaptersEnabled} on:change={fetchChapters} />
-	</label>
-{/if}
+
+	{#if block?.soundBite}
+		<TimeInputs bind:block bind:time={block.soundBite.startTime} title="Clip Start" bind:player />
+
+		<TimeInputs bind:block bind:time={block.soundBite.endTime} title="Clip End" bind:player />
+		<audio bind:this={player} controls src={block.enclosureUrl} />
+	{/if}
+</div>
+
+<style>
+	div {
+		display: flex;
+		flex-direction: column;
+		margin: 8px 0;
+	}
+
+	label {
+		color: var(--color-theme-blue);
+		margin-bottom: 8px;
+	}
+
+	h3 {
+		margin: 0;
+		display: inline-block;
+	}
+
+	audio {
+		margin-top: 8px;
+		width: 100%;
+	}
+</style>

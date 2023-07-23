@@ -42,21 +42,23 @@
 
 <style>
 	div {
-		width: calc(100% - 16px);
-		margin: 0 8px;
+		width: calc(100% - 12px);
+		margin: 6px;
 	}
 
 	label {
 		margin: 12px 0;
+		color: var(--color-theme-blue);
 	}
 	label p {
-		margin: 0;
+		margin: 0 0 2px 0;
 		padding: 0;
 		font-weight: bold;
 	}
 
 	label input {
-		width: calc(100% - 8px);
+		width: calc(100% - 18px);
+		padding: 6px;
 	}
 
 	label.checkbox {

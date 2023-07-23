@@ -45,12 +45,10 @@
 				credentials: 'include'
 			});
 			let data = await res.json();
-			console.log(data);
 		}
 	}
 
 	function handleCopy(event) {
-		console.log(event);
 		$copiedEvent = event;
 	}
 </script>

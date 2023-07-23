@@ -147,7 +147,7 @@
 		</card-info>
 		<middle-container>
 			<time-container>
-				{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
+				{#if ['playlist', 'edit'].find((v) => v === $mainSettings.broadcastMode) || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
 					{#if block.blockGuid !== $defaultBlockGuid}
 						<duration>
 							<strong>Duration:</strong>
@@ -169,7 +169,7 @@
 								{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
 							</time-remaing>
 						{/if}
-					{:else if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
+					{:else if ['podcast'].find((v) => v === $mainSettings?.broadcastMode)}
 						<start-time>
 							<strong>Start:</strong>
 							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
@@ -219,7 +219,8 @@
 				on:click={moveElement.bind(this, index + 1, 1)}>▼</button
 			>
 		</bottom-container>
-		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl}
+
+		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl && block.blockGuid !== $defaultBlockGuid}
 			<warning>This block has no audio file.</warning>
 		{/if}
 		{#if !block?.value?.destinations?.length}

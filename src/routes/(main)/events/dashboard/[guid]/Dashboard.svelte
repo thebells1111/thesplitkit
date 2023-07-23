@@ -31,6 +31,7 @@
 	let broadcastTimeRemaining;
 	let broadcastIntervalTimer;
 	let broadcastTimeInterval;
+	let chapterIndex;
 	export let guid = $page.params.guid;
 
 	$: if (player && !['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)) {
@@ -77,7 +78,6 @@
 	}
 
 	async function handleBroadcast(block) {
-		let serverData;
 		broadcastIntervalTimer = null;
 		clearInterval(broadcastTimeInterval);
 		await tick();
@@ -92,12 +92,28 @@
 				if (player) {
 					player.autoplay = true;
 					player.src = block.enclosureUrl;
+					chapterIndex = undefined;
 					player.onended = () => {
 						handleBroadcast(nextBlock);
 					};
 					player.ontimeupdate = () => {
 						if (block?.duration && player?.currentTime) {
 							broadcastTimeRemaining = block.duration - player.currentTime;
+						}
+						if (block?.chapters && block?.settings?.chaptersEnabled === true) {
+							let chapters = block.chapters?.chapters;
+							if (!chapterIndex) {
+								chapterIndex = 0;
+							}
+							while (player.currentTime >= chapters?.[chapterIndex + 1]?.startTime) {
+								chapterIndex++;
+							}
+
+							while (player.currentTime < chapters?.[chapterIndex]?.startTime) {
+								chapterIndex--;
+							}
+						} else {
+							chapterIndex = undefined;
 						}
 					};
 				}
@@ -133,28 +149,29 @@
 				}
 			}
 		}
+	}
 
-		function broadcastBlock(block) {
-			if (block) {
-				serverData = processBlock(clone(block));
-				broadcastingBlockGuid = block.blockGuid;
-				if (timeStamp) {
-					let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
-					foundBlock.startTime = timeStamp;
-					$liveBlocks = $liveBlocks;
-				}
-			} else {
-				if ($mainSettings?.broadcastMode === 'podcast') {
-					broadcastingBlockGuid = $defaultBlockGuid;
-				} else {
-					broadcastingBlockGuid = null;
-				}
-				broadcastTimeRemaining = null;
-				serverData = {};
+	function broadcastBlock(block) {
+		let serverData;
+		if (block) {
+			serverData = processBlock(clone(block));
+			broadcastingBlockGuid = block.blockGuid;
+			if (timeStamp) {
+				let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
+				foundBlock.startTime = timeStamp;
+				$liveBlocks = $liveBlocks;
 			}
-
-			$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		} else {
+			if ($mainSettings?.broadcastMode === 'podcast') {
+				broadcastingBlockGuid = $defaultBlockGuid;
+			} else {
+				broadcastingBlockGuid = null;
+			}
+			broadcastTimeRemaining = null;
+			serverData = {};
 		}
+
+		$socket.emit('valueBlock', { valueGuid: guid, serverData });
 	}
 
 	function getNextBlock(block) {
@@ -207,7 +224,7 @@
 			if (defaultBlock) {
 				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
 				let splitDeduct = block?.value?.destinations?.length ? split : 0;
-				console.log(splitDeduct);
+
 				newDestinations = newDestinations.concat(
 					updateSplits(defaultBlock?.value?.destinations, 100 - splitDeduct)
 				);
@@ -231,11 +248,12 @@
 
 		delete block.settings;
 
-		if (!block.link.text || block.link.text === 'Link - click to edit') {
-			block.link.text = block.link.url;
+		if (!block?.link?.text || block?.link?.text === 'Link - click to edit') {
+			block.link = block.link || {};
+			block.link.text = block?.link?.url;
 		}
 
-		if (!block.link.url) {
+		if (!block?.link?.url) {
 			delete block.link;
 		}
 
@@ -304,6 +322,27 @@
 		$liveBlocks = $liveBlocks;
 		console.log('player: ', player);
 	}
+
+	$: if (chapterIndex > -1) {
+		console.log(broadcastingBlockGuid);
+		let block = $liveBlocks.find((v) => {
+			return v.blockGuid === broadcastingBlockGuid;
+		});
+		console.log(block);
+		let chapters = block?.chapters?.chapters || [];
+		let activeChapter = chapters[chapterIndex];
+		console.log(activeChapter);
+		if (activeChapter) {
+			let chapterBlock = clone(block);
+			chapterBlock.title = activeChapter.title;
+			chapterBlock.line = [];
+			chapterBlock.image = activeChapter.img;
+			chapterBlock.link = activeChapter.url
+				? { text: activeChapter.url, url: activeChapter.url }
+				: undefined;
+			broadcastBlock(chapterBlock);
+		}
+	}
 </script>
 
 <div>
@@ -317,8 +356,9 @@
 		{/if}
 		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
 			<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
-		{:else if $mainSettings?.broadcastMode === 'podcast' && $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid)?.type !== 'podcast'}
-			<warning>Podcast Mode Error - Your default block needs to be your podcast</warning>
+		{/if}
+		{#if !$liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid)?.value?.destinations?.length}
+			<warning>Error - Your default block needs a value block</warning>
 		{/if}
 
 		{#if ['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)}

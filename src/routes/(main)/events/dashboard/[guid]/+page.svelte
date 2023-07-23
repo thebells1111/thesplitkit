@@ -38,6 +38,7 @@
 	let showAdded = false;
 	let showSaved = false;
 	let addDefaultType;
+	let saveMainSettings;
 
 	const guid = $page.params.guid;
 
@@ -50,7 +51,6 @@
 	}
 
 	function handleFilter() {
-		console.log('applying filter');
 		if (filterType !== 'off') {
 			filteredBlocks = $liveBlocks.filter((v) => v.type === filterType);
 		} else {
@@ -296,8 +296,8 @@
 {/if}
 
 {#if showMainSettingsModal}
-	<Modal bind:showModal={showMainSettingsModal}>
-		<MainSettings />
+	<Modal bind:showModal={showMainSettingsModal} onClose={saveMainSettings}>
+		<MainSettings bind:saveMainSettings />
 	</Modal>
 {/if}
 

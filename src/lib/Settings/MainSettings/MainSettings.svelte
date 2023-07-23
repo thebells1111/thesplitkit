@@ -1,7 +1,5 @@
 <script>
 	import clone from 'just-clone';
-	import SaveModal from '$lib/Modal/SaveModal.svelte';
-	import Save from '$lib/icons/Save.svelte';
 
 	import { remoteServer, mainSettings, liveBlocks } from '$/stores';
 	import { page } from '$app/stores';
@@ -18,7 +16,6 @@
 	let showSaved = false;
 
 	$: compareSettings($mainSettings);
-	$: console.log(showSaved);
 
 	function compareSettings() {
 		if (JSON.stringify($mainSettings) !== JSON.stringify(savedSettings)) {
@@ -31,7 +28,7 @@
 		}
 	}
 
-	function saveSettings() {
+	export const saveMainSettings = () => {
 		showSaved = true;
 		setTimeout(() => (showSaved = false), 500);
 		fetch(remoteServer + '/api/sk/savesettings', {
@@ -67,12 +64,8 @@
 		}
 
 		mainUnsaved = false;
-	}
+	};
 </script>
-
-<button class="save" class:unsaved={mainUnsaved} on:click={saveSettings}>
-	<Save size="32" />
-</button>
 
 <DefaultSplits bind:mainUnsaved bind:updateAllSplits />
 <BroadcastMode bind:mainUnsaved />
@@ -81,53 +74,13 @@
 	<!-- <PlaylistSettings bind:mainUnsaved /> -->
 {/if}
 
+{#if $mainSettings?.broadcastMode === 'podcast'}
+	<PodcastSettings bind:mainUnsaved />
+{/if}
+
 {#if $mainSettings?.broadcastMode === 'edit'}
 	<PrerecordedSettings bind:mainUnsaved />
 {/if}
 
-{#if $mainSettings?.broadcastMode === 'podcast'}
-	<PodcastSettings bind:mainUnsaved />
-{/if}
-{#if showSaved}
-	<SaveModal>
-		<h2>Saved</h2>
-	</SaveModal>
-{/if}
-
 <style>
-	button {
-		background-color: hsl(0, 0%, 96%);
-		color: var(--color-text-0);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 50px;
-		width: 50px;
-		border-radius: 25px;
-		padding: 0;
-		margin: 16px;
-		box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.5);
-		position: relative;
-		right: 100px;
-	}
-
-	.unsaved {
-		animation: heartbeat 1s infinite;
-		z-index: 2;
-	}
-
-	@keyframes heartbeat {
-		0% {
-			transform: scale(1);
-			box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-		}
-		50% {
-			transform: scale(1.1);
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-		}
-		100% {
-			transform: scale(1);
-			box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-		}
-	}
 </style>
