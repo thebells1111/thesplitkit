@@ -1,6 +1,5 @@
 <script>
 	export let block = {};
-	export let mainUnsaved;
 
 	const getHours = (t) => Math.floor(t / 3600) || 0;
 	const getMinutes = (t) => Math.floor((t % 3600) / 60) || 0;
@@ -24,7 +23,6 @@
 		}
 
 		block.startTime = h * 3600 + m * 60 + s + ms / 1000;
-		mainUnsaved = true;
 	};
 </script>
 
@@ -75,8 +73,14 @@
 </time-container>
 
 <style>
+	time-container {
+		margin: 8px;
+		width: calc(100% - 16px);
+	}
 	h3 {
 		margin: 4px 0 0 0;
+		margin: 4px 0 0 0;
+		color: var(--color-theme-blue);
 	}
 	time-inputs {
 		display: flex;
@@ -95,5 +99,6 @@
 	time-inputs label input {
 		width: 60%;
 		text-align: center;
+		padding: 4px;
 	}
 </style>

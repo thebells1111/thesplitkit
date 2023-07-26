@@ -11,12 +11,6 @@
 	}
 
 	$: enclosureUrl = $mainSettings?.editEnclosure || '';
-
-	function handleIncludeCheck(e) {
-		$mainSettings.editing = $mainSettings.editing || {};
-		$mainSettings.includeDefault = e.target.checked;
-		mainUnsaved = true;
-	}
 </script>
 
 <div>
@@ -24,29 +18,27 @@
 		<p>Link to audio to sync chapters with:</p>
 		<input type="url" value={enclosureUrl} on:input={handleInput} />
 	</label>
-	<label class="checkbox">
-		<input type="checkbox" on:input={handleIncludeCheck} checked={$mainSettings?.includeDefault} />
-		<p>Include podcast block when exporting chapters and time value splits (not recommended)</p>
-	</label>
 </div>
 
 <style>
 	div {
-		width: calc(100% - 16px);
-		margin: 8px;
+		width: calc(100% - 12px);
+		margin: 6px;
 	}
 
 	label {
 		margin: 12px 0;
+		color: var(--color-theme-blue);
 	}
 	label p {
-		margin: 0;
+		margin: 0 0 2px 0;
 		padding: 0;
 		font-weight: bold;
 	}
 
 	label input {
-		width: calc(100% - 8px);
+		width: calc(100% - 18px);
+		padding: 6px;
 	}
 
 	label.checkbox {

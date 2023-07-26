@@ -17,12 +17,6 @@
 		$mainSettings.podcast.autoSwitch = e.target.checked;
 		mainUnsaved = true;
 	}
-
-	function handleIncludeCheck(e) {
-		$mainSettings.podcast = $mainSettings.podcast || {};
-		$mainSettings.includeDefault = e.target.checked;
-		mainUnsaved = true;
-	}
 </script>
 
 <div>
@@ -38,10 +32,6 @@
 		/>
 		<p>Automatically Broadcast Default Podcast when Active Block ends.</p>
 	</label>
-	<label class="checkbox">
-		<input type="checkbox" on:input={handleIncludeCheck} checked={$mainSettings?.includeDefault} />
-		<p>Include podcast block when exporting chapters and time value splits (not recommended)</p>
-	</label>
 
 	<warning>
 		<p>
@@ -52,21 +42,23 @@
 
 <style>
 	div {
-		width: calc(100% - 16px);
-		margin: 0 8px;
+		width: calc(100% - 12px);
+		margin: 6px;
 	}
 
 	label {
 		margin: 12px 0;
+		color: var(--color-theme-blue);
 	}
 	label p {
-		margin: 0;
+		margin: 0 0 2px 0;
 		padding: 0;
 		font-weight: bold;
 	}
 
 	label input {
-		width: calc(100% - 8px);
+		width: calc(100% - 18px);
+		padding: 6px;
 	}
 
 	label.checkbox {

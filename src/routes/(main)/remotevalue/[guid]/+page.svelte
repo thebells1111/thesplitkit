@@ -16,8 +16,6 @@
 
 	onMount(loadBlocks);
 
-	$: console.log($liveBlocks);
-
 	async function loadBlocks() {
 		if (!$liveBlocks?.length) {
 			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
@@ -25,15 +23,14 @@
 			$liveBlocks = data.blocks;
 		}
 
-		console.log($liveBlocks);
-
 		if ($liveBlocks?.length) {
-			badStartBlocks = $liveBlocks.filter((v) => !v.startTime);
-			badValueBlocks = $liveBlocks.filter((v) => !v?.value?.destinations?.length);
+			const blocks = $liveBlocks.filter((v) => !v?.settings?.default);
+			badStartBlocks = blocks.filter((v) => !v.startTime);
+			badValueBlocks = blocks.filter((v) => !v?.value?.destinations?.length);
 			console.log(!badStartBlocks?.length && !badValueBlocks?.length);
 
 			if (!badStartBlocks?.length && !badValueBlocks?.length) {
-				$liveBlocks.forEach((v) => {
+				blocks.forEach((v) => {
 					xmlText += '<podcast:valueTimeSplit';
 					if (v.startTime) {
 						xmlText += `\n   startTime="${v.startTime}"\n   remotePercentage="${
@@ -129,6 +126,8 @@
 		<h4>
 			In your feed, paste the Value Time Splits in the {`<podcast:value>`} tag of your episode.
 		</h4>
+
+		<h4>Below is an example:</h4>
 		<p class="instructions">
 			{`<podcast:value type="lightning" method="keysend" suggested="0.00000005000" >`}
 		</p>
@@ -145,7 +144,7 @@
 			{`address="03ae9f91a0cb8ff43840e3c322c4c61f019d8c1c3cea15a25cfc425ac605e61a4a"`}
 		</p>
 		<p class="instructions indent-2">
-			{`split="72"`}
+			{`split="100"`}
 		</p>
 		<p class="instructions indent-1">
 			{`/>`}
@@ -155,7 +154,7 @@
 			{`</podcast:value>`}
 		</p>
 	</instruction-block>
-	<h3>Value Time Splits</h3>
+	<h3>Here's your<br /> Value Time Splits<br /> to paste.</h3>
 	<textarea>{xmlText}</textarea>
 	<button class="dl-link" on:click={copyText}>
 		<copy-link-icon class="multi-icon">

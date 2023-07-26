@@ -23,11 +23,13 @@
 
 <style>
 	div {
-		margin: 8px;
+		margin: 8px 0;
+		width: 100%;
 	}
 	label {
 		font-size: 1.2em;
 		font-weight: bold;
+		padding: 0 6px;
 		color: var(--color-theme-blue);
 	}
 

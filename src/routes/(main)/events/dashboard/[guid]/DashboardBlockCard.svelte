@@ -147,15 +147,9 @@
 		</card-info>
 		<middle-container>
 			<time-container>
-				{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
-					<duration>
-						{#if block.blockGuid === $defaultBlockGuid}
-							{#if block.duration}
-								<warning>Remove the duration for this block.</warning>
-							{:else}
-								<warning>Default Block. No duration needed.</warning>
-							{/if}
-						{:else}
+				{#if ['playlist', 'edit'].find((v) => v === $mainSettings.broadcastMode) || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
+					{#if block.blockGuid !== $defaultBlockGuid}
+						<duration>
 							<strong>Duration:</strong>
 
 							{#if ($mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) && !block.duration}
@@ -163,24 +157,24 @@
 							{:else}
 								<span>{block.duration ? formatTime(block.duration) : ''}</span>
 							{/if}
-						{/if}
-					</duration>
-					<start-time>
-						<strong>Start:</strong>
-						<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
-					</start-time>
+						</duration>
+						<start-time>
+							<strong>Start:</strong>
+							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
+						</start-time>
 
-					{#if broadcastingBlockGuid === block.blockGuid}
-						<time-remaing>
-							<strong>Time Remaining:</strong>
-							{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
-						</time-remaing>
+						{#if broadcastingBlockGuid === block.blockGuid}
+							<time-remaing>
+								<strong>Time Remaining:</strong>
+								{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
+							</time-remaing>
+						{/if}
+					{:else if ['podcast'].find((v) => v === $mainSettings?.broadcastMode)}
+						<start-time>
+							<strong>Start:</strong>
+							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
+						</start-time>
 					{/if}
-				{:else if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
-					<start-time>
-						<strong>Start:</strong>
-						<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
-					</start-time>
 				{/if}
 			</time-container>
 			<button-container>
@@ -193,9 +187,11 @@
 				>
 					<EditIcon size="27" /></button
 				>
-				<button class="tuner" on:click={() => (showSettingsModal = true)}>
-					<TunerIcon size="27" />
-				</button>
+				{#if block.blockGuid !== $defaultBlockGuid}
+					<button class="tuner" on:click={() => (showSettingsModal = true)}>
+						<TunerIcon size="27" />
+					</button>
+				{/if}
 				{#if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
 					<button class="broadcast" on:click={updateStartTime.bind(this, block, index)}
 						><TimerIcon size="32" /></button
@@ -223,8 +219,12 @@
 				on:click={moveElement.bind(this, index + 1, 1)}>▼</button
 			>
 		</bottom-container>
-		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl}
+
+		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl && block.blockGuid !== $defaultBlockGuid}
 			<warning>This block has no audio file.</warning>
+		{/if}
+		{#if !block?.value?.destinations?.length}
+			<warning>This item has no value blocks</warning>
 		{/if}
 	</div>
 {/if}
@@ -252,23 +252,25 @@
 	}
 
 	div.default {
-		background-color: var(--color-theme-light-blue);
+		background-color: var(--color-theme-light-purple);
 		margin-bottom: 16px;
 	}
 
 	div.active {
-		background-color: var(--color-theme-light-yellow);
+		background-color: var(--color-theme-light-blue);
+		box-shadow: 0 0px 8px 1px rgba(0, 131, 179, 0.75);
 	}
 
 	default {
 		position: absolute;
 		top: -1px;
 		left: calc(50% - 50px);
-		color: gray;
+		color: var(--color-theme-purple);
+		font-weight: bold;
 	}
 	div.warning {
 		border: 1px solid red;
-		box-shadow: 0 2px 8px 0px rgba(254, 98, 98, 0.75);
+		box-shadow: 0 0px 8px 1px rgba(254, 98, 98, 0.75);
 	}
 
 	card-info {

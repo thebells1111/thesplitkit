@@ -37,6 +37,8 @@
 	onMount(async () => {
 		const url = remoteServer + '/event?event_id=' + $page.params.guid;
 		const liveItemSocket = io.connect(url);
+		fetchConversionRate();
+		senderName = localStorage.getItem('senderName') || 'anonymous';
 
 		liveItemSocket.on('remoteValue', function (data) {
 			// You will need to adjust this part based on the actual format of the data sent by the server
@@ -51,9 +53,6 @@
 			if (block?.blockGuid && defaultBlock?.blockGuid) {
 				isDefault = block.blockGuid === defaultBlock.blockGuid;
 			}
-
-			fetchConversionRate();
-			senderName = localStorage.getItem('senderName') || 'anonymous';
 		});
 		loaded = true;
 		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);

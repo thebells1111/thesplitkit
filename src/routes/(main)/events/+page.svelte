@@ -45,12 +45,10 @@
 				credentials: 'include'
 			});
 			let data = await res.json();
-			console.log(data);
 		}
 	}
 
 	function handleCopy(event) {
-		console.log(event);
 		$copiedEvent = event;
 	}
 </script>
@@ -88,7 +86,7 @@
 
 			{#if $copiedEvent}
 				<a class="copy" href={`/events/creator/${$copiedEvent.guid}`}>
-					<p>Paste Copied Event</p>
+					<p>Paste a copy of "{$copiedEvent.eventName}"</p>
 					<CopyIcon size="30" />
 				</a>
 			{/if}

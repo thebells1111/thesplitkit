@@ -3,20 +3,17 @@
 
 	import { liveBlocks, mainSettings, defaultBlockGuid } from '$/stores';
 
-	import Duration from './Duration.svelte';
-	import StartTime from './StartTime.svelte';
+	import TimeInputs from './TimeInputs.svelte';
 	import Enclosure from './Enclosure.svelte';
+	import Chapters from './Chapters.svelte';
 	import Clips from './Clips.svelte';
 
-	let mainUnsaved = false;
 	let initialized = false;
 	let savedBlock;
-	let initializedBlockGuid;
 
 	let showSaved = false;
 
 	export let block = { settings: { split: 95 } };
-	$: console.log(block);
 
 	$: {
 		if (block.settings.split < 0) block.settings.split = 0;
@@ -32,76 +29,54 @@
 
 	$: compareBlock(block);
 
-	$: console.log(block.duration);
-
 	function compareBlock() {
 		if (JSON.stringify(block) !== JSON.stringify(savedBlock)) {
 			savedBlock = clone(block);
-			if (initialized) {
-				mainUnsaved = true;
-			} else {
-				initialized = true;
-				initializedBlockGuid = block.blockGuid;
-				if (!block.settings) {
-					block.settings = { split: 95 };
-				}
+
+			if (!block.settings) {
+				block.settings = { split: 95 };
 			}
 		}
 	}
-
-	function handleCheck(e) {
-		let oldBlock = getBlock($defaultBlockGuid);
-		let block = getBlock(initializedBlockGuid);
-		oldBlock.settings.default = false;
-		block.settings.default = true;
-
-		$defaultBlockGuid = initializedBlockGuid;
-		mainUnsaved = true;
-
-		// Move block to the front of the $liveBlocks array
-		$liveBlocks = $liveBlocks.filter((v) => v.blockGuid !== initializedBlockGuid);
-		$liveBlocks.unshift(block);
-	}
-
-	function getBlock(blockGuid) {
-		let block = $liveBlocks.find((v) => v.blockGuid === blockGuid);
-		block = block || {};
-		block.settings = block?.settings || {};
-		return block;
-	}
 </script>
 
-<settings-container>
-	<label class="default-block">
-		<input
-			type="checkbox"
-			on:input={handleCheck}
-			checked={$defaultBlockGuid === initializedBlockGuid}
-		/>
-		<p>set as default block</p>
-	</label>
-	<label>
-		<p>Default value split for this block</p>
-		<percent
-			><input
-				type="number"
-				bind:value={block.settings.split}
-				min="0"
-				max="100"
-				on:keydown={preventCertainInput}
-			/>%</percent
-		>
-	</label>
-</settings-container>
+<div>
+	<settings-container>
+		<label>
+			<h3>Default Block Value Split</h3>
+			<percent
+				><input
+					type="number"
+					bind:value={block.settings.split}
+					min="0"
+					max="100"
+					on:keydown={preventCertainInput}
+				/>%</percent
+			>
+		</label>
+	</settings-container>
 
-{#if $mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
-	<Duration bind:block />
-	<StartTime bind:block />
+	<TimeInputs bind:block bind:time={block.startTime} title="Start Time" />
+	<TimeInputs bind:block bind:time={block.duration} title="Block Playback Duration" />
 	<Enclosure bind:block />
-	<Clips bind:block />
+	{#if block?.chaptersUrl}
+		<Chapters bind:block />
+	{/if}
+	<!-- {#if ['podcast', 'music'].find((v) => v === block?.type) && block.enclosureUrl}
+		<Clips bind:block />
+	{/if} -->
+</div>
+
+{#if showSaved}
+	<SaveModal>
+		<h2>Saved</h2>
+	</SaveModal>
 {/if}
 
 <style>
+	div {
+		width: calc(100% - 16px);
+	}
 	settings-container {
 		width: calc(100% - 16px);
 		margin: 8px;
@@ -109,26 +84,27 @@
 	label {
 		display: flex;
 		align-items: center;
-		justify-content: flex-start;
-		width: 100%;
+		justify-content: space-between;
+		width: 300px;
 		margin-bottom: 4px;
 	}
 
-	p {
+	h3 {
 		margin: 0;
 		padding: 0;
-		font-weight: bold;
+		color: var(--color-theme-blue);
 	}
 
 	percent {
 		align-self: flex-end;
+		min-width: 75px;
 	}
 
 	percent input {
 		width: 40px;
 		padding: 4px 0;
 		text-align: right;
-		margin-left: 8px;
+		margin: 0 8px;
 	}
 
 	button {
