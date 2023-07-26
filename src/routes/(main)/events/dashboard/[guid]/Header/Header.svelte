@@ -77,6 +77,11 @@
 		mainUnsaved = false;
 	}
 
+	$: if (mainUnsaved) {
+		saveEntry($liveBlocks);
+		mainUnsaved = false;
+	}
+
 	function saveEntry(blocks) {
 		fetch(remoteServer + '/api/sk/saveblocks', {
 			method: 'POST',
