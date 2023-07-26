@@ -73,10 +73,6 @@
 	}
 
 	function moveElement(index, direction) {
-		console.log(index);
-		console.log(direction);
-		console.log(index + direction);
-		console.log($liveBlocks);
 		if (index + direction >= $liveBlocks.length || index + direction < 1) {
 			// The element is already at the boundary (start/end), so do nothing.
 			// This is indexed at one to handle the default block
@@ -104,20 +100,6 @@
 		if (activeIndex > -1) {
 			$liveBlocks[activeIndex] = block;
 		}
-
-		fetch(remoteServer + '/api/sk/saveblocks', {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ blocks: $liveBlocks, guid: $page.params.guid })
-		})
-			.then((response) => response.json())
-			.then((newData) => {
-				console.log(newData);
-			})
-			.catch((error) => console.error(error));
 	}
 </script>
 
@@ -169,11 +151,6 @@
 								{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
 							</time-remaing>
 						{/if}
-					{:else if ['podcast'].find((v) => v === $mainSettings?.broadcastMode)}
-						<start-time>
-							<strong>Start:</strong>
-							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
-						</start-time>
 					{/if}
 				{/if}
 			</time-container>
