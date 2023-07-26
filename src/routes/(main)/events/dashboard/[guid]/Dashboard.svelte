@@ -164,6 +164,7 @@
 				foundBlock.startTime = timeStamp;
 				$liveBlocks = $liveBlocks;
 			} else {
+				let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
 				foundBlock.startTime = 0;
 				$liveBlocks = $liveBlocks;
 			}
