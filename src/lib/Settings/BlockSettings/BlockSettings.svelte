@@ -55,9 +55,10 @@
 			>
 		</label>
 	</settings-container>
-
-	<TimeInputs bind:block bind:time={block.startTime} title="Start Time" />
-	<TimeInputs bind:block bind:time={block.duration} title="Block Playback Duration" />
+	<time-settings>
+		<TimeInputs bind:block bind:time={block.startTime} title="Start Time" />
+		<TimeInputs bind:block bind:time={block.duration} title="Block Playback Duration" />
+	</time-settings>
 	<Enclosure bind:block />
 	{#if block?.chaptersUrl}
 		<Chapters bind:block />
@@ -107,39 +108,10 @@
 		margin: 0 8px;
 	}
 
-	button {
-		background-color: hsl(0, 0%, 96%);
-		color: var(--color-text-0);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 50px;
-		width: 50px;
-		border-radius: 25px;
-		padding: 0;
-		margin: 16px;
-		box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.5);
-		position: relative;
-		right: 100px;
-	}
-
-	.unsaved {
-		animation: heartbeat 1s infinite;
-		z-index: 2;
-	}
-
-	@keyframes heartbeat {
-		0% {
-			transform: scale(1);
-			box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-		}
-		50% {
-			transform: scale(1.1);
-			box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-		}
-		100% {
-			transform: scale(1);
-			box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-		}
+	time-settings {
+		display: block;
+		width: calc(100% - 16px);
+		margin: 0 8px;
+		max-width: 360px;
 	}
 </style>

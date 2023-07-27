@@ -5,6 +5,7 @@
 	export let block;
 	export let title;
 	export let player;
+	export let hidePlayer;
 
 	const getHours = (t) => Math.floor(t / 3600) || 0;
 	const getMinutes = (t) => Math.floor((t % 3600) / 60) || 0;
@@ -33,7 +34,7 @@
 <time-container>
 	<title-bar>
 		<h3>{title}</h3>
-		{#if player}
+		{#if player && !hidePlayer}
 			<button class="timer" on:click={handleMarkTime}><TimerIcon size="32" /></button>
 		{/if}
 	</title-bar>
@@ -60,8 +61,8 @@
 
 <style>
 	time-container {
-		margin: 0 8px;
-		width: calc(100% - 16px);
+		margin: 0;
+		width: 100%;
 	}
 
 	title-bar {
@@ -76,6 +77,8 @@
 	}
 	time-inputs {
 		display: flex;
+		justify-content: space-between;
+		width: 100%;
 	}
 
 	time-inputs label {

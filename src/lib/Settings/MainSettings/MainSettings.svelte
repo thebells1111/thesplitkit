@@ -74,7 +74,7 @@
 		showOffsetStartTimes = true;
 	}}>Offset Start Times</button
 >
-<BroadcastMode bind:mainUnsaved />Offset
+<BroadcastMode bind:mainUnsaved />
 
 {#if $mainSettings?.broadcastMode === 'playlist'}
 	<!-- <PlaylistSettings bind:mainUnsaved /> -->

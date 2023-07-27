@@ -42,6 +42,7 @@
 	let addDefaultType;
 	let saveMainSettings;
 	let showOffsetStartTimes = true;
+	$: console.log(showOffsetStartTimes);
 
 	const guid = $page.params.guid;
 
@@ -300,7 +301,7 @@
 
 {#if showMainSettingsModal}
 	<Modal bind:showModal={showMainSettingsModal} onClose={saveMainSettings}>
-		<MainSettings bind:saveMainSettings />
+		<MainSettings bind:saveMainSettings bind:showOffsetStartTimes />
 	</Modal>
 {/if}
 
