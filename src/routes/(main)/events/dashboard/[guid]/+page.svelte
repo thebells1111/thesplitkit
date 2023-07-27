@@ -41,8 +41,7 @@
 	let showSaved = false;
 	let addDefaultType;
 	let saveMainSettings;
-	let showOffsetStartTimes = true;
-	$: console.log(showOffsetStartTimes);
+	let showOffsetStartTimes = false;
 
 	const guid = $page.params.guid;
 

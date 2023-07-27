@@ -6,10 +6,6 @@
 	let selectedOption = 'subtract';
 	let showSaveModal = false;
 
-	console.log($liveBlocks);
-
-	$: console.log(offsetTime);
-
 	function handleOffset() {
 		$liveBlocks = $liveBlocks.map((v) => {
 			if (v.startTime) {
