@@ -11,6 +11,8 @@
 	import EventsHeader from './Header/Header.svelte';
 	import Dashboard from './Dashboard.svelte';
 	import MainSettings from '$lib/Settings/MainSettings/MainSettings.svelte';
+	import OffsetStartTimes from '$lib/Settings/MainSettings/OffsetStartTimes.svelte';
+
 	import EditOptions from '$lib/Creator/EditOptions.svelte';
 	import PromoEditor from '$lib/PromoEditor/PromoEditor.svelte';
 	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
@@ -39,6 +41,7 @@
 	let showSaved = false;
 	let addDefaultType;
 	let saveMainSettings;
+	let showOffsetStartTimes = true;
 
 	const guid = $page.params.guid;
 
@@ -330,6 +333,12 @@
 		bind:showEditor
 		{activeBlockGuid}
 	/>
+{/if}
+
+{#if showOffsetStartTimes}
+	<Modal bind:showModal={showOffsetStartTimes}>
+		<OffsetStartTimes />
+	</Modal>
 {/if}
 
 {#if showAdded}

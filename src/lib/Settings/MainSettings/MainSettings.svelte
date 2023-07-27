@@ -14,6 +14,7 @@
 	let savedSettings = {};
 	let updateAllSplits = false;
 	let showSaved = false;
+	export let showOffsetStartTimes;
 
 	$: compareSettings($mainSettings);
 
@@ -68,7 +69,12 @@
 </script>
 
 <DefaultSplits bind:mainUnsaved bind:updateAllSplits />
-<BroadcastMode bind:mainUnsaved />
+<button
+	on:click={() => {
+		showOffsetStartTimes = true;
+	}}>Offset Start Times</button
+>
+<BroadcastMode bind:mainUnsaved />Offset
 
 {#if $mainSettings?.broadcastMode === 'playlist'}
 	<!-- <PlaylistSettings bind:mainUnsaved /> -->
@@ -83,4 +89,8 @@
 {/if}
 
 <style>
+	button {
+		margin: 8px;
+		align-self: flex-start;
+	}
 </style>
