@@ -43,17 +43,15 @@
 		player.src = $mainSettings?.editEnclosure;
 	}
 
-	$: console.log(player);
-
 	$: onMount(async () => {
 		if (!$liveBlocks?.length) {
 			loadSocket();
 		}
 	});
 
-	$: if ($activeBroadcastGuid !== guid) {
+	$: if (guid && $activeBroadcastGuid !== guid) {
 		$activeBroadcastGuid = guid;
-		loadSocket;
+		loadSocket();
 	}
 
 	function loadSocket() {
@@ -99,6 +97,11 @@
 					player.ontimeupdate = () => {
 						if (block?.duration && player?.currentTime) {
 							broadcastTimeRemaining = block.duration - player.currentTime;
+							if (broadcastTimeRemaining <= 0) {
+								player.pause();
+								player.src = null;
+								handleBroadcast(nextBlock);
+							}
 						}
 						if (block?.chapters && block?.settings?.chaptersEnabled === true) {
 							let chapters = block.chapters?.chapters;
@@ -156,9 +159,13 @@
 		if (block) {
 			serverData = processBlock(clone(block));
 			broadcastingBlockGuid = block.blockGuid;
-			if (timeStamp) {
+			if (timeStamp && block.blockGuid !== $defaultBlockGuid) {
 				let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
 				foundBlock.startTime = timeStamp;
+				$liveBlocks = $liveBlocks;
+			} else {
+				let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
+				foundBlock.startTime = 0;
 				$liveBlocks = $liveBlocks;
 			}
 		} else {
@@ -237,7 +244,6 @@
 			if (defaultBlock) {
 				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
 				let splitDeduct = block?.value?.destinations?.length ? split : 0;
-				console.log(splitDeduct);
 				newDestinations = newDestinations.concat(
 					updateSplits(defaultBlock?.value?.destinations, 100 - splitDeduct, true)
 				);
@@ -318,20 +324,15 @@
 	function updateStartTime(block) {
 		let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
 		foundBlock.startTime = player.currentTime;
-		console.log(player.currentTime);
 		$liveBlocks = $liveBlocks;
-		console.log('player: ', player);
 	}
 
 	$: if (chapterIndex > -1) {
-		console.log(broadcastingBlockGuid);
 		let block = $liveBlocks.find((v) => {
 			return v.blockGuid === broadcastingBlockGuid;
 		});
-		console.log(block);
 		let chapters = block?.chapters?.chapters || [];
 		let activeChapter = chapters[chapterIndex];
-		console.log(activeChapter);
 		if (activeChapter) {
 			let chapterBlock = clone(block);
 			chapterBlock.title = activeChapter.title;

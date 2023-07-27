@@ -1,5 +1,6 @@
 <script>
 	import TimerIcon from '$lib/icons/Timer.svelte';
+	import NumberInput from './NumberInput.svelte';
 	export let time;
 	export let block;
 	export let title;
@@ -10,29 +11,22 @@
 	const getSeconds = (t) => Math.floor(t) % 60 || 0;
 	const getMilliseconds = (t) => Math.round((t % 1) * 1000) || 0;
 
-	const updateAdded = (type, value) => {
-		let h = getHours(time);
-		let m = getMinutes(time);
-		let s = getSeconds(time);
-		let ms = getMilliseconds(time);
+	let hour = getHours(time);
+	let mins = getMinutes(time);
+	let sec = getSeconds(time);
+	let msec = getMilliseconds(time);
 
-		if (type === 'hours') {
-			h = parseInt(value);
-		} else if (type === 'minutes') {
-			m = parseInt(value);
-		} else if (type === 'seconds') {
-			s = parseInt(value);
-		} else if (type === 'milliseconds') {
-			ms = parseInt(value);
-		}
-
-		time = h * 3600 + m * 60 + s + ms / 1000;
-		block = block;
-	};
+	$: if (hour > -1 && mins > -1 && sec > -1 && msec > -1) {
+		time = hour * 3600 + mins * 60 + sec + msec / 1000;
+	}
 
 	function handleMarkTime() {
 		time = player.currentTime;
 		block = block;
+		hour = getHours(time);
+		mins = getMinutes(time);
+		sec = getSeconds(time);
+		msec = getMilliseconds(time);
 	}
 </script>
 
@@ -47,42 +41,19 @@
 	<time-inputs>
 		<label>
 			Hour
-			<input
-				type="number"
-				value={getHours(time)}
-				on:input={(e) => updateAdded('hours', e.target.value)}
-				min="0"
-			/>
+			<NumberInput max={99} min={0} bind:value={hour} blurDefault={0} disableScroll={true} />
 		</label>
 		<label>
 			Min
-			<input
-				type="number"
-				value={getMinutes(time)}
-				on:input={(e) => updateAdded('minutes', e.target.value)}
-				min="0"
-				max="59"
-			/>
+			<NumberInput max={59} min={0} bind:value={mins} blurDefault={0} disableScroll={true} />
 		</label>
 		<label>
 			Sec
-			<input
-				type="number"
-				value={getSeconds(time)}
-				on:input={(e) => updateAdded('seconds', e.target.value)}
-				min="0"
-				max="59"
-			/>
+			<NumberInput max={59} min={0} bind:value={sec} blurDefault={0} disableScroll={true} />
 		</label>
 		<label>
 			mSec
-			<input
-				type="number"
-				value={getMilliseconds(time)}
-				on:input={(e) => updateAdded('milliseconds', e.target.value)}
-				min="0"
-				max="999"
-			/>
+			<NumberInput max={999} min={0} bind:value={msec} blurDefault={0} disableScroll={true} />
 		</label>
 	</time-inputs>
 </time-container>

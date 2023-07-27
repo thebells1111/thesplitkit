@@ -34,6 +34,10 @@
 	};
 
 	$: compareBlocks($liveBlocks);
+	$: if (mainUnsaved) {
+		saveEntry($liveBlocks);
+		mainUnsaved = false;
+	}
 
 	function compareBlocks(blocks) {
 		if (JSON.stringify(blocks) !== JSON.stringify(savedBlocks)) {
