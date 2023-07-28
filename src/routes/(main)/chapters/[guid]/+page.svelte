@@ -29,26 +29,29 @@
 			badStartBlocks = chaps.filter((v) => !v.startTime);
 
 			if (!badStartBlocks?.length) {
-				chapters = chaps.map((v) => {
-					console.log(v);
-					let chapter = { startTime: v.startTime };
+				chapters = chaps
+					.map((v) => {
+						console.log(v);
+						let chapter = { startTime: v.startTime };
 
-					if (v?.title) {
-						chapter.title = v.title;
-					}
-					if (v?.duration) {
-						chapter.endTime = v.startTime + v.duration;
-					}
-					if (v?.image) {
-						chapter.img = v.image;
-					}
-					if (v?.link?.url) {
-						chapter.url = v.link.url;
-					}
+						if (v?.title) {
+							chapter.title = v.title;
+						}
+						if (v?.duration) {
+							chapter.endTime = v.startTime + v.duration;
+						}
+						if (v?.image) {
+							chapter.img = v.image;
+						}
+						if (v?.link?.url) {
+							chapter.url = v.link.url;
+						}
 
-					return chapter;
-				});
+						return chapter;
+					})
+					.sort((a, b) => a.startTime - b.startTime);
 			}
+			console.log(chapters);
 			file.chapters = chapters;
 		}
 
