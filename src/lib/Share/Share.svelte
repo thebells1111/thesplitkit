@@ -14,6 +14,7 @@
 	import Modal from '$lib/Modal/Modal.svelte';
 	import RemoteValue from '$routes/(main)/remotevalue/[guid]/+page.svelte';
 	import DownloadChapters from '$routes/(main)/chapters/[guid]/+page.svelte';
+	import ShowNotes from './ShowNotes.svelte';
 
 	export let liveGuid;
 	export let eventGuid;
@@ -25,6 +26,7 @@
 	let showPodcastModal = false;
 	let showRemoteValuesModal = false;
 	let showDownloadChaptersModal = false;
+	let showShowNotesModal = false;
 
 	if (liveGuid) {
 		guid = liveGuid;
@@ -158,6 +160,12 @@
 					<p>Value <br />Time Splits</p>
 				</button-container>
 				<button-container>
+					<button class="show-notes" on:click={() => (showShowNotesModal = true)}>
+						{`<HTML/>`}
+					</button>
+					<p>Show Notes</p>
+				</button-container>
+				<button-container>
 					<button class="chapter-link" on:click={() => (showDownloadChaptersModal = true)}>
 						<multi-icon>
 							<ChapterIcon size="32" />
@@ -228,6 +236,12 @@
 {#if showDownloadChaptersModal}
 	<Modal bind:showModal={showDownloadChaptersModal}>
 		<DownloadChapters />
+	</Modal>
+{/if}
+
+{#if showShowNotesModal}
+	<Modal bind:showModal={showShowNotesModal}>
+		<ShowNotes />
 	</Modal>
 {/if}
 
@@ -334,6 +348,10 @@
 	.podcast-link,
 	.lvl-link {
 		background-color: var(--color-theme-blue);
+	}
+
+	.show-notes {
+		font-size: 0.6em;
 	}
 
 	secondary-icon {

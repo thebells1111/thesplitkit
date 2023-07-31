@@ -43,6 +43,7 @@
 			on:click|stopPropagation={() => {
 				rippleAlbum = true;
 				tick();
+				console.log(feed);
 				addFeed(feed, 'music');
 				setTimeout(() => {
 					rippleAlbum = false;
@@ -99,6 +100,8 @@
 							on:click={() => {
 								shimmerCard(index);
 								tick();
+								console.log(feed);
+								console.log(episode);
 								addFeed(episode, 'music', feed);
 							}}
 							class="add-icon"

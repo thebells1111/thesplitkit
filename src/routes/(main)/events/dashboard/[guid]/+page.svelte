@@ -225,7 +225,11 @@
 					destinations: []
 				};
 			newBlock.type = type;
-			newBlock.link = { text: '', url: '' };
+
+			newBlock.link = {
+				text: 'Checkout the Album',
+				url: block?.link || channel?.link || `https://podcastindex.org/podcast/${channel.id}`
+			};
 			newBlock.chaptersUrl = block?.chaptersUrl;
 
 			if (block.enclosureUrl) {
@@ -263,6 +267,7 @@
 			} else {
 				$liveBlocks = $liveBlocks.concat(newBlock);
 			}
+			console.log($liveBlocks);
 			mainUnsaved = true;
 		}
 	}
