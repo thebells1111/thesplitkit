@@ -13,6 +13,7 @@
 	let badValueBlocks = [];
 	let remoteValues = [];
 	let xmlText = '';
+	let userDanger = true;
 
 	onMount(loadBlocks);
 
@@ -27,63 +28,64 @@
 			const blocks = $liveBlocks.filter((v) => !v?.settings?.default);
 			badStartBlocks = blocks.filter((v) => !v.startTime);
 			badValueBlocks = blocks.filter((v) => !v?.value?.destinations?.length);
-			console.log(!badStartBlocks?.length && !badValueBlocks?.length);
 
-			if (!badStartBlocks?.length && !badValueBlocks?.length) {
+			if ((!badStartBlocks?.length && !badValueBlocks?.length) || !userDanger) {
 				blocks.forEach((v) => {
-					xmlText += '<podcast:valueTimeSplit';
-					if (v.startTime) {
-						xmlText += `\n   startTime="${v.startTime}"\n   remotePercentage="${
-							v?.settings?.split || 100
-						}"`;
-					}
-					if (v.duration) {
-						xmlText += `\n   duration="${v.duration}"`;
-					}
-
-					xmlText += '\n>';
-					xmlText += '\n';
-
-					if (v.feedGuid) {
-						xmlText += `  <podcast:remoteItem \n    feedGuid="${v.feedGuid}"`;
-						if (v.itemGuid) {
-							xmlText += `\n    itemGuid="${v.itemGuid}"`;
+					if (v.startTime && v.duration && v?.value?.destinations?.length) {
+						xmlText += '<podcast:valueTimeSplit';
+						if (v.startTime) {
+							xmlText += `\n   startTime="${v.startTime}"\n   remotePercentage="${
+								v?.settings?.split || 100
+							}"`;
+						}
+						if (v.duration) {
+							xmlText += `\n   duration="${v.duration}"`;
 						}
 
-						xmlText += '\n  />\n';
-					} else {
-						xmlText += '  <podcast:valueRecipient';
+						xmlText += '\n>';
+						xmlText += '\n';
 
-						v.value.destinations.forEach((w) => {
-							// <podcast:valueRecipient name="Alice (Podcaster)" type="node" address="02d5c1bf8b940dc9cadca86d1b0a3c37fbe39cee4c7e839e33bef9174531d27f52" split="85" />
-							xmlText += '\n    ';
-							xmlText += `type="node"`;
-							if (w.name) {
-								xmlText += '\n    ';
-								xmlText += `name="${w.name}"`;
-							}
-							xmlText += '\n    ';
-							xmlText += `address="${w.address}"`;
-							if (w.customKey) {
-								xmlText += '\n    ';
-								xmlText += `customKey="${w.customKey}"`;
-							}
-							if (w.customValue) {
-								xmlText += '\n    ';
-								xmlText += `customValue="${w.customValue}"`;
+						if (v.feedGuid) {
+							xmlText += `  <podcast:remoteItem \n    feedGuid="${v.feedGuid}"`;
+							if (v.itemGuid) {
+								xmlText += `\n    itemGuid="${v.itemGuid}"`;
 							}
 
-							xmlText += '\n    ';
-							xmlText += `split="${w.split || 100}"`;
+							xmlText += '\n  />\n';
+						} else {
+							xmlText += '  <podcast:valueRecipient';
 
-							console.log(w);
-						});
+							v.value.destinations.forEach((w) => {
+								// <podcast:valueRecipient name="Alice (Podcaster)" type="node" address="02d5c1bf8b940dc9cadca86d1b0a3c37fbe39cee4c7e839e33bef9174531d27f52" split="85" />
+								xmlText += '\n    ';
+								xmlText += `type="node"`;
+								if (w.name) {
+									xmlText += '\n    ';
+									xmlText += `name="${w.name}"`;
+								}
+								xmlText += '\n    ';
+								xmlText += `address="${w.address}"`;
+								if (w.customKey) {
+									xmlText += '\n    ';
+									xmlText += `customKey="${w.customKey}"`;
+								}
+								if (w.customValue) {
+									xmlText += '\n    ';
+									xmlText += `customValue="${w.customValue}"`;
+								}
 
-						xmlText += '\n  />\n';
+								xmlText += '\n    ';
+								xmlText += `split="${w.split || 100}"`;
+
+								console.log(w);
+							});
+
+							xmlText += '\n  />\n';
+						}
+
+						xmlText += '</podcast:valueTimeSplit>';
+						xmlText += '\n';
 					}
-
-					xmlText += '</podcast:valueTimeSplit>';
-					xmlText += '\n';
 				});
 			}
 		}
@@ -101,7 +103,7 @@
 `;
 </script>
 
-{#if badStartBlocks?.length || badValueBlocks?.length}
+{#if (badStartBlocks?.length || badValueBlocks?.length) && userDanger}
 	<warning-container>
 		<h3>Go back and fix these blocks.</h3>
 		{#if badStartBlocks?.length}
@@ -120,6 +122,14 @@
 				{/each}
 			</ul>
 		{/if}
+		<button
+			on:click={() => {
+				userDanger = false;
+				loadBlocks();
+			}}
+		>
+			I understand.<br />Show me the good splits.
+		</button>
 	</warning-container>
 {:else}
 	<instruction-block>
@@ -183,7 +193,7 @@
 		resize: none;
 	}
 
-	button {
+	button.dl-link {
 		width: 200px;
 		font-weight: 700;
 		border-radius: 20px;
@@ -236,7 +246,9 @@
 	}
 
 	warning-container {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 
 	warning-container h3 {

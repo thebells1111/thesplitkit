@@ -17,7 +17,7 @@
 
 	onMount(loadBlocks);
 
-	async function loadBlocks() {
+	async function loadBlocks(reload) {
 		if (!$liveBlocks?.length) {
 			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
 			const data = await res.json();
@@ -28,27 +28,30 @@
 			const chaps = $liveBlocks.filter((v) => !v?.settings?.default);
 			badStartBlocks = chaps.filter((v) => !v.startTime);
 
-			if (!badStartBlocks?.length) {
+			if (!badStartBlocks?.length || reload) {
 				chapters = chaps
 					.map((v) => {
-						console.log(v);
-						let chapter = { startTime: v.startTime };
+						if (v.startTime) {
+							console.log(v);
+							let chapter = { startTime: v.startTime };
 
-						if (v?.title) {
-							chapter.title = v.title;
-						}
-						if (v?.duration) {
-							chapter.endTime = v.startTime + v.duration;
-						}
-						if (v?.image) {
-							chapter.img = v.image;
-						}
-						if (v?.link?.url) {
-							chapter.url = v.link.url;
-						}
+							if (v?.title) {
+								chapter.title = v.title;
+							}
+							if (v?.duration) {
+								chapter.endTime = v.startTime + v.duration;
+							}
+							if (v?.image) {
+								chapter.img = v.image;
+							}
+							if (v?.link?.url) {
+								chapter.url = v.link.url;
+							}
 
-						return chapter;
+							return chapter;
+						}
 					})
+					.filter((v) => v)
 					.sort((a, b) => a.startTime - b.startTime);
 			}
 			console.log(chapters);
@@ -58,7 +61,10 @@
 		console.log(file);
 	}
 
-	function downloadFile() {
+	async function downloadFile(reload) {
+		if (reload) {
+			await loadBlocks(reload);
+		}
 		const blob = new Blob([JSON.stringify(file)], { type: 'text/plain;charset=utf-8' });
 		saveAs(blob, `${guid}.json`);
 		downloadStarted = true;
@@ -79,6 +85,12 @@
 				{/each}
 			</ul>
 		{/if}
+		<p
+			style="color:black; margin: 8px 0 0 0; font-weight: bold; font-size: 1.1em; text-align:center"
+		>
+			I understand. <br /> I want to download <br /> the good chapters anyway.
+		</p>
+		<button on:click={downloadFile}>Download Chapters File</button>
 	{:else if chapters?.length}
 		<button on:click={downloadFile}>Download Chapters File</button>
 	{:else}
@@ -101,7 +113,7 @@
 
 	button {
 		margin: 32px auto;
-		width: 200px;
+		min-width: 200px;
 	}
 
 	h3 {
