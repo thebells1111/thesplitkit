@@ -87,5 +87,6 @@
 	p {
 		margin: 4px 0;
 		font-weight: bold;
+		text-align: center;
 	}
 </style>
