@@ -3,7 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import jwt from 'jsonwebtoken';
 
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 
 if (!process.env.ALBY_ID) {
@@ -18,15 +18,17 @@ export async function GET({ url, cookies }) {
 		let code = url.searchParams.get('code') ?? '';
 		var formData = new FormData();
 		formData.append('code', code);
+
+		let codeUrl;
 		if (dev) {
-			formData.append('redirect_uri', 'http://localhost:3000/api/alby/auth');
+			codeUrl = 'http://localhost:3000/api/alby/refreshauth';
 		} else {
-			formData.append('redirect_uri', 'https://www.thesplitkit.com/api/alby/auth');
+			codeUrl = 'https://www.thesplitkit.com/api/alby/refreshauth';
 		}
 		formData.append('grant_type', 'authorization_code');
 		let resolve = await axios({
 			method: 'POST',
-			url: 'https://api.getalby.com/oauth/token',
+			url: codeUrl,
 			auth: {
 				username: ALBY_ID,
 				password: ALBY_SECRET
@@ -41,7 +43,7 @@ export async function GET({ url, cookies }) {
 			expiresIn: '10d'
 		});
 
-		throw redirect(302, '/redirect');
+		json({ success: true });
 	} catch (err) {
 		if (newToken) {
 			cookies.set('awt', newToken, {
@@ -51,7 +53,7 @@ export async function GET({ url, cookies }) {
 				secure: !dev,
 				maxAge: 60 * 60 * 24 * 30
 			});
-			throw redirect(302, '/redirect');
+			json({ success: false });
 		}
 
 		console.error('alby err: ', err);

@@ -30,6 +30,10 @@
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
 				$user.balance = data.balance;
+
+				let res = await fetch('/api/alby/auth?code=' + code, {
+					credentials: 'include'
+				});
 				$albyReady = true;
 			}
 		} else if (!$user.loggedIn) {
