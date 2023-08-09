@@ -39,11 +39,26 @@ export async function GET({ url, cookies }) {
 			}
 		});
 
+		// await axios({
+		// 	method: 'POST',
+		// 	url: codeUrl,
+		// 	auth: {
+		// 		username: ALBY_ID,
+		// 		password: ALBY_SECRET
+		// 	},
+		// 	data: {
+		// 		tempCode: 'random code'
+		// 	},
+		// 	headers: {
+		// 		'Content-Type': 'application/json'
+		// 	}
+		// });
+
 		newToken = jwt.sign(resolve.data, ALBY_JWT, {
 			expiresIn: '10d'
 		});
 
-		json({ success: true });
+		json({ success: true, data: resolve.data });
 	} catch (err) {
 		if (newToken) {
 			cookies.set('awt', newToken, {
