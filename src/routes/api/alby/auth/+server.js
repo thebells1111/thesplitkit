@@ -3,7 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import jwt from 'jsonwebtoken';
 
-import { error } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 
 if (!process.env.ALBY_ID) {
@@ -16,19 +16,17 @@ export async function GET({ url, cookies }) {
 	let newToken;
 	try {
 		let code = url.searchParams.get('code') ?? '';
+		let redirect_uri = url.searchParams.get('redirect_uri') ?? '';
+		console.log(redirect_uri);
+		console.log(code);
 		var formData = new FormData();
 		formData.append('code', code);
-
-		let codeUrl;
-		if (dev) {
-			codeUrl = 'http://localhost:3000/api/alby/refreshauth';
-		} else {
-			codeUrl = 'https://www.thesplitkit.com/api/alby/refreshauth';
-		}
+		formData.append('redirect_uri', redirect_uri);
 		formData.append('grant_type', 'authorization_code');
+
 		let resolve = await axios({
 			method: 'POST',
-			url: codeUrl,
+			url: 'https://api.getalby.com/oauth/token',
 			auth: {
 				username: ALBY_ID,
 				password: ALBY_SECRET
@@ -39,26 +37,36 @@ export async function GET({ url, cookies }) {
 			}
 		});
 
-		// await axios({
-		// 	method: 'POST',
-		// 	url: codeUrl,
-		// 	auth: {
-		// 		username: ALBY_ID,
-		// 		password: ALBY_SECRET
-		// 	},
-		// 	data: {
-		// 		tempCode: 'random code'
-		// 	},
-		// 	headers: {
-		// 		'Content-Type': 'application/json'
-		// 	}
-		// });
-
 		newToken = jwt.sign(resolve.data, ALBY_JWT, {
 			expiresIn: '10d'
 		});
 
-		json({ success: true, data: resolve.data });
+		let codeUrl;
+		if (dev) {
+			codeUrl = 'http://localhost:8000/api/alby/refreshauth';
+		} else {
+			codeUrl = 'https://www.thesplitkit.com/api/alby/refreshauth';
+		}
+
+		let randomCode = 'random-code';
+		const tempCode = { code: randomCode, data: resolve.data };
+
+		console.log(tempCode);
+
+		await axios({
+			method: 'POST',
+			url: codeUrl,
+			auth: {
+				username: ALBY_ID,
+				password: ALBY_SECRET
+			},
+			data: tempCode,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+
+		return json({ success: true, code: randomCode });
 	} catch (err) {
 		if (newToken) {
 			cookies.set('awt', newToken, {
@@ -68,7 +76,7 @@ export async function GET({ url, cookies }) {
 				secure: !dev,
 				maxAge: 60 * 60 * 24 * 30
 			});
-			json({ success: false });
+			return json({ success: false });
 		}
 
 		console.error('alby err: ', err);
