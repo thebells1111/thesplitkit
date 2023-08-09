@@ -108,8 +108,11 @@
 					<h3>{block.title === 'Title - click to edit' ? '' : block.title || ''}</h3>
 					<p class="block-type"><icon><svelte:component this={Icons[typeText]} /></icon></p>
 				</top>
-
-				<p>{block.line[0] === 'Text - click to edit' ? '' : block.line[0] || ''}</p>
+				{#if block.type === 'music'}
+					<p>{block.line[1] === 'Text - click to edit' ? '' : block.line[1] || ''}</p>
+				{:else}
+					<p>{block.line[0] === 'Text - click to edit' ? '' : block.line[0] || ''}</p>
+				{/if}
 			</card-text>
 		</card-info>
 		<middle-container>
