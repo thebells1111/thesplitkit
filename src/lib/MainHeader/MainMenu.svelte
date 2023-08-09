@@ -10,7 +10,7 @@
 	let expandMenu = false;
 
 	async function logout() {
-		const res = await fetch(remoteServer + '/api/alby/logout', { credentials: 'include' });
+		const res = await fetch('/api/alby/logout', { credentials: 'include' });
 
 		const data = await res.json();
 		console.log(data);
