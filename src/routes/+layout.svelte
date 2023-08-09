@@ -17,28 +17,21 @@
 		if (code) {
 			console.log('checking Alby code');
 			let redirect_uri = $page.url.href.split('/?')[0].split('?')[0];
-			// redirect_uri = redirect_uri.slice(0, -1);
-
-			let res = await fetch(
-				remoteServer + '/api/alby/auth?code=' + code + '&redirect_uri=' + redirect_uri,
-				{
-					credentials: 'include'
-				}
-			);
+			// redirect_uri = redirect_uri.slice(0, -1)
+			let res = await fetch('/api/alby/auth?code=' + code + '&redirect_uri=' + redirect_uri, {
+				credentials: 'include'
+			});
 			let data = await res.json();
 			if (data.lightning_address) {
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
 				$user.balance = data.balance;
 
-				let res = await fetch('/api/alby/auth?code=' + code, {
-					credentials: 'include'
-				});
 				$albyReady = true;
 			}
 		} else if (!$user.loggedIn) {
 			console.log('refresh');
-			let res = await fetch(remoteServer + '/api/alby/refresh', {
+			let res = await fetch('/api/alby/refresh', {
 				credentials: 'include'
 			});
 
