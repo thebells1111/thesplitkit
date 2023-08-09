@@ -9,7 +9,7 @@
 	const guid = $page.params.guid;
 	$activePageGuid = guid;
 
-	let file = { version: 1.2 };
+	let file = { version: '1.2' };
 	let chapters = [];
 
 	let badStartBlocks = [];
