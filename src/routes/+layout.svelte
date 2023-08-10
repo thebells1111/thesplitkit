@@ -41,6 +41,7 @@
 			});
 
 			let data = await res.json();
+			console.log(data);
 			if (data.lightning_address) {
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;

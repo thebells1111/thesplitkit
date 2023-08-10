@@ -43,9 +43,9 @@ export async function GET({ cookies }) {
 					maxAge: 60 * 60 * 24 * 30
 				});
 
-				const { name, balance } = await getUserInfo(refreshedToken);
+				const data = await getUserInfo(refreshedToken);
 
-				return json({ loggedIn: true, name, balance });
+				return json(data);
 			}
 		}
 

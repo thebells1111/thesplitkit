@@ -40,11 +40,12 @@ export async function getUserInfo(token) {
 		headers: { Authorization: `Bearer ${token.access_token}` }
 	});
 
-	return { name: user.data.lightning_address, balance: balance.data.balance };
+	return user.data;
 }
 
 export async function checkAwtCookie(cookies) {
 	const awt = cookies.get('awt');
+	console.log(awt);
 
 	if (!awt) {
 		cookies.set('awt', '', {
@@ -60,6 +61,7 @@ export async function checkAwtCookie(cookies) {
 
 	try {
 		const token = jwt.verify(awt, ALBY_JWT);
+		console.log('token___: ', token);
 		return { token };
 	} catch (err) {
 		return { err };
