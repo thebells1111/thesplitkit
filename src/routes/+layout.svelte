@@ -23,6 +23,7 @@
 				credentials: 'include'
 			});
 			let data = await res.json();
+
 			if (data.lightning_address) {
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
