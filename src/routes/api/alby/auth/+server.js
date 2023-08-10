@@ -50,10 +50,6 @@ export async function GET({ url, cookies }) {
 			maxAge: 60 * 60 * 24 * 30
 		});
 
-		// const { name, balance } = await getUserInfo(resolve.data.access_token);
-
-		// console.log(name, balance);
-
 		const [account, balance] = await Promise.all([
 			axios({
 				url: 'https://api.getalby.com/user/value4value',
@@ -73,8 +69,6 @@ export async function GET({ url, cookies }) {
 		]);
 
 		let user = { ...account.data, ...balance.data };
-
-		console.log(account);
 
 		let codeUrl;
 		if (dev) {

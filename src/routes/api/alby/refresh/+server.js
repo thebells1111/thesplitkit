@@ -56,8 +56,6 @@ export async function GET({ cookies }) {
 				let randomCode = 'random-code';
 				const tempCode = { code: randomCode, data: refreshedToken };
 
-				console.log(tempCode);
-
 				await axios({
 					method: 'POST',
 					url: codeUrl,
