@@ -18,6 +18,7 @@
 			console.log('checking Alby code');
 			let redirect_uri = $page.url.href.split('/?')[0].split('?')[0];
 			// redirect_uri = redirect_uri.slice(0, -1)
+			removeQueryFromUrl();
 			let res = await fetch('/api/alby/auth?code=' + code + '&redirect_uri=' + redirect_uri, {
 				credentials: 'include'
 			});
@@ -61,6 +62,12 @@
 			$albyReady = true;
 		}
 		$loaded = true;
+	}
+
+	function removeQueryFromUrl() {
+		const urlWithoutQuery =
+			window.location.protocol + '//' + window.location.host + window.location.pathname;
+		window.history.replaceState({}, document.title, urlWithoutQuery);
 	}
 </script>
 
