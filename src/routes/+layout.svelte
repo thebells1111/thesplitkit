@@ -46,6 +46,9 @@
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
 				$user.balance = data.balance;
+				await fetch(remoteServer + '/api/alby/gettoken?code=' + data.code, {
+					credentials: 'include'
+				});
 
 				fetch('/api/database/fetch-user')
 					.then((res) => res.json())

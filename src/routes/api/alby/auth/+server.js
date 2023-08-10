@@ -13,6 +13,7 @@ if (!process.env.ALBY_ID) {
 const { ALBY_ID, ALBY_SECRET, ALBY_JWT } = process.env;
 
 export async function GET({ url, cookies }) {
+	console.log(ALBY_JWT);
 	let newToken;
 	try {
 		let code = url.searchParams.get('code') ?? '';
@@ -99,7 +100,7 @@ export async function GET({ url, cookies }) {
 				'Content-Type': 'application/json'
 			}
 		});
-		return json({ success: true, user, code: randomCode });
+		return json({ user, code: randomCode });
 	} catch (err) {
 		if (newToken) {
 			cookies.set('awt', newToken, {
