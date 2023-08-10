@@ -12,20 +12,18 @@ if (!process.env.ALBY_JWT) {
 const { ALBY_ID, ALBY_SECRET, ALBY_JWT } = process.env;
 
 export async function GET({ cookies }) {
-	console.log(ALBY_JWT);
 	try {
 		const { token, error } = await checkAwtCookie(cookies);
-		console.log('this should be the token: ', token);
 		if (!token) {
 			if (error) {
 				console.error('Token verification error:', error);
 			}
-			cookies.set('awt', 'cool', {
+			cookies.set('awt', '', {
 				path: '/',
 				httpOnly: true,
 				sameSite: 'strict',
 				secure: !dev,
-				maxAge: 60
+				maxAge: 0
 			});
 
 			return json({ loggedIn: false, name: '' });
@@ -33,10 +31,11 @@ export async function GET({ cookies }) {
 
 		if (token) {
 			const refreshedToken = await refreshToken(token);
-			console.log(refreshedToken);
-
-			if (refreshedToken) {
-				cookies.set('awt', refreshedToken, {
+			const newToken = jwt.sign(refreshedToken, ALBY_JWT, {
+				expiresIn: '10d'
+			});
+			if (newToken) {
+				cookies.set('awt', newToken, {
 					path: '/',
 					httpOnly: true,
 					sameSite: 'strict',

@@ -48,21 +48,19 @@ export async function checkAwtCookie(cookies) {
 	console.log(awt);
 
 	if (!awt) {
-		cookies.set('awt', 'not awt', {
+		cookies.set('awt', '', {
 			path: '/',
 			httpOnly: true,
 			sameSite: 'strict',
 			secure: !dev,
-			maxAge: 60
+			maxAge: 0
 		});
 
 		return false;
 	}
 
 	try {
-		console.log('trying token');
 		const token = jwt.verify(awt, ALBY_JWT);
-		console.log('token___: ', token);
 		return { token };
 	} catch (err) {
 		console.log(err);
