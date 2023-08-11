@@ -9,6 +9,7 @@
 	import BitcoinIcon from '$lib/icons/Bitcoin.svelte';
 	import ShareIcon from '$lib/icons/Share.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
+	import PublishIcon from '$lib/icons/Publish.svelte';
 	import QRIcon from '$lib/icons/QRReader.svelte';
 	import DownloadIcon from '$lib/icons/Download.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
@@ -27,6 +28,7 @@
 	let showRemoteValuesModal = false;
 	let showDownloadChaptersModal = false;
 	let showShowNotesModal = false;
+	let showImportModal = false;
 
 	if (liveGuid) {
 		guid = liveGuid;
@@ -188,6 +190,17 @@
 					</button>
 					<p>Live <br />Value Link</p>
 				</button-container>
+				<button-container>
+					<button class="import-link" on:click={() => (showImportModal = true)}>
+						<multi-icon>
+							<PublishIcon size="32" />
+							<secondary-icon class="import-link">
+								<LinkIcon />
+							</secondary-icon>
+						</multi-icon>
+					</button>
+					<p>Import <br />ID</p>
+				</button-container>
 			</button-row>
 		{/if}
 	</div>
@@ -245,6 +258,24 @@
 	</Modal>
 {/if}
 
+{#if showImportModal}
+	<Modal bind:showModal={showImportModal}>
+		<podcast-code>
+			<h2>Copy the link below to paste into your host's <br />"Import from the Split Kit".</h2>
+			<code-block>
+				<code>
+					{`${liveGuid}`}
+				</code>
+				<button class="lvl-link" on:click={copyLinkToClipboard.bind(this, liveGuid)}>
+					<copy-link-icon class="multi-icon">
+						<CopyIcon size="32" />
+					</copy-link-icon>
+				</button>
+			</code-block>
+		</podcast-code>
+	</Modal>
+{/if}
+
 <style>
 	.qr-container {
 		display: flex;
@@ -260,7 +291,7 @@
 
 	button-row {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
 		width: 100%;
 		max-width: 420px;
@@ -333,20 +364,21 @@
 	}
 
 	.copy-qr,
-	.value-time-splits {
+	.value-time-splits,
+	.import-link {
 		background-color: var(--color-theme-yellow);
 		color: var(--color-text-0);
 	}
 
 	.dl-qr,
-	.chapter-link {
+	.show-notes,
+	.podcast-link {
 		color: hsl(278, 100%, 92%);
 		background-color: hsl(277, 100%, 44%);
 	}
 
 	.dl-link,
-	.podcast-link,
-	.lvl-link {
+	.chapter-link {
 		background-color: var(--color-theme-blue);
 	}
 
