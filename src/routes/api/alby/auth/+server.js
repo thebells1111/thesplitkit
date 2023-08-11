@@ -89,10 +89,6 @@ export async function GET({ url, cookies }) {
 		await axios({
 			method: 'POST',
 			url: codeUrl,
-			auth: {
-				username: ALBY_ID,
-				password: ALBY_SECRET
-			},
 			data: tempCode,
 			headers: {
 				'Content-Type': 'application/json'
