@@ -12,6 +12,8 @@ if (!process.env.ALBY_ID) {
 
 const { ALBY_ID, ALBY_SECRET, ALBY_JWT } = process.env;
 
+let ts = {};
+
 export async function GET({ url, cookies }) {
 	console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
 	console.log(ALBY_JWT);
@@ -20,8 +22,6 @@ export async function GET({ url, cookies }) {
 		let code = url.searchParams.get('code') ?? '';
 		let redirect_uri = url.searchParams.get('redirect_uri') ?? '';
 
-		console.log('code: ', code);
-		console.log('redirect_uri: ', redirect_uri);
 		var formData = new FormData();
 		formData.append('code', code);
 		formData.append('redirect_uri', redirect_uri);
@@ -43,8 +43,6 @@ export async function GET({ url, cookies }) {
 		newToken = jwt.sign(resolve.data, ALBY_JWT, {
 			expiresIn: '10d'
 		});
-
-		console.log('new token: ', newToken);
 
 		cookies.set('awt', newToken, {
 			path: '/',
@@ -74,12 +72,16 @@ export async function GET({ url, cookies }) {
 
 		let user = { ...account.data, ...balance.data };
 
+		ts.user = user;
+
 		let codeUrl;
 		if (dev) {
 			codeUrl = 'http://localhost:8000/api/alby/refreshauth';
 		} else {
 			codeUrl = 'https://www.thesplitkit.com/api/alby/refreshauth';
 		}
+
+		ts.codeUrl = codeUrl;
 
 		let randomCode = 'random-code';
 		const tempCode = { code: randomCode, data: resolve.data };
@@ -101,6 +103,7 @@ export async function GET({ url, cookies }) {
 	} catch (err) {
 		cookies.set('awt', '', {
 			path: '/',
+
 			httpOnly: true,
 			sameSite: 'strict',
 			secure: !dev,
@@ -114,6 +117,7 @@ export async function GET({ url, cookies }) {
 		console.log('***************************************************');
 		console.log('');
 		console.log('***************************************************');
+		return json(ts);
 		throw error(500, { message: err.response?.data?.error_description });
 	}
 }
