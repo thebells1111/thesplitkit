@@ -33,12 +33,12 @@
 			let linkText = '';
 			if (item.line[1] && item.line[1] !== 'Title - click to edit') {
 				linkText = item.line[1];
-				if (item.title) {
+				if (item.title && item.title !== 'Title - click to edit') {
 					linkText += ' - ';
 				}
 			}
 
-			if (item.title) {
+			if (item.title && item.title !== 'Title - click to edit') {
 				linkText += item.title;
 			}
 
