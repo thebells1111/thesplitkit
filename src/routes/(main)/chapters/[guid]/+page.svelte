@@ -18,6 +18,7 @@
 	onMount(loadBlocks);
 
 	async function loadBlocks(reload) {
+		chapters = [];
 		if (!$liveBlocks?.length) {
 			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
 			const data = await res.json();
@@ -26,13 +27,35 @@
 
 		if ($liveBlocks?.length) {
 			const chaps = $liveBlocks.filter((v) => !v?.settings?.default);
+			let defaultBlock = $liveBlocks.filter((v) => v?.settings?.default);
+
+			function createDefaultChapter(startTime) {
+				let defaultChapter = defaultBlock.map((v) => {
+					let chapter = { startTime: Math.round(startTime * 1000) / 1000 };
+
+					if (v?.title) {
+						chapter.title = v.title;
+					}
+
+					if (v?.image) {
+						chapter.img = v.image;
+					}
+					if (v?.link?.url) {
+						chapter.url = v.link.url;
+					}
+
+					return chapter;
+				});
+				return defaultChapter[0];
+			}
+
 			badStartBlocks = chaps.filter((v) => !v.startTime);
 
 			if (!badStartBlocks?.length || reload) {
-				chapters = chaps
-					.map((v) => {
+				chaps
+					.sort((a, b) => a.startTime - b.startTime)
+					.forEach((v, i, a) => {
 						if (v.startTime) {
-							console.log(v);
 							let chapter = { startTime: v.startTime };
 
 							if (v?.title && v?.title !== 'Title - click to edit') {
@@ -44,9 +67,7 @@
 							} else {
 								return;
 							}
-							if (v?.duration) {
-								chapter.endTime = v.startTime + v.duration;
-							}
+
 							if (v?.image) {
 								chapter.img = v.image;
 							}
@@ -54,13 +75,21 @@
 								chapter.url = v.link.url;
 							}
 
-							return chapter;
+							chapters.push(chapter);
 						}
-					})
-					.filter((v) => v)
-					.sort((a, b) => a.startTime - b.startTime);
+						if (v?.duration && defaultBlock?.length) {
+							if (i < a.length - 1 && v?.startTime + v?.duration < a[i + 1]?.startTime) {
+								chapters.push(createDefaultChapter(v.startTime + v.duration));
+							}
+
+							if (i === a.length - 1) {
+								chapters.push(createDefaultChapter(v.startTime + v.duration));
+							}
+						}
+					});
 			}
-			console.log(chapters);
+
+			chapters = chapters.filter((v) => v);
 			file.chapters = chapters;
 		}
 

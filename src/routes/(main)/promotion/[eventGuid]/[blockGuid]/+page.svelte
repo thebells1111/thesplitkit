@@ -81,12 +81,6 @@
 	function setAmount(value) {
 		amount = value;
 	}
-	const redirectUrl =
-		`https://getalby.com/oauth?client_id=${albyClientId}` +
-		`&response_type=code&redirect_uri=${$page.url.href}/live` +
-		$page.params.guid
-			? $page.params.guid
-			: '' + `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 
 	function closeInfoModal() {
 		showInfoModal = false;
@@ -95,21 +89,28 @@
 	function getTitle(block) {
 		let text = block.title || block.feedTitle || '';
 		console.log(text);
-		text = text === 'undefined' ? '' : text;
+		text = text === 'undefined' || text === 'Title - click to edit' ? '' : text;
 		return text;
 	}
 
 	function getLine0(block) {
 		let text = block?.line?.[0] || block.itemTitle || '';
-		text = text === 'undefined' ? '' : text;
+		text = text === 'undefined' || text === 'Text - click to edit' ? '' : text;
 		return text;
 	}
 
 	function getLine1(block) {
 		let text = block?.line?.[1] || block.author || '';
-		text = text === 'undefined' ? '' : text;
+		text = text === 'undefined' || text === 'Title - click to edit' ? '' : text;
 		return text;
 	}
+
+	const redirectUrl =
+		`https://getalby.com/oauth?client_id=${albyClientId}` +
+		`&response_type=code&redirect_uri=${$page.url.href}/live` +
+		$page.params.guid
+			? $page.params.guid
+			: '' + `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 </script>
 
 <container>
@@ -149,6 +150,14 @@
 				showModal = true;
 				activeBlock = clone(block);
 			} else {
+				let redirectUrl = `https://getalby.com/oauth?client_id=${albyClientId}&response_type=code&redirect_uri=${
+					$page.url.href
+				}/live${
+					$page.params.guid
+						? $page.params.guid
+						: '' + `&scope=account:read%20balance:read%20payments:send%20invoices:read`
+				}`;
+
 				goto(redirectUrl);
 			}
 		}}>Boost 🚀</button
