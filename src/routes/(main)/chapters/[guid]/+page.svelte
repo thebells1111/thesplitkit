@@ -26,15 +26,29 @@
 		}
 
 		if ($liveBlocks?.length) {
-			const chaps = $liveBlocks.filter((v) => !v?.settings?.default);
-			let defaultBlock = $liveBlocks.filter((v) => v?.settings?.default);
+			const chaps = $liveBlocks.slice(1);
+			let defaultBlock = [$liveBlocks[0]];
 
 			function createDefaultChapter(startTime) {
 				let defaultChapter = defaultBlock.map((v) => {
 					let chapter = { startTime: Math.round(startTime * 1000) / 1000 };
 
-					if (v?.title) {
+					if (v?.title && v?.title !== 'Title - click to edit') {
 						chapter.title = v.title;
+					} else if (
+						v?.line[0] &&
+						v?.line[0] !== 'Text - click to edit' &&
+						v?.line[0] !== 'Title - click to edit'
+					) {
+						chapter.title = v.line[0];
+					} else if (
+						v?.line[1] &&
+						v?.line[1] !== 'Text - click to edit' &&
+						v?.line[1] !== 'Title - click to edit'
+					) {
+						chapter.title = v.line[1];
+					} else {
+						chapter.title = '';
 					}
 
 					if (v?.image) {
@@ -60,12 +74,20 @@
 
 							if (v?.title && v?.title !== 'Title - click to edit') {
 								chapter.title = v.title;
-							} else if (v?.line[0] && v?.line[0] !== 'Text - click to edit') {
+							} else if (
+								v?.line[0] &&
+								v?.line[0] !== 'Text - click to edit' &&
+								v?.line[0] !== 'Title - click to edit'
+							) {
 								chapter.title = v.line[0];
-							} else if (v?.line[1] && v?.line[1] !== 'Text - click to edit') {
+							} else if (
+								v?.line[1] &&
+								v?.line[1] !== 'Text - click to edit' &&
+								v?.line[1] !== 'Title - click to edit'
+							) {
 								chapter.title = v.line[1];
 							} else {
-								return;
+								chapter.title = '';
 							}
 
 							if (v?.image) {
@@ -77,7 +99,7 @@
 
 							chapters.push(chapter);
 						}
-						if (v?.duration && defaultBlock?.length) {
+						if (v?.duration) {
 							if (i < a.length - 1 && v?.startTime + v?.duration < a[i + 1]?.startTime) {
 								chapters.push(createDefaultChapter(v.startTime + v.duration));
 							}
@@ -89,7 +111,12 @@
 					});
 			}
 
+			chapters.unshift(createDefaultChapter(0.001));
+
+			console.log(chapters);
+
 			chapters = chapters.filter((v) => v);
+			console.log(chapters);
 			file.chapters = chapters;
 		}
 
