@@ -19,9 +19,13 @@
 
 			// Create the link text
 			let linkText = '';
-			if (item.line[1] && item.line[1] !== 'Text - click to edit') {
+			if (
+				item.line[1] &&
+				item.line[1] !== 'Text - click to edit' &&
+				item.line[1] !== 'Title - click to edit'
+			) {
 				linkText = item.line[1];
-				if (item.title && item.title !== 'Text - click to edit') {
+				if (item.title && item.title !== 'Title - click to edit') {
 					linkText += ' - ';
 				}
 			}
