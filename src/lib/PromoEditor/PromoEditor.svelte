@@ -139,7 +139,7 @@
 			bind:innerText={block.line[1]}
 			on:blur={() => {
 				if (!block.line[1] || /^[\s]*$/.test(block.line[1])) {
-					block.line[1] = 'Title - click to edit';
+					block.line[1] = 'Text - click to edit';
 				}
 			}}
 			on:focus={(e) => handleFocus(e, block.line[1], 'Text - click to edit')}

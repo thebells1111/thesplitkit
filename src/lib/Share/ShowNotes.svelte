@@ -16,29 +16,17 @@
 		data.forEach((item) => {
 			// Ignore items that have settings.default as true or no startTime
 			console.log(item);
-			if ((item.settings && item.settings.default === true) || !item.startTime) return;
-
-			// Format the start time
-			let hours = Math.floor(item.startTime / 3600);
-			let minutes = Math.floor((item.startTime % 3600) / 60);
-			let seconds = Math.floor(item.startTime % 60);
-			let formattedTime =
-				hours > 0
-					? `[${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
-							.toString()
-							.padStart(2, '0')}]`
-					: `[${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}]`;
 
 			// Create the link text
 			let linkText = '';
-			if (item.line[1]) {
+			if (item.line[1] && item.line[1] !== 'Text - click to edit') {
 				linkText = item.line[1];
-				if (item.title) {
+				if (item.title && item.title !== 'Text - click to edit') {
 					linkText += ' - ';
 				}
 			}
 
-			if (item.title) {
+			if (item.title && item.title !== 'Title - click to edit') {
 				linkText += item.title;
 			}
 

@@ -35,8 +35,14 @@
 							console.log(v);
 							let chapter = { startTime: v.startTime };
 
-							if (v?.title) {
+							if (v?.title && v?.title !== 'Title - click to edit') {
 								chapter.title = v.title;
+							} else if (v?.line[0] && v?.line[0] !== 'Text - click to edit') {
+								chapter.title = v.line[0];
+							} else if (v?.line[1] && v?.line[1] !== 'Text - click to edit') {
+								chapter.title = v.line[1];
+							} else {
+								return;
 							}
 							if (v?.duration) {
 								chapter.endTime = v.startTime + v.duration;
