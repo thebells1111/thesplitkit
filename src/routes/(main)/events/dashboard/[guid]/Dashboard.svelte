@@ -25,6 +25,7 @@
 	export let filterType;
 	export let showOptionsModal = false;
 	export let activeBlockGuid;
+	$: console.log(activeBlockGuid);
 
 	let broadcastingBlockGuid;
 	let player;
@@ -47,6 +48,7 @@
 		if (!$liveBlocks?.length) {
 			loadSocket();
 		}
+		loadSocket();
 	});
 
 	$: if (guid && $activeBroadcastGuid !== guid) {
@@ -61,10 +63,14 @@
 		console.log('socket connect');
 	}
 
+	let storedGuid = '';
+
 	function socketConnect() {
 		$socket = io(remoteServer + '/event?event_id=' + guid, { withCredentials: true });
 
 		$socket.on('connect', () => {
+			storedGuid = $socket.id;
+			console.log(storedGuid);
 			if (guid) {
 				// Send a message with the valueGuid
 				$socket.emit('connected', guid);
@@ -73,6 +79,23 @@
 				console.log('guid is not defined');
 			}
 		});
+
+		$socket.on('nextBlock', (message) => {
+			console.log(message);
+		});
+	}
+
+	async function handleNext() {
+		console.log(storedGuid);
+		let res = await fetch(remoteServer + '/api/sk/nextblock?guid=' + storedGuid);
+		let data = await res.text();
+		console.log(data);
+		console.log(broadcastingBlockGuid);
+		let block = getNextBlock({ blockGuid: broadcastingBlockGuid });
+		broadcastingBlockGuid = block.blockGuid;
+		console.log(block);
+
+		handleBroadcast(block);
 	}
 
 	async function handleBroadcast(block) {
@@ -347,6 +370,7 @@
 </script>
 
 <div>
+	<button on:click={handleNext}>Next</button>
 	{#if !$defaultBlockGuid}
 		<NoDefault />
 	{:else}
