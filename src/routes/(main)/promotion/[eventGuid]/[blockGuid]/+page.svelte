@@ -87,21 +87,22 @@
 	}
 
 	function getTitle(block) {
-		let text = block.title || block.feedTitle || '';
-		console.log(text);
-		text = text === 'undefined' || text === 'Title - click to edit' ? '' : text;
-		return text;
+		return getText(block.title || block.feedTitle || '');
 	}
 
 	function getLine0(block) {
-		let text = block?.line?.[0] || block.itemTitle || '';
-		text = text === 'undefined' || text === 'Text - click to edit' ? '' : text;
-		return text;
+		return getText(block?.line?.[0] || block.itemTitle || '');
 	}
 
 	function getLine1(block) {
-		let text = block?.line?.[1] || block.author || '';
-		text = text === 'undefined' || text === 'Title - click to edit' ? '' : text;
+		return getText(block?.line?.[1] || block.author || '');
+	}
+
+	function getText(text) {
+		text =
+			text === 'undefined' || text === 'Title - click to edit' || text === 'Text - click to edit'
+				? ''
+				: text;
 		return text;
 	}
 
