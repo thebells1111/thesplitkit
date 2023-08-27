@@ -72,6 +72,7 @@
 			if (block?.blockGuid && defaultBlock?.blockGuid) {
 				isDefault = block.blockGuid === defaultBlock.blockGuid;
 			}
+			console.log(`${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`);
 
 			code = `${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`;
 			generateQRCode();
@@ -153,15 +154,15 @@
 	}
 
 	function getTitle(block) {
-		return getText(block.title || block.feedTitle || '');
+		return getText(block?.title || block?.feedTitle || '');
 	}
 
 	function getLine0(block) {
-		return getText(block?.line?.[0] || block.itemTitle || '');
+		return getText(block?.line?.[0] || block?.itemTitle || '');
 	}
 
 	function getLine1(block) {
-		return getText(block?.line?.[1] || block.author || '');
+		return getText(block?.line?.[1] || block?.author || '');
 	}
 
 	function getText(text) {
