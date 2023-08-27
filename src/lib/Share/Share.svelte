@@ -16,6 +16,7 @@
 	import RemoteValue from '$routes/(main)/remotevalue/[guid]/+page.svelte';
 	import DownloadChapters from '$routes/(main)/chapters/[guid]/+page.svelte';
 	import ShowNotes from './ShowNotes.svelte';
+	import CreateFeed from '$lib/CreateFeed/CreateFeed.svelte';
 
 	export let liveGuid;
 	export let eventGuid;
@@ -29,6 +30,7 @@
 	let showDownloadChaptersModal = false;
 	let showShowNotesModal = false;
 	let showImportModal = false;
+	let showFeedModal = false;
 
 	if (liveGuid) {
 		guid = liveGuid;
@@ -53,7 +55,7 @@
 
 		try {
 			await QRCode.toCanvas(qrCodeCanvas, code, {
-				width: 300
+				width: 200
 			});
 		} catch (err) {
 			console.error(err);
@@ -178,7 +180,7 @@
 					</button>
 					<p>Download <br />Chapters</p>
 				</button-container>
-
+			</button-row><button-row>
 				<button-container>
 					<button class="podcast-link" on:click={() => (showPodcastModal = true)}>
 						<multi-icon>
@@ -200,6 +202,10 @@
 						</multi-icon>
 					</button>
 					<p>Import <br />ID</p>
+				</button-container>
+				<button-container>
+					<button class="create-feed" on:click={() => (showFeedModal = true)}>XML</button>
+					<p>Create <br />Feed</p>
 				</button-container>
 			</button-row>
 		{/if}
@@ -276,6 +282,12 @@
 	</Modal>
 {/if}
 
+{#if showFeedModal}
+	<Modal bind:showModal={showFeedModal}>
+		<CreateFeed />
+	</Modal>
+{/if}
+
 <style>
 	.qr-container {
 		display: flex;
@@ -300,7 +312,7 @@
 
 	button-row.top {
 		position: absolute;
-		top: 300px;
+		top: 200px;
 		max-width: 360px;
 	}
 
@@ -365,18 +377,19 @@
 
 	.copy-qr,
 	.value-time-splits,
-	.import-link {
+	.podcast-link {
 		background-color: var(--color-theme-yellow);
 		color: var(--color-text-0);
 	}
 
 	.dl-qr,
 	.show-notes,
-	.podcast-link {
+	.import-link {
 		color: hsl(278, 100%, 92%);
 		background-color: hsl(277, 100%, 44%);
 	}
 
+	.create-feed,
 	.dl-link,
 	.chapter-link {
 		background-color: var(--color-theme-blue);
