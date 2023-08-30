@@ -156,7 +156,7 @@
 
 {#if showShareModal}
 	<Modal bind:showModal={showShareModal}>
-		<Share eventGuid={block.eventGuid} blockGuid={block.blockGuid} />
+		<Share eventGuid={block.eventGuid} blockGuid={block.blockGuid} promotion={true} />
 	</Modal>
 {/if}
 

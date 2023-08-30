@@ -21,6 +21,7 @@
 	export let eventGuid;
 	export let blockGuid;
 	export let shareEvent = false;
+	export let promotion = false;
 	let guid;
 	let code = '';
 	let podcastCode = '';
@@ -127,7 +128,7 @@
 		</button-row>
 
 		<copy-link-row>
-			<h3>Sharable Link to View Your Event</h3>
+			<h3>Sharable Link to View Your {promotion ? 'Block' : 'Event'}</h3>
 			<div>
 				<input type="url" disabled value={code} />
 				<button class="dl-link" on:click={copyLinkToClipboard.bind(this, code)}>
