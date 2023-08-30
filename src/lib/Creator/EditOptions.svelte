@@ -82,6 +82,14 @@
 		<top>
 			{#if $defaultBlockGuid === block?.blockGuid}
 				<button
+					class="default-share"
+					on:click={() => {
+						showShareModal = true;
+					}}
+				>
+					<ShareIcon size="24" />
+				</button>
+				<button
 					class="change-default"
 					on:click={() => {
 						$changeDefault = true;
@@ -211,6 +219,7 @@
 		height: 40px;
 		padding: 4px;
 		align-items: center;
+		position: relative;
 	}
 
 	top p icon {
@@ -314,6 +323,8 @@
 	.change-default {
 		color: var(--color-text-purple);
 		background-color: var(--color-theme-purple);
+		position: absolute;
+		top: 64px;
 	}
 
 	.change-default p {
