@@ -82,6 +82,12 @@
 
 		$socket.on('nextBlock', (message) => {
 			console.log(message);
+			console.log(broadcastingBlockGuid);
+			let block = getNextBlock({ blockGuid: broadcastingBlockGuid });
+			broadcastingBlockGuid = block.blockGuid;
+			console.log(block);
+
+			handleBroadcast(block);
 		});
 	}
 
@@ -90,12 +96,6 @@
 		let res = await fetch(remoteServer + '/api/sk/nextblock?guid=' + storedGuid);
 		let data = await res.text();
 		console.log(data);
-		console.log(broadcastingBlockGuid);
-		let block = getNextBlock({ blockGuid: broadcastingBlockGuid });
-		broadcastingBlockGuid = block.blockGuid;
-		console.log(block);
-
-		handleBroadcast(block);
 	}
 
 	async function handleBroadcast(block) {
