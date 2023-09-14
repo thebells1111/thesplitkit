@@ -89,6 +89,14 @@
 			if ($mainSettings?.broadcastMode === 'playlist' && block.enclosureUrl) {
 				if (player) {
 					player.autoplay = true;
+					player.onpause = () => {
+						console.log('pause');
+						$socket.emit('playerPause', { valueGuid: guid });
+					};
+					player.onplay = () => {
+						console.log('play');
+						$socket.emit('playerPlay', { valueGuid: guid });
+					};
 					player.src = block.enclosureUrl;
 					chapterIndex = undefined;
 					player.onended = () => {

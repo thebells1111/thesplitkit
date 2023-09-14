@@ -77,6 +77,10 @@
 			code = `${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`;
 			generateQRCode();
 		});
+		liveItemSocket.on('playerPause', function (data) {
+			// You will need to adjust this part based on the actual format of the data sent by the server
+			console.log(data);
+		});
 		loaded = true;
 		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
 		const data = await res.json();
@@ -172,7 +176,15 @@
 				: text;
 		return DOMPurify.sanitize(text?.replace(/\r?\n/g, '<br/>'));
 	}
+
+	function getHeaderTitle(block) {
+		return block?.title || block?.feedTitle || 'The Split Kit';
+	}
 </script>
+
+<svelte:head>
+	<title>{`${getHeaderTitle(block)}`}</title>
+</svelte:head>
 
 {#if loaded}
 	<container>
