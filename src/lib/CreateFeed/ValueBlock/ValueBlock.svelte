@@ -1,10 +1,30 @@
 <script>
+	import { onMount } from 'svelte';
 	import DataFields from './DataFields.svelte';
 	import WalletProvidersQuery from './WalletProviderQuery.svelte';
 	import Delete from '$lib/icons/Delete.svelte';
+	import clone from 'just-clone';
 
 	export let data;
-	export let calculateTotalPercentage = () => {};
+	export let feed;
+	export let isItem;
+
+	let totalPercentage = 0;
+
+	const calculateTotalPercentage = () => {
+		totalPercentage = data['podcast:value']['podcast:valueRecipient'].reduce((acc, person) => {
+			let adder = 0;
+			if (!person['@_fee']) {
+				adder = parseFloat(person['@_split']) || 0;
+			}
+			return acc + adder;
+		}, 0);
+
+		return totalPercentage;
+	};
+
+	onMount(calculateTotalPercentage);
+
 	export let unsaved = false;
 	let showWalletModal = false;
 	let editingIndex;
@@ -14,17 +34,23 @@
 	let showProviderInput = false;
 
 	function addPerson() {
-		editingIndex = data.value.destinations.length;
-		data.value.destinations = [
-			...data.value.destinations,
-			{ split: '', name: '', address: '', customKey: '', customValue: '' }
+		editingIndex = data['podcast:value']['podcast:valueRecipient'].length;
+		data['podcast:value']['podcast:valueRecipient'] = [
+			...data['podcast:value']['podcast:valueRecipient'],
+			{ '@_split': '', '@_name': '', '@_address': '', '@_customKey': '', '@_customValue': '' }
 		];
 		showWalletModal = true;
 	}
 
 	function updatevalue(index, key, value) {
-		data.value.destinations[index][key] = value;
-		if (key === 'split') {
+		if (typeof data['podcast:value']['podcast:valueRecipient'] !== 'array') {
+			data['podcast:value']['podcast:valueRecipient'] = [
+				...data['podcast:value']['podcast:valueRecipient']
+			];
+		}
+
+		data['podcast:value']['podcast:valueRecipient'][index][key] = value;
+		if (key === '@_split') {
 			calculateTotalPercentage();
 		}
 		unsaved = true;
@@ -35,10 +61,71 @@
 	}
 
 	function deletePerson(index) {
-		const personName = data.value.destinations[index].name || 'this person';
+		if (typeof data['podcast:value']['podcast:valueRecipient'] !== 'array') {
+			data['podcast:value']['podcast:valueRecipient'] = [
+				...data['podcast:value']['podcast:valueRecipient']
+			];
+		}
+		const personName = data['podcast:value']['podcast:valueRecipient'][index].name || 'this person';
 		if (window.confirm(`Are you sure you want to delete ${personName}?`)) {
-			data.value.destinations = data.value.destinations.filter((_, i) => i !== index);
+			data['podcast:value']['podcast:valueRecipient'] = data['podcast:value'][
+				'podcast:valueRecipient'
+			].filter((_, i) => i !== index);
 			calculateTotalPercentage();
+		}
+	}
+
+	function importFromFeed() {
+		data['podcast:value'] = clone(feed['podcast:value']);
+		const newPerson = {
+			'@_name': 'The Split Kit',
+			'@_customKey': '696969',
+			'@_customValue': 'boPNspwDdt7axih5DfKs',
+			'@_address': '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
+			'@_type': 'node',
+			'@_split': String(splitKitSplit),
+			'@_fee': true
+		};
+		data['podcast:value']['podcast:valueRecipient'].push(newPerson);
+		data = data;
+	}
+
+	let splitKitChecked = true;
+	let splitKitSplit = 5;
+
+	function toggleSplitKit(value) {
+		const splitKitIndex = data['podcast:value']['podcast:valueRecipient'].findIndex(
+			(e) => e['@_name'] === 'The Split Kit' && (e['@_fee'] === true || e['@_fee'] === 'true')
+		);
+		if (value && splitKitIndex === -1) {
+			const newPerson = {
+				'@_name': 'The Split Kit',
+				'@_customKey': '696969',
+				'@_customValue': 'boPNspwDdt7axih5DfKs',
+				'@_address': '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
+				'@_type': 'node',
+				'@_split': String(splitKitSplit),
+				'@_fee': true
+			};
+			data['podcast:value']['podcast:valueRecipient'].push(newPerson);
+			data = data;
+		} else if (!value && splitKitIndex !== -1) {
+			data['podcast:value']['podcast:valueRecipient'].splice(splitKitIndex, 1);
+			data = data;
+		}
+		calculateTotalPercentage();
+		unsaved = true;
+	}
+
+	function adjustSplitKitSplit(value) {
+		const splitKitIndex = data['podcast:value']['podcast:valueRecipient'].findIndex(
+			(e) => e['@_name'] === 'The Split Kit' && (e['@_fee'] === true || e['@_fee'] === 'true')
+		);
+		if (splitKitIndex !== -1) {
+			data['podcast:value']['podcast:valueRecipient'][splitKitIndex]['@_split'] = String(value);
+			splitKitSplit = value;
+			calculateTotalPercentage();
+			unsaved = true;
 		}
 	}
 </script>
@@ -48,16 +135,22 @@
 		<h3>Value Block</h3>
 	</mobile-top>
 	<total-percentage>
-		Total Percentage: {calculateTotalPercentage()?.toFixed(2) || 0}%
+		Total Percentage: {totalPercentage || 0}%
 
 		<span class="warning">
-			{calculateTotalPercentage() !== 100 ? 'Warning: Total percentage must equal 100%' : ''}</span
+			{totalPercentage !== 100 ? 'Warning: Total percentage must equal 100%' : ''}</span
 		>
 	</total-percentage>
+	{#if isItem}
+		<button type="button" on:click={importFromFeed}>Use Feeds Value Block</button>
+	{/if}
 	<button type="button" on:click={addPerson}>Add Person</button>
 </value-header>
 
-{#each data?.value?.destinations || [] as person, index}
+{#each [].concat(data?.['podcast:value']?.['podcast:valueRecipient']).filter((v) => {
+	console.log(v);
+	return v['@_customValue'] !== 'boPNspwDdt7axih5DfKs';
+}) || [] as person, index}
 	<person
 		on:click={() => {
 			editingIndex = index;
@@ -65,11 +158,11 @@
 		}}
 	>
 		<info>
-			<p style={person.name ? '' : 'color:red'}>
-				{person.name || 'a name is required for this person'}
+			<p style={['@_name'] ? '' : 'color:red'}>
+				{person['@_name'] || 'a name is required for this person'}
 			</p>
-			<p class="percentage" style={person.split ? '' : 'color:red'}>
-				{person.split || 0}% {person.fee ? '(fee)' : ''}
+			<p class="percentage" style={person['@_split'] ? '' : 'color:red'}>
+				{person['@_split'] || 0}% {person['@_fee'] ? '(fee)' : ''}
 			</p>
 		</info>
 		<button on:click={deletePerson.bind(this, index)}>
@@ -90,7 +183,7 @@
 				/>
 			{:else}
 				<DataFields
-					person={data.value.destinations[editingIndex]}
+					person={data['podcast:value']['podcast:valueRecipient'][editingIndex]}
 					index={editingIndex}
 					{updatevalue}
 					bind:showProviderInput
@@ -99,6 +192,27 @@
 			{/if}
 		</wallet-modal>
 	</blurred-background>
+{/if}
+
+{#if isItem}
+	<label>
+		Include The Split Kit as a fee:
+		<input
+			type="checkbox"
+			bind:checked={splitKitChecked}
+			on:change={() => toggleSplitKit(splitKitChecked)}
+		/>
+	</label>
+	{#if splitKitChecked}
+		<label>
+			Split for The Split Kit:
+			<input
+				type="number"
+				bind:value={splitKitSplit}
+				on:input={() => adjustSplitKitSplit(splitKitSplit)}
+			/>
+		</label>
+	{/if}
 {/if}
 
 <style>

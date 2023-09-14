@@ -8,12 +8,19 @@
 	let noUserFound = false;
 	let userFound = false;
 
-	async function handleProviderSubmit() {
-		noUserFound = false;
-		let name = username.split('@');
+	function splitName(name) {
+		name = name.split('@');
 		if (!name[0]) {
 			name.shift();
 		}
+		console.log(name[0]);
+		return name[0];
+	}
+
+	async function handleProviderSubmit() {
+		noUserFound = false;
+		let name = splitName(username);
+		console.log(name);
 		const providerMapping = {
 			Alby: 'https://getalby.com/.well-known/keysend/',
 			Fountain: 'https://fountain.fm/.well-known/keysend/'
@@ -23,13 +30,14 @@
 
 		if (providerUrl) {
 			try {
-				const res = await fetch(`${providerUrl}${name[0]}`);
+				const res = await fetch(`${providerUrl}${name}`);
 				const info = await res.json();
+				console.log(info);
 				if (info.status === 'OK') {
-					updatevalue(index, 'address', info.pubkey);
-					updatevalue(index, 'customValue', info.customData[0].customValue);
-					updatevalue(index, 'customKey', info.customData[0].customKey);
-					userFound = `${name}@${provider.toLowerCase()}${
+					updatevalue(index, '@_address', info.pubkey);
+					updatevalue(index, '@_customValue', info.customData[0].customValue);
+					updatevalue(index, '@_customKey', info.customData[0].customKey);
+					userFound = `${splitName(name)}@${provider.toLowerCase()}${
 						provider === 'Fountain' ? '.fm' : '.com'
 					}`;
 				} else {
@@ -37,18 +45,19 @@
 				}
 				setTimeout(cancelProviderSubmit.bind(this, true), 3500);
 			} catch (error) {
+				console.log(error);
 				noUserFound = true;
 			}
-		} else if (provider === 'v4v.app' && name[0]) {
+		} else if (provider === 'v4v.app' && name) {
 			updatevalue(
 				index,
-				'address',
+				'@_address',
 				'0266ad2656c7a19a219d37e82b280046660f4d7f3ae0c00b64a1629de4ea567668'
 			);
-			updatevalue(index, 'customValue', name[0]);
-			updatevalue(index, 'customKey', 818818);
+			updatevalue(index, '@_customValue', name);
+			updatevalue(index, '@_customKey', 818818);
 			userFound = name;
-			userFound = `${name}@v4v.app`;
+			userFound = `${splitName(name)}@v4v.app`;
 
 			setTimeout(cancelProviderSubmit.bind(this, true), 3500);
 		} else {

@@ -19,7 +19,7 @@
 		<name-header>
 			<div>
 				<label for="name-{index}">Name:</label>
-				{#if !person.address}
+				{#if !person['@_address']}
 					<p class="warning">
 						Warning: The Lightning Address field in the Advanced Fields is required.
 					</p>
@@ -29,8 +29,8 @@
 		<input
 			id="name-{index}"
 			type="text"
-			bind:value={person.name}
-			on:input={(e) => updatevalue(index, 'name', e.target.value)}
+			bind:value={person['@_name']}
+			on:input={(e) => updatevalue(index, '@_name', e.target.value)}
 			placeholder="Name (required)"
 			class="required-input"
 		/>
@@ -42,8 +42,8 @@
 			min="0"
 			max="100"
 			step="1"
-			bind:value={person.split}
-			on:input={(e) => updatevalue(index, 'split', e.target.value)}
+			bind:value={person['@_split']}
+			on:input={(e) => updatevalue(index, '@_split', e.target.value)}
 			placeholder="Split (required)"
 			class="required-input"
 		/>
@@ -73,8 +73,8 @@
 			<input
 				id="ln-address-{index}"
 				type="text"
-				bind:value={person.address}
-				on:input={(e) => updatevalue(index, 'address', e.target.value)}
+				bind:value={person['@_address']}
+				on:input={(e) => updatevalue(index, '@_address', e.target.value)}
 				placeholder="LN address (required)"
 				class="required-input"
 			/>
@@ -83,16 +83,16 @@
 			<input
 				id="custom-key-{index}"
 				type="text"
-				bind:value={person.customKey}
-				on:input={(e) => updatevalue(index, 'customKey', e.target.value)}
+				bind:value={person['@_customKey']}
+				on:input={(e) => updatevalue(index, '@_customKey', e.target.value)}
 			/>
 
 			<label for="custom-value-{index}">Custom Value:</label>
 			<input
 				id="custom-value-{index}"
 				type="text"
-				bind:value={person.customValue}
-				on:input={(e) => updatevalue(index, 'customValue', e.target.value)}
+				bind:value={person['@_customValue']}
+				on:input={(e) => updatevalue(index, '@_customValue', e.target.value)}
 			/>
 		</advanced-fields>
 	{/if}

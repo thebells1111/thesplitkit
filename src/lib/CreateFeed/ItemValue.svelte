@@ -5,7 +5,7 @@
 	export let item;
 </script>
 
-<ValueBlock bind:data={item} />
+<ValueBlock bind:data={item} isItem={true} {feed} />
 
 <button
 	on:click={() => {

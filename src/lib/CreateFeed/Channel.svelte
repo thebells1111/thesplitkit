@@ -5,6 +5,7 @@
 	export let screenIndex;
 
 	console.log(item);
+	console.log(feed);
 </script>
 
 <h3>Podcast Info</h3>
