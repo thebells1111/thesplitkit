@@ -25,6 +25,7 @@
 		player.onplay = function () {
 			isPaused = false;
 		};
+		player.muted = true;
 	});
 </script>
 
@@ -37,7 +38,7 @@
 		<img src={feed?.artwork || feed?.image} alt={feed?.title} />
 		<h2>{feed?.title}</h2>
 		<h3>{feed?.author}</h3>
-		<audio controls bind:this={player} autoplay />
+		<audio controls bind:this={player} autoplay muted />
 
 		<button
 			on:click|stopPropagation={() => {

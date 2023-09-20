@@ -26,6 +26,8 @@
 		changeDefault
 	} from '$/stores';
 
+	$: console.log($mainSettings);
+
 	let showShareModal = false;
 	let showMainSettingsModal = false;
 	let showFilterModal = false;
@@ -77,7 +79,7 @@
 		console.log(data);
 
 		const blocks = data.blocks || [];
-		$mainSettings = data.settings || $mainSettings;
+		$mainSettings = Object.keys(data.settings).length ? data.settings : $mainSettings;
 
 		blocks.forEach((block) => {
 			if (block?.settings?.default) {
@@ -170,7 +172,7 @@
 
 		newBlock.blockGuid = blockGuid;
 		newBlock.settings = {
-			split: $mainSettings.splits
+			split: $mainSettings.splits || 95
 		};
 
 		activeBlockGuid = blockGuid;

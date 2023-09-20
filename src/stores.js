@@ -10,7 +10,7 @@ export const user = writable({ loggedIn: false });
 export const catalog = writable([]);
 
 export const liveBlocks = writable([]);
-export const mainSettings = writable({ splits: 95 });
+export const mainSettings = writable({ splits: 95, broadcastMode: 'edit', editEnclosure: '' });
 export const defaultBlockGuid = writable();
 export const activePageGuid = writable();
 export const activeBroadcastGuid = writable();

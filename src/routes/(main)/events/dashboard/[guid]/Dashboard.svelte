@@ -371,7 +371,7 @@
 		{/if}
 
 		{#if ['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)}
-			<audio autoplay controls bind:this={player} class:hidden={player?.src} />
+			<audio autoplay controls bind:this={player} class:hidden={player?.src} muted />
 		{/if}
 
 		{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
