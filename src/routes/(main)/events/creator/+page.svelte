@@ -56,15 +56,6 @@
 	};
 
 	const texts = {
-		manual: `<p>In manual, there's no auto switching of the blocks.</p>
-		<p>
-			It's useful for live events like a conference or debate where there's someone available to
-			quickly update the blocks as the speaker changes or an image needs to be displayed.
-		</p>
-		<p>
-			It could also be used by a band doing a live set by having a Split Kit engineer changing the
-			block to match the song being played so the audience can boost the song live.
-		</p>`,
 		prerecorded: `<p>
 	A prerecord podcast or music show is where you have a prerecorded audio file and you just need to
 	import the Value Time Splits (wallet switching info) for the songs you played on your show.
@@ -81,7 +72,9 @@
 		playlist: `<p>
 	In Playlist mode, your blocks will auto-broadcast to the next block when the time remaining
 	reaches zero. If you clicked the timer icon when you started your show, the start time for the
-	next block will fill in automatically based on the timer.
+	next block will fill in automatically based on the timer. 
+	The timer is useful if you plan on publishing your live episode as a regular podcast 
+	episode and need to sync your Value Time Splits with the audio recording times.
 </p>
 
 <p>
@@ -104,6 +97,8 @@
 <p>
 	If you press the timer at the start of your show, any time you broadcast a block, the start time
 	will auto fill for you based on the timer time.
+	The timer is useful if you plan on publishing your live episode as a regular podcast 
+	episode and need to sync your Value Time Splits with the audio recording times.
 </p>
 
 <p>
@@ -117,40 +112,51 @@
 	until you manually choose another block.
 </p>
 
-<p>This mode does not currently support playing the song in app like playlist mode does.</p>`
+<p>This mode does not currently support playing the song in app like playlist mode does.</p>`,
+		manual: `<p>In manual, there's no auto switching of the blocks.</p>
+		<p>
+			It's useful for live events like a conference or debate where there's someone available to
+			quickly update the blocks as the speaker changes or an image needs to be displayed.
+		</p>
+		<p>
+			It could also be used by a band doing a live set by having a Split Kit operator changing the
+			block to match the song being played so the audience can boost the song live.
+		</p>`
 	};
 </script>
 
 <div>
 	<label>
-		Event Name:
+		<h2>Event Name: (required)</h2>
 		<input bind:value={eventName} />
 	</label>
 </div>
 
 <h1>Event Type</h1>
 
-<button-container>
-	<button class="prerecorded selector" on:click={generateLink.bind(this, 'prerecorded')}>
-		<h2>Prerecorded Podcast <br />or Music Show</h2>
-	</button>
-	<button class="help" on:click={showHelp.bind(this, 'prerecorded')}>?</button>
-</button-container><button-container>
-	<button class="selector" on:click={generateLink.bind(this, 'playlist')}>
-		<h2>Playlist <br /> or Live Music Show</h2>
-	</button>
-	<button class="help" on:click={showHelp.bind(this, 'playlist')}>?</button>
-</button-container>
-<button-container>
-	<button class="selector" on:click={generateLink.bind(this, 'podcast')}>
-		<h2>Live Podcast</h2>
-	</button>
-	<button class="help" on:click={showHelp.bind(this, 'podcast')}>?</button>
-</button-container>
-<button-container>
-	<button class="selector" on:click={generateLink.bind(this, 'manual')}> <h2>Manual</h2> </button>
-	<button class="help" on:click={showHelp.bind(this, 'manual')}>?</button>
-</button-container>
+<event-selector>
+	<button-container>
+		<button class="prerecorded selector" on:click={generateLink.bind(this, 'prerecorded')}>
+			<h2>Prerecorded <br />Podcast or Music Show</h2>
+		</button>
+		<button class="help" on:click={showHelp.bind(this, 'prerecorded')}>?</button>
+	</button-container><button-container>
+		<button class="selector" on:click={generateLink.bind(this, 'playlist')}>
+			<h2>Live <br />Playlist or Music Show</h2>
+		</button>
+		<button class="help" on:click={showHelp.bind(this, 'playlist')}>?</button>
+	</button-container>
+	<button-container>
+		<button class="selector" on:click={generateLink.bind(this, 'podcast')}>
+			<h2>Live Podcast</h2>
+		</button>
+		<button class="help" on:click={showHelp.bind(this, 'podcast')}>?</button>
+	</button-container>
+	<button-container>
+		<button class="selector" on:click={generateLink.bind(this, 'manual')}> <h2>Manual</h2> </button>
+		<button class="help" on:click={showHelp.bind(this, 'manual')}>?</button>
+	</button-container>
+</event-selector>
 
 {#if showHelpModal}
 	<SmallModal
@@ -219,10 +225,19 @@
 		text-align: center;
 		text-decoration: underline;
 	}
+
+	h2 {
+		margin: 0;
+	}
 	p {
 		text-align: center;
 		padding: 0;
 		margin: 0;
 		width: 75px;
+	}
+
+	event-selector {
+		display: block;
+		margin: 0 8px 0 16px;
 	}
 </style>

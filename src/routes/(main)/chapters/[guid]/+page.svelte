@@ -63,7 +63,7 @@
 				return defaultChapter[0];
 			}
 
-			badStartBlocks = chaps.filter((v) => !v.startTime);
+			badStartBlocks = chaps.filter((v) => v && !v.startTime);
 
 			if (!badStartBlocks?.length || reload) {
 				chaps
@@ -101,17 +101,22 @@
 						}
 						if (v?.duration) {
 							if (i < a.length - 1 && v?.startTime + v?.duration < a[i + 1]?.startTime) {
-								chapters.push(createDefaultChapter(v.startTime + v.duration));
+								if ($liveBlocks[0]) {
+									chapters.push(createDefaultChapter(v.startTime + v.duration));
+								}
 							}
 
 							if (i === a.length - 1) {
-								chapters.push(createDefaultChapter(v.startTime + v.duration));
+								if ($liveBlocks[0]) {
+									chapters.push(createDefaultChapter(v.startTime + v.duration));
+								}
 							}
 						}
 					});
 			}
-
-			chapters.unshift(createDefaultChapter(0.001));
+			if ($liveBlocks[0]) {
+				chapters.unshift(createDefaultChapter(0.001));
+			}
 
 			console.log(chapters);
 

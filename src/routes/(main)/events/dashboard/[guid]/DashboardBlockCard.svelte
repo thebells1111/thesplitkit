@@ -26,7 +26,7 @@
 	export let updateStartTime = () => {};
 
 	function broadcast(block) {
-		if (broadcastingBlockGuid !== block.blockGuid) {
+		if (broadcastingBlockGuid !== block?.blockGuid) {
 			handleBroadcast(block);
 		}
 	}
@@ -96,7 +96,7 @@
 			}
 		}
 
-		let activeIndex = $liveBlocks.findIndex((v) => v.blockGuid === block.blockGuid);
+		let activeIndex = $liveBlocks.findIndex((v) => v?.blockGuid === block?.blockGuid);
 		if (activeIndex > -1) {
 			$liveBlocks[activeIndex] = block;
 		}
@@ -105,14 +105,14 @@
 
 {#if block}
 	<div
-		class:active={broadcastingBlockGuid === block.blockGuid}
-		class:default={$defaultBlockGuid === block.blockGuid}
+		class:active={broadcastingBlockGuid === block?.blockGuid}
+		class:default={$defaultBlockGuid === block?.blockGuid}
 		class:warning={block.value.destinations.reduce(
 			(acc, person) => acc + parseFloat(person.fee ? 0 : person.split),
 			0
 		) !== 100 || block.value.destinations.some((item) => !item.address)}
 	>
-		{#if block.blockGuid === $defaultBlockGuid}
+		{#if block?.blockGuid === $defaultBlockGuid}
 			<default>-default block-</default>
 		{/if}
 
@@ -133,7 +133,7 @@
 		<middle-container>
 			<time-container>
 				{#if ['playlist', 'edit'].find((v) => v === $mainSettings.broadcastMode) || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
-					{#if block.blockGuid !== $defaultBlockGuid}
+					{#if block?.blockGuid !== $defaultBlockGuid}
 						<duration>
 							<strong>Duration:</strong>
 
@@ -148,7 +148,7 @@
 							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
 						</start-time>
 
-						{#if broadcastingBlockGuid === block.blockGuid}
+						{#if broadcastingBlockGuid === block?.blockGuid}
 							<time-remaing>
 								<strong>Time Remaining:</strong>
 								{broadcastTimeRemaining > 0 ? formatTime(broadcastTimeRemaining) : '∞'}
@@ -162,12 +162,12 @@
 					class="edit"
 					on:click={() => {
 						showOptionsModal = true;
-						activeBlockGuid = block.blockGuid;
+						activeBlockGuid = block?.blockGuid;
 					}}
 				>
 					<EditIcon size="27" /></button
 				>
-				{#if block.blockGuid !== $defaultBlockGuid}
+				{#if block?.blockGuid !== $defaultBlockGuid}
 					<button class="tuner" on:click={() => (showSettingsModal = true)}>
 						<TunerIcon size="27" />
 					</button>
@@ -187,20 +187,20 @@
 		<bottom-container>
 			<button
 				class="navigator up"
-				class:default={$defaultBlockGuid === block.blockGuid || index === 0}
+				class:default={$defaultBlockGuid === block?.blockGuid || index === 0}
 				on:click={moveElement.bind(this, index + 1, -1)}>▲</button
 			><block-value
-				>{block.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to this block
+				>{block?.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to this block
 				when active</block-value
 			>
 			<button
 				class="navigator down"
-				class:default={$defaultBlockGuid === block.blockGuid || index === $liveBlocks?.length - 2}
+				class:default={$defaultBlockGuid === block?.blockGuid || index === $liveBlocks?.length - 2}
 				on:click={moveElement.bind(this, index + 1, 1)}>▼</button
 			>
 		</bottom-container>
 
-		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl && block.blockGuid !== $defaultBlockGuid}
+		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl && block?.blockGuid !== $defaultBlockGuid}
 			<warning>This block has no audio file.</warning>
 		{/if}
 		{#if !block?.value?.destinations?.length}

@@ -70,7 +70,7 @@
 			}
 
 			if (block?.blockGuid && defaultBlock?.blockGuid) {
-				isDefault = block.blockGuid === defaultBlock.blockGuid;
+				isDefault = block?.blockGuid === defaultBlock?.blockGuid;
 			}
 			console.log(`${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`);
 
@@ -94,7 +94,7 @@
 			}
 		}
 		if (block?.blockGuid && defaultBlock?.blockGuid) {
-			isDefault = block.blockGuid === defaultBlock.blockGuid;
+			isDefault = block?.blockGuid === defaultBlock?.blockGuid;
 		}
 	});
 

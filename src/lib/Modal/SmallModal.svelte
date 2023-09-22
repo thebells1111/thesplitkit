@@ -35,7 +35,7 @@
 		justify-content: center;
 		width: 100%;
 		height: 100%;
-		position: absolute;
+		position: fixed;
 		background: transparent;
 		top: 0;
 		right: 0;
@@ -47,13 +47,23 @@
 		display: block;
 		position: relative;
 		width: calc(100% - 56px);
-		max-width: 991px;
-		overflow-y: auto;
-		overflow-x: hidden;
+		max-width: 960px;
+		overflow: hidden;
 		border-radius: 8px;
 		background-color: white;
-		padding: 40px 20px 20px 20px;
+
 		box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 1);
+		height: calc(100% - 56px);
+		min-height: 400px;
+		max-height: calc(100svh - 32px);
+	}
+
+	modal-content {
+		display: block;
+		overflow: auto;
+		height: calc(100% - 60px);
+		margin-top: 40px;
+		padding: 0 20px 20px 20px;
 	}
 
 	.close {

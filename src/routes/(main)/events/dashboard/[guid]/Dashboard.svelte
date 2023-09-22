@@ -166,13 +166,13 @@
 		let serverData;
 		if (block) {
 			serverData = processBlock(clone(block));
-			broadcastingBlockGuid = block.blockGuid;
-			if (timeStamp && block.blockGuid !== $defaultBlockGuid) {
-				let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
+			broadcastingBlockGuid = block?.blockGuid;
+			if (timeStamp && block?.blockGuid !== $defaultBlockGuid) {
+				let foundBlock = $liveBlocks.find((v) => v?.blockGuid === block?.blockGuid);
 				foundBlock.startTime = timeStamp;
 				$liveBlocks = $liveBlocks;
 			} else {
-				let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
+				let foundBlock = $liveBlocks.find((v) => v?.blockGuid === block?.blockGuid);
 				foundBlock.startTime = 0;
 				$liveBlocks = $liveBlocks;
 			}
@@ -190,7 +190,7 @@
 	}
 
 	function getNextBlock(block) {
-		let index = $liveBlocks.findIndex((v) => v.blockGuid === block?.blockGuid);
+		let index = $liveBlocks.findIndex((v) => v?.blockGuid === block?.blockGuid);
 		if (index > -1 && index < $liveBlocks.length - 1) {
 			return $liveBlocks[index + 1];
 		} else {
@@ -228,9 +228,9 @@
 
 	function processBlock(block) {
 		let defaultBlock =
-			block.blockGuid === $defaultBlockGuid
+			block?.blockGuid === $defaultBlockGuid
 				? undefined
-				: $liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid);
+				: $liveBlocks.find((v) => v?.blockGuid === $defaultBlockGuid);
 		let split = defaultBlock ? block.settings.split : 100;
 
 		let newDestinations = [];
@@ -330,14 +330,14 @@
 	}
 
 	function updateStartTime(block) {
-		let foundBlock = $liveBlocks.find((v) => v.blockGuid === block.blockGuid);
+		let foundBlock = $liveBlocks.find((v) => v?.blockGuid === block?.blockGuid);
 		foundBlock.startTime = player.currentTime;
 		$liveBlocks = $liveBlocks;
 	}
 
 	$: if (chapterIndex > -1) {
 		let block = $liveBlocks.find((v) => {
-			return v.blockGuid === broadcastingBlockGuid;
+			return v?.blockGuid === broadcastingBlockGuid;
 		});
 		let chapters = block?.chapters?.chapters || [];
 		let activeChapter = chapters[chapterIndex];
@@ -352,10 +352,12 @@
 			broadcastBlock(chapterBlock);
 		}
 	}
+
+	$: console.log($mainSettings);
 </script>
 
 <div>
-	{#if !$defaultBlockGuid}
+	{#if !$defaultBlockGuid && $mainSettings.broadcastMode !== 'edit'}
 		<NoDefault />
 	{:else}
 		{#if !$socket}
@@ -366,7 +368,7 @@
 		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
 			<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
 		{/if}
-		{#if !$liveBlocks.find((v) => v.blockGuid === $defaultBlockGuid)?.value?.destinations?.length}
+		{#if !$liveBlocks.find((v) => v?.blockGuid === $defaultBlockGuid)?.value?.destinations?.length && $mainSettings.broadcastMode !== 'edit'}
 			<warning>Error - Your default block needs a value block</warning>
 		{/if}
 
@@ -402,9 +404,9 @@
 
 		{#if filterType === 'person'}
 			<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
-		{:else}
+		{:else if blocks?.length}
 			<blocks bind:this={$blocksList}>
-				{#each blocks.filter((v) => v.blockGuid === $defaultBlockGuid) as block, index}
+				{#each blocks.filter((v) => v?.blockGuid === $defaultBlockGuid) as block, index}
 					<DashboardBlockCard
 						{block}
 						{index}
@@ -416,7 +418,7 @@
 						{updateStartTime}
 					/>
 				{/each}
-				{#each blocks.filter((v) => v.blockGuid !== $defaultBlockGuid) as block, index}
+				{#each blocks.filter((v) => v?.blockGuid !== $defaultBlockGuid) as block, index}
 					<DashboardBlockCard
 						{block}
 						{index}
@@ -429,6 +431,8 @@
 					/>
 				{/each}
 			</blocks>
+		{:else}
+			<p>Click the blue add button to add your first block.</p>
 		{/if}
 	{/if}
 </div>

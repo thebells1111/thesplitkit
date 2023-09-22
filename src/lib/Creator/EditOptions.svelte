@@ -33,8 +33,8 @@
 			'Are you sure you want to delete ' + (block?.line?.[0] || 'this block?')
 		);
 		if (confirmation) {
-			$liveBlocks = $liveBlocks.filter((v) => v.blockGuid !== block.blockGuid);
-			if (block.blockGuid === $defaultBlockGuid) {
+			$liveBlocks = $liveBlocks.filter((v) => v?.blockGuid !== block?.blockGuid);
+			if (block?.blockGuid === $defaultBlockGuid) {
 				$defaultBlockGuid = $liveBlocks?.[0]?.blockGuid;
 			}
 
@@ -156,7 +156,7 @@
 
 {#if showShareModal}
 	<Modal bind:showModal={showShareModal}>
-		<Share eventGuid={block.eventGuid} blockGuid={block.blockGuid} promotion={true} />
+		<Share eventGuid={block.eventGuid} blockGuid={block?.blockGuid} promotion={true} />
 	</Modal>
 {/if}
 
