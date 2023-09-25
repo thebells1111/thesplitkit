@@ -404,19 +404,21 @@
 
 		{#if filterType === 'person'}
 			<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
-		{:else if blocks?.length}
+		{:else if blocks?.[0] || blocks?.[1]}
 			<blocks bind:this={$blocksList}>
 				{#each blocks.filter((v) => v?.blockGuid === $defaultBlockGuid) as block, index}
-					<DashboardBlockCard
-						{block}
-						{index}
-						bind:broadcastingBlockGuid
-						bind:activeBlockGuid
-						bind:showOptionsModal
-						{broadcastTimeRemaining}
-						{handleBroadcast}
-						{updateStartTime}
-					/>
+					{#if block}
+						<DashboardBlockCard
+							{block}
+							{index}
+							bind:broadcastingBlockGuid
+							bind:activeBlockGuid
+							bind:showOptionsModal
+							{broadcastTimeRemaining}
+							{handleBroadcast}
+							{updateStartTime}
+						/>
+					{/if}
 				{/each}
 				{#each blocks.filter((v) => v?.blockGuid !== $defaultBlockGuid) as block, index}
 					<DashboardBlockCard

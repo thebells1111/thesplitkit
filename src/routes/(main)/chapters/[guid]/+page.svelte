@@ -1,10 +1,21 @@
 <script>
+	import { v4 as uuidv4 } from 'uuid';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { saveAs } from 'file-saver';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
-	import { remoteServer, liveBlocks, activePageGuid } from '$/stores';
+	import AddFeed from '$lib/Creator/AddFeed.svelte';
+	import PodcastIcon from '$lib/icons/Podcast.svelte';
+
+	import {
+		remoteServer,
+		liveBlocks,
+		activePageGuid,
+		defaultBlockGuid,
+		mainSettings,
+		changeDefault
+	} from '$/stores';
 
 	const guid = $page.params.guid;
 	$activePageGuid = guid;
@@ -14,6 +25,8 @@
 
 	let badStartBlocks = [];
 	let downloadStarted = false;
+	let defaultChapterTitle = '';
+	let defaultChapterImage = '';
 
 	onMount(loadBlocks);
 
@@ -139,6 +152,104 @@
 			downloadStarted = false;
 		}, 1000); // Message will disappear after 3 seconds
 	}
+
+	async function handleSelect(type) {
+		resetModals();
+		if (handleChangeType) {
+			handleChangeType(type);
+		}
+
+		if (modalsConfig.hasOwnProperty(type)) {
+			modalsConfig[type].show = true;
+
+			if (['person', 'chapter'].find((v) => type === v)) {
+				addBlock(type);
+			}
+		} else {
+			if (['paste'].find((v) => v === type)) {
+				await pasteBlock();
+			}
+		}
+	}
+
+	async function addFeed(block, type, channel) {
+		let addBlock = true;
+
+		block.value = block?.value || channel?.value;
+
+		if (addBlock) {
+			let newBlock = {};
+			newBlock.image = block?.artwork || block?.image || channel?.artwork || channel?.image;
+			if (channel) {
+				newBlock.title = block?.title;
+				newBlock.line = [channel?.title, channel?.author];
+			} else {
+				newBlock.title = block?.title;
+				newBlock.line = [channel?.author];
+			}
+
+			newBlock.description = block.description;
+			newBlock.value = block?.value ||
+				channel?.value || {
+					model: {
+						type: 'lightning',
+						method: 'keysend'
+					},
+					destinations: []
+				};
+			newBlock.type = type;
+
+			newBlock.link = {
+				text: 'Checkout the Album',
+				url: block?.link || channel?.link || `https://podcastindex.org/podcast/${channel.id}`
+			};
+			newBlock.chaptersUrl = block?.chaptersUrl;
+
+			if (block.enclosureUrl) {
+				newBlock.enclosureUrl = block.enclosureUrl;
+			}
+
+			newBlock.feedGuid = channel?.podcastGuid || block?.podcastGuid;
+
+			newBlock.itemGuid = block.guid;
+
+			newBlock.eventGuid = $page.params.guid;
+			newBlock.eventAPI = 'https://curiohoster.com/api/sk/event/lookup';
+
+			if (block.enclosureUrl) {
+				newBlock.enclosureUrl = block.enclosureUrl;
+				newBlock.duration = await getMediaDuration(block.enclosureUrl);
+			}
+
+			let blockGuid;
+			do {
+				blockGuid = generateBlockGuid();
+			} while (!isBlockGuidUnique(blockGuid, $liveBlocks));
+
+			newBlock.blockGuid = blockGuid;
+			newBlock.settings = {
+				split: $mainSettings.splits
+			};
+
+			$defaultBlockGuid = blockGuid;
+			newBlock.settings.default = true;
+			$liveBlocks[0] = newBlock;
+		}
+	}
+
+	function generateBlockGuid() {
+		let uniqueId = uuidv4();
+		return uniqueId;
+	}
+
+	function isBlockGuidUnique(blockGuid, blocks) {
+		for (let block of blocks) {
+			if (block?.blockGuid === blockGuid) {
+				return false;
+			}
+		}
+		return true;
+	}
 </script>
 
 <div>
@@ -163,6 +274,36 @@
 	{:else}
 		<p>You have nothing in this block.</p>
 	{/if}
+
+	{#if !$liveBlocks[0]}
+		<default-block-container>
+			<p>You can add a fallback chapter image to show between blocks.</p>
+			<chapter-container>
+				<chapter-info>
+					<label>
+						Chapter Title
+						<input bind:value={defaultChapterTitle} />
+					</label>
+					<label>
+						Chapter Image Link:
+						<input bind:value={defaultChapterImage} />
+					</label>
+				</chapter-info>
+				<img
+					width="60"
+					height="60"
+					src={defaultChapterImage}
+					alt="chapter art"
+					style="border: 1px solid black"
+				/>
+			</chapter-container>
+			<p>-or-</p>
+			<p>Use your podcast info</p>
+			<add-feed-container>
+				<AddFeed {addFeed} />
+			</add-feed-container>
+		</default-block-container>
+	{/if}
 </div>
 
 {#if downloadStarted}
@@ -176,6 +317,20 @@
 		padding: 8px;
 		display: flex;
 		flex-direction: column;
+		overflow: hidden;
+		height: 100%;
+	}
+
+	default-block-container {
+		display: block;
+		flex: 1;
+		overflow: hidden;
+	}
+
+	add-feed-container {
+		display: block;
+		overflow: auto;
+		height: calc(100% - 100px);
 	}
 
 	button {
