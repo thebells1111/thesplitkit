@@ -4,7 +4,7 @@
 	let notes = '';
 
 	onMount(() => {
-		notes = generateHtmlString($liveBlocks);
+		notes = generateHtmlString($liveBlocks.slice(1));
 	});
 
 	function generateHtmlString(data) {

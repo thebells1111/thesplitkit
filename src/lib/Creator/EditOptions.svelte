@@ -35,7 +35,8 @@
 		if (confirmation) {
 			$liveBlocks = $liveBlocks.filter((v) => v?.blockGuid !== block?.blockGuid);
 			if (block?.blockGuid === $defaultBlockGuid) {
-				$defaultBlockGuid = $liveBlocks?.[0]?.blockGuid;
+				$defaultBlockGuid = null;
+				$liveBlocks.unshift(null);
 			}
 
 			showOptionsModal = false;

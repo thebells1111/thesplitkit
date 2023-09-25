@@ -107,10 +107,14 @@
 	<div
 		class:active={broadcastingBlockGuid === block?.blockGuid}
 		class:default={$defaultBlockGuid === block?.blockGuid}
-		class:warning={block.value.destinations.reduce(
-			(acc, person) => acc + parseFloat(person.fee ? 0 : person.split),
-			0
-		) !== 100 || block.value.destinations.some((item) => !item.address)}
+		class:warning={!(
+			$mainSettings?.broadcastMode === 'edit' && block?.blockGuid === $defaultBlockGuid
+		) &&
+			(block?.value?.destinations?.reduce(
+				(acc, person) => acc + parseFloat(person.fee ? 0 : person.split),
+				0
+			) !== 100 ||
+				block.value.destinations.some((item) => !item.address))}
 	>
 		{#if block?.blockGuid === $defaultBlockGuid}
 			<default>-default block-</default>
@@ -124,9 +128,9 @@
 					<p class="block-type"><icon><svelte:component this={Icons[typeText]} /></icon></p>
 				</top>
 				{#if block.type === 'music'}
-					<p>{block.line[1] === 'Text - click to edit' ? '' : block.line[1] || ''}</p>
+					<p>{block?.line?.[1] === 'Text - click to edit' ? '' : block?.line?.[1] || ''}</p>
 				{:else}
-					<p>{block.line[0] === 'Text - click to edit' ? '' : block.line[0] || ''}</p>
+					<p>{block?.line?.[0] === 'Text - click to edit' ? '' : block?.line?.[0] || ''}</p>
 				{/if}
 			</card-text>
 		</card-info>
@@ -203,7 +207,7 @@
 		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl && block?.blockGuid !== $defaultBlockGuid}
 			<warning>This block has no audio file.</warning>
 		{/if}
-		{#if !block?.value?.destinations?.length}
+		{#if !block?.value?.destinations?.length && !($mainSettings?.broadcastMode === 'edit' && block?.blockGuid === $defaultBlockGuid)}
 			<warning>This item has no value blocks</warning>
 		{/if}
 	</div>

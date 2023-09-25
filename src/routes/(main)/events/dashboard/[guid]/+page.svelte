@@ -87,13 +87,13 @@
 					$defaultBlockGuid = block?.blockGuid;
 					$activePageGuid = guid;
 				}
-				if (!block.link.text) {
-					block.link.text = 'Link - click to edit';
+				if (!block?.link?.text) {
+					block.link = { text: 'Link - click to edit' };
 				}
-				if (!block.title) {
+				if (!block?.title) {
 					block.title = 'Title - click to edit';
 				}
-				for (let i = 0; i < block.line.length; i++) {
+				for (let i = 0; i < block?.line?.length; i++) {
 					if (!block.line[i]) {
 						block.line[i] = 'Text - click to edit';
 					}

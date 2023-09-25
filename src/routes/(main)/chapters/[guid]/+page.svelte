@@ -153,23 +153,41 @@
 		}, 1000); // Message will disappear after 3 seconds
 	}
 
-	async function handleSelect(type) {
-		resetModals();
-		if (handleChangeType) {
-			handleChangeType(type);
-		}
+	async function addDefaultChapter() {
+		let newBlock = {};
+		newBlock.title = defaultChapterTitle;
+		newBlock.image = defaultChapterImage;
+		newBlock.line = [];
+		newBlock.description = '';
+		newBlock.value = {
+			model: {
+				type: 'lightning',
+				method: 'keysend'
+			},
+			destinations: []
+		};
+		newBlock.type = 'chapters';
+		newBlock.link = {
+			text: '',
+			url: ''
+		};
+		newBlock.chaptersUrl = '';
 
-		if (modalsConfig.hasOwnProperty(type)) {
-			modalsConfig[type].show = true;
+		newBlock.eventGuid = $page.params.guid;
+		newBlock.eventAPI = 'https://curiohoster.com/api/sk/event/lookup';
+		let blockGuid;
+		do {
+			blockGuid = generateBlockGuid();
+		} while (!isBlockGuidUnique(blockGuid, $liveBlocks));
 
-			if (['person', 'chapter'].find((v) => type === v)) {
-				addBlock(type);
-			}
-		} else {
-			if (['paste'].find((v) => v === type)) {
-				await pasteBlock();
-			}
-		}
+		newBlock.blockGuid = blockGuid;
+		newBlock.settings = {
+			split: $mainSettings.splits
+		};
+
+		$defaultBlockGuid = blockGuid;
+		newBlock.settings.default = true;
+		$liveBlocks[0] = newBlock;
 	}
 
 	async function addFeed(block, type, channel) {
@@ -277,7 +295,12 @@
 
 	{#if !$liveBlocks[0]}
 		<default-block-container>
+			<h3>Wait! Wait! Wait!</h3>
 			<p>You can add a fallback chapter image to show between blocks.</p>
+			<p>
+				This is great if you're doing a music show with segments were the DJ is talking but no song
+				is playing.
+			</p>
 			<chapter-container>
 				<chapter-info>
 					<label>
@@ -290,13 +313,14 @@
 					</label>
 				</chapter-info>
 				<img
-					width="60"
-					height="60"
+					width="92"
+					height="92"
 					src={defaultChapterImage}
 					alt="chapter art"
 					style="border: 1px solid black"
 				/>
 			</chapter-container>
+			<button class="create-chapter" on:click={addDefaultChapter}>Create Fallback Chapter</button>
 			<p>-or-</p>
 			<p>Use your podcast info</p>
 			<add-feed-container>
@@ -345,5 +369,44 @@
 	p {
 		margin: 4px;
 		color: var(--color-theme-blue);
+	}
+
+	chapter-container {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	chapter-info {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		flex: 1;
+	}
+
+	chapter-info label {
+		display: flex;
+		flex-direction: column;
+		width: calc(100% - 16px);
+		font-weight: 600;
+		margin: 8px;
+	}
+
+	img {
+		margin: 8px 0 0 0;
+	}
+
+	default-block-container > h3 {
+		text-align: center;
+	}
+
+	default-block-container > p {
+		text-align: center;
+	}
+
+	button.create-chapter {
+		margin: 4px auto;
+		width: 100%;
+		background-color: var(--color-theme-yellow);
+		color: var(--color-text-0);
 	}
 </style>
