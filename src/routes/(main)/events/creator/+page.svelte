@@ -35,7 +35,7 @@
 			podcast: { autoSwitch: true },
 			splits: 95
 		},
-		prerecorded: {
+		edit: {
 			splits: 95,
 			broadcastMode: 'edit',
 			editEnclosure: '',
@@ -47,7 +47,7 @@
 			podcast: { autoSwitch: true },
 			splits: 95
 		},
-		manual: {
+		playlist: {
 			broadcastMode: 'playlist',
 			editEnclosure: '',
 			podcast: { autoSwitch: true },
@@ -56,7 +56,7 @@
 	};
 
 	const texts = {
-		prerecorded: `<p>
+		edit: `<p>
 	A prerecord podcast or music show is where you have a prerecorded audio file and you just need to
 	import the Value Time Splits (wallet switching info) for the songs you played on your show.
 </p>
@@ -132,32 +132,35 @@
 	</label>
 </div>
 
-<h1>Event Type</h1>
+{#if eventName}
+	<h1>Event Type</h1>
 
-<event-selector>
-	<button-container>
-		<button class="prerecorded selector" on:click={generateLink.bind(this, 'prerecorded')}>
-			<h2>Prerecorded <br />Podcast or Music Show</h2>
-		</button>
-		<button class="help" on:click={showHelp.bind(this, 'prerecorded')}>?</button>
-	</button-container><button-container>
-		<button class="selector" on:click={generateLink.bind(this, 'playlist')}>
-			<h2>Live <br />Playlist or Music Show</h2>
-		</button>
-		<button class="help" on:click={showHelp.bind(this, 'playlist')}>?</button>
-	</button-container>
-	<button-container>
-		<button class="selector" on:click={generateLink.bind(this, 'podcast')}>
-			<h2>Live Podcast</h2>
-		</button>
-		<button class="help" on:click={showHelp.bind(this, 'podcast')}>?</button>
-	</button-container>
-	<button-container>
-		<button class="selector" on:click={generateLink.bind(this, 'manual')}> <h2>Manual</h2> </button>
-		<button class="help" on:click={showHelp.bind(this, 'manual')}>?</button>
-	</button-container>
-</event-selector>
-
+	<event-selector>
+		<button-container>
+			<button class="prerecorded selector" on:click={generateLink.bind(this, 'edit')}>
+				<h2>Prerecorded <br />Podcast or Music Show</h2>
+			</button>
+			<button class="help" on:click={showHelp.bind(this, 'edit')}>?</button>
+		</button-container><button-container>
+			<button class="selector" on:click={generateLink.bind(this, 'playlist')}>
+				<h2>Live <br />Playlist or Music Show</h2>
+			</button>
+			<button class="help" on:click={showHelp.bind(this, 'playlist')}>?</button>
+		</button-container>
+		<button-container>
+			<button class="selector" on:click={generateLink.bind(this, 'podcast')}>
+				<h2>Live Podcast</h2>
+			</button>
+			<button class="help" on:click={showHelp.bind(this, 'podcast')}>?</button>
+		</button-container>
+		<button-container>
+			<button class="selector" on:click={generateLink.bind(this, 'manual')}>
+				<h2>Manual</h2>
+			</button>
+			<button class="help" on:click={showHelp.bind(this, 'manual')}>?</button>
+		</button-container>
+	</event-selector>
+{/if}
 {#if showHelpModal}
 	<SmallModal
 		bind:showModal={showHelpModal}
