@@ -17,10 +17,7 @@
 
 	async function fetchAlbums() {
 		const res = await fetch(
-			remoteServer +
-				`/api/queryindex?q=${encodeURIComponent(
-					'podcasts/bymedium?medium=music&max=1500&val=lightning'
-				)}`
+			remoteServer + `/api/queryindex?q=podcasts/bymedium?medium=music&max=1500&val=lightning`
 		);
 		let data = await res.json();
 
