@@ -68,7 +68,8 @@
 		);
 	}
 
-	function fetchEpisodes(guid) {
+	async function fetchEpisodes(guid, index, feed) {
+		console.log(feed);
 		showSongs = true;
 		let feedUrl =
 			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
@@ -76,9 +77,18 @@
 			remoteServer +
 			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}`)}`;
 
+		// let feedUrl =
+		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byfeedid?id=${feed.id}`)}`;
+		// let episodesUrl =
+		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/episodes/byfeedid?id=${feed.id}`)}`;
+
+		let res = await fetch(feedUrl);
+		let data = await res.json();
+		console.log(data);
 		Promise.all([fetch(feedUrl), fetch(episodesUrl)])
 			.then(async ([feedRes, episodesRes]) => {
 				let data = await feedRes.json();
+				console.log(data);
 				let feed = data.feed;
 
 				let episodesData = await episodesRes.json();
@@ -88,6 +98,8 @@
 
 				episodes = feed.episodes || [];
 				selectedFeed = feed;
+
+				console.log(episodes);
 			})
 			.catch((err) => {
 				console.error('Error fetching episodes:', err);

@@ -1,9 +1,11 @@
 <script>
-	import { mainSettings } from '$/stores';
+	import JSZip from 'jszip';
+	import { mainSettings, remoteServer, liveBlocks } from '$/stores';
 	console.log($mainSettings);
 
 	let enclosureUrl;
 	export let mainUnsaved;
+	let downloadInfo = '';
 
 	function handleInput(e) {
 		$mainSettings.liveEnclosure = e.target.value;
@@ -16,6 +18,43 @@
 		$mainSettings.podcast = $mainSettings.podcast || {};
 		$mainSettings.podcast.autoSwitch = e.target.checked;
 		mainUnsaved = true;
+	}
+
+	async function downloadZippedMP3s(mp3Links) {
+		const zip = new JSZip();
+
+		console.log($liveBlocks);
+
+		let blocks = $liveBlocks.slice(1);
+
+		if (blocks.length) {
+			for (const [index, block] of blocks.entries()) {
+				console.log(block);
+				console.log(`Downloading ${block.title}`);
+				downloadInfo = `Downloading ${block.title}`;
+				if (block?.duration < 10 * 60 && block.enclosureUrl) {
+					const res = await fetch(
+						remoteServer + '/api/proxy?url=' + encodeURIComponent(block.enclosureUrl),
+						{
+							headers: { 'User-Agent': 'TheSplitKit/0.1' }
+						}
+					);
+					const blob = await res.blob();
+					zip.file(`${block.title} - ${block?.line?.[1]} - ${block.blockGuid}.mp3`, blob);
+				}
+			}
+
+			const content = await zip.generateAsync({ type: 'blob' });
+			const link = document.createElement('a');
+			link.href = URL.createObjectURL(content);
+			link.download = 'MP3Files.zip';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			downloadInfo = '';
+		} else {
+			downloadInfo = 'No valid files to download';
+		}
 	}
 </script>
 
@@ -38,6 +77,19 @@
 			When Auto Broadcast is enabled, any block without a duration will be unable to auto broadcast.
 		</p>
 	</warning>
+
+	<button on:click={downloadZippedMP3s}>Download Zipped Audio Files</button>
+	<warning>
+		<p>
+			Zipped Audio Files is experimental, and may be a paid feature in the future if server costs
+			get out of hand. <br />
+			It's for downloading songs, so will only download files with a duration of 10 minutes or less.
+		</p>
+	</warning>
+
+	<download-info>
+		{downloadInfo}
+	</download-info>
 </div>
 
 <style>
@@ -76,5 +128,13 @@
 		text-align: center;
 		font-weight: bold;
 		font-size: 1.1em;
+	}
+
+	download-info {
+		display: block;
+		color: var(--color-theme-purple);
+		text-align: center;
+		font-weight: bold;
+		font-size: 1.3em;
 	}
 </style>
