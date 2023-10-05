@@ -74,7 +74,7 @@
 	{#if episodes.length}
 		<h3>Songs</h3>
 		<ul>
-			{#each episodes as episode, index (episode.id)}
+			{#each episodes as episode, index (episode?.id)}
 				<!-- The key should be unique for each episode -->
 				<li>
 					<card

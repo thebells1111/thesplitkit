@@ -60,12 +60,31 @@
 		return arr;
 	}
 
-	$: {
-		filteredResults = podcastIndexSearchResults.filter(
-			(obj) =>
-				obj.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				obj.author.toLowerCase().includes(searchQuery.toLowerCase())
-		);
+	async function searchPI() {
+		console.log(searchQuery);
+		if (searchQuery) {
+			const res = await fetch(
+				remoteServer +
+					`/api/queryindex?q=/search/music/byterm` +
+					encodeURIComponent(`?q=${searchQuery}`)
+			);
+			let data = await res.json();
+			if (data.status) {
+				return data.feeds;
+			}
+			return;
+		}
+		return podcastIndexSearchResults;
+	}
+
+	$: filterSearch(searchQuery);
+
+	async function filterSearch() {
+		if (searchQuery) {
+			filteredResults = (await searchPI()) || [];
+		} else {
+			filteredResults = podcastIndexSearchResults;
+		}
 	}
 
 	async function fetchEpisodes(guid, index, feed) {
