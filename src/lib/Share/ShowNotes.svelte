@@ -4,7 +4,7 @@
 	let notes = '';
 
 	onMount(() => {
-		notes = generateHtmlString($liveBlocks);
+		notes = generateHtmlString($liveBlocks.slice(1));
 	});
 
 	function generateHtmlString(data) {
@@ -14,28 +14,30 @@
 		console.log(data);
 
 		data.forEach((item) => {
-			// Ignore items that have settings.default as true or no startTime
-			console.log(item);
+			if (item) {
+				// Ignore items that have settings.default as true or no startTime
+				console.log(item);
 
-			// Create the link text
-			let linkText = '';
-			if (
-				item.line[1] &&
-				item.line[1] !== 'Text - click to edit' &&
-				item.line[1] !== 'Title - click to edit'
-			) {
-				linkText = item.line[1];
-				if (item.title && item.title !== 'Title - click to edit') {
-					linkText += ' - ';
+				// Create the link text
+				let linkText = '';
+				if (
+					item.line[1] &&
+					item.line[1] !== 'Text - click to edit' &&
+					item.line[1] !== 'Title - click to edit'
+				) {
+					linkText = item.line[1];
+					if (item.title && item.title !== 'Title - click to edit') {
+						linkText += ' - ';
+					}
 				}
-			}
 
-			if (item.title && item.title !== 'Title - click to edit') {
-				linkText += item.title;
-			}
+				if (item.title && item.title !== 'Title - click to edit') {
+					linkText += item.title;
+				}
 
-			if (linkText) {
-				htmlString += `<a href="${item.link.url}">${linkText}</a><br />`;
+				if (linkText) {
+					htmlString += `<a href="${item.link.url}">${linkText}</a><br />`;
+				}
 			}
 		});
 

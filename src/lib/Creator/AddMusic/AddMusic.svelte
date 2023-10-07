@@ -9,6 +9,7 @@
 	let podcastIndexSearchResults = [];
 	let episodes = [];
 	let showSongs = false;
+	import archivedFeeds from './archivedFeeds.json';
 
 	let searchQuery = '';
 	let filteredResults = [];
@@ -16,13 +17,12 @@
 	onMount(fetchAlbums);
 
 	async function fetchAlbums() {
-		const res = await fetch(
-			remoteServer +
-				`/api/queryindex?q=${encodeURIComponent(
-					'podcasts/bymedium?medium=music&max=1000&val=lightning'
-				)}`
-		);
-		let data = await res.json();
+		// const res = await fetch(
+		// 	remoteServer + `/api/queryindex?q=podcasts/bymedium?medium=music&max=1500`
+		// );
+		// let data = await res.json();
+
+		let data = { feeds: archivedFeeds };
 
 		try {
 			episodes = [];
@@ -60,15 +60,35 @@
 		return arr;
 	}
 
-	$: {
-		filteredResults = podcastIndexSearchResults.filter(
-			(obj) =>
-				obj.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				obj.author.toLowerCase().includes(searchQuery.toLowerCase())
-		);
+	async function searchPI() {
+		console.log(searchQuery);
+		if (searchQuery) {
+			const res = await fetch(
+				remoteServer +
+					`/api/queryindex?q=/search/music/byterm` +
+					encodeURIComponent(`?q=${searchQuery}`)
+			);
+			let data = await res.json();
+			if (data.status) {
+				return data.feeds;
+			}
+			return;
+		}
+		return podcastIndexSearchResults;
 	}
 
-	function fetchEpisodes(guid) {
+	$: filterSearch(searchQuery);
+
+	async function filterSearch() {
+		if (searchQuery) {
+			filteredResults = (await searchPI()) || [];
+		} else {
+			filteredResults = podcastIndexSearchResults;
+		}
+	}
+
+	async function fetchEpisodes(guid, index, feed) {
+		console.log(feed);
 		showSongs = true;
 		let feedUrl =
 			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
@@ -76,9 +96,18 @@
 			remoteServer +
 			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}`)}`;
 
+		// let feedUrl =
+		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byfeedid?id=${feed.id}`)}`;
+		// let episodesUrl =
+		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/episodes/byfeedid?id=${feed.id}`)}`;
+
+		let res = await fetch(feedUrl);
+		let data = await res.json();
+		console.log(data);
 		Promise.all([fetch(feedUrl), fetch(episodesUrl)])
 			.then(async ([feedRes, episodesRes]) => {
 				let data = await feedRes.json();
+				console.log(data);
 				let feed = data.feed;
 
 				let episodesData = await episodesRes.json();
@@ -88,6 +117,8 @@
 
 				episodes = feed.episodes || [];
 				selectedFeed = feed;
+
+				console.log(episodes);
 			})
 			.catch((err) => {
 				console.error('Error fetching episodes:', err);

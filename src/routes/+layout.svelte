@@ -32,6 +32,8 @@
 				$user.balance = data.balance;
 				$albyReady = true;
 			}
+			const urlWithoutQuery = window.location.href.split('?')[0];
+			window.history.replaceState(null, null, urlWithoutQuery);
 		} else if (!$user.loggedIn) {
 			console.log('refresh');
 			let res = await fetch(remoteServer + '/api/alby/refresh', {

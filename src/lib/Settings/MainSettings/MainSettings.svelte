@@ -47,7 +47,11 @@
 			.catch((error) => console.error(error));
 
 		if (updateAllSplits) {
-			$liveBlocks.forEach((v) => (v.settings.split = $mainSettings.splits));
+			$liveBlocks.forEach((v) => {
+				if (v) {
+					v.settings.split = $mainSettings.splits;
+				}
+			});
 			$liveBlocks = $liveBlocks;
 			fetch(remoteServer + '/api/sk/saveblocks', {
 				method: 'POST',

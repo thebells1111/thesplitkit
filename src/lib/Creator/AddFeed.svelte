@@ -16,8 +16,7 @@
 		selectedFeed = {};
 		selectedEpisode = {};
 		let url =
-			remoteServer +
-			`/api/queryindex?q=${encodeURIComponent(`/search/byterm?q=${indexQuery}&val=lightning`)}`;
+			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/search/byterm?q=${indexQuery}`)}`;
 
 		const res = await fetch(url);
 		let data = await res.json();

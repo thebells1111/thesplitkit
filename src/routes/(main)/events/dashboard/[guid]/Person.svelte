@@ -26,7 +26,7 @@
 	{#each blocks as block, index}
 		<person>
 			<button
-				class:active={broadcastingBlockGuid === block.blockGuid}
+				class:active={broadcastingBlockGuid === block?.blockGuid}
 				on:click={broadcast.bind(this, block, index)}
 			>
 				<img src={block.image || '/splitkit300.png'} alt="person's headshot" />
