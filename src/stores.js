@@ -24,3 +24,5 @@ export const copiedBlock = writable();
 export const copiedEvent = writable();
 export const blocksList = writable();
 export const changeDefault = writable(false);
+
+export const feedShowNotes = writable(''); //this is because of weirdness with TinyMCE and using item.description

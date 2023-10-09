@@ -2,8 +2,11 @@
 	export let feed;
 	export let item;
 	export let screenIndex;
+	import DownloadFeed from './DownloadFeed.svelte';
 
 	let warningMessage = ''; // Initialize as empty string
+
+	console.log(item);
 
 	function isValidURL(str) {
 		try {
@@ -48,22 +51,49 @@
 			warningMessage = `An error occurred. <br/> <br/> This is usually because the file doesn't exist <br/> or Cross Origin Resource Sharing (CORS) <br/> is not enabled on your server.`;
 		}
 	}
+
+	async function downloadFeed() {
+		console.log(feed);
+	}
 </script>
 
-<label>
-	Link to Chapter File
-	<input bind:value={item['podcast:chapters']['@_url']} />
-</label>
-<button on:click={verifyFile.bind(this, 'chapters')}>Verify</button>
+<container>
+	<label>
+		Link to Chapter File
+		<input bind:value={item['podcast:chapters']['@_url']} />
+	</label>
+	<button on:click={verifyFile.bind(this, 'chapters')}>Verify</button>
 
-<label>
-	Link to Transcript File
-	<input bind:value={item['podcast:transcript']['@_url']} />
-</label>
-<button on:click={verifyFile.bind(this, 'transcript')}>Verify</button>
+	<label>
+		Link to Transcript File
+		<input bind:value={item['podcast:transcript']['@_url']} />
+	</label>
+	<button on:click={verifyFile.bind(this, 'transcript')}>Verify</button>
 
-<p>{@html warningMessage}</p>
+	<p>{@html warningMessage}</p>
+</container>
+
+<button-container>
+	<button
+		on:click={() => {
+			screenIndex--;
+		}}>Episode Value</button
+	>
+
+	<DownloadFeed bind:screenIndex bind:feed bind:item />
+</button-container>
 
 <style>
-	/* Add your CSS here */
+	container {
+		display: flex;
+		flex-direction: column;
+		width: calc(100% - 16px);
+		height: calc(100% - 50px);
+	}
+	button-container {
+		width: calc(100% - 16px);
+		margin: 8px 8px 16px 8px;
+		display: flex;
+		justify-content: space-between;
+	}
 </style>

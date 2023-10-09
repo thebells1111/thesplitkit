@@ -39,8 +39,9 @@
 			let res = await fetch(remoteServer + '/api/alby/refresh', {
 				credentials: 'include'
 			});
-
+			console.log(res);
 			let data = await res.json();
+			console.log(data);
 			if (data.lightning_address) {
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
@@ -62,8 +63,12 @@
 			$albyReady = true;
 		}
 		$loaded = true;
+
+		console.log('yo');
 	}
 </script>
+
+<svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
 
 <div class="app">
 	<Header />

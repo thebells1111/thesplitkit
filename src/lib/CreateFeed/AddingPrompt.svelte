@@ -42,8 +42,30 @@
 		};
 
 		const parser = new XMLParser(options);
-		let xmlObj = parser.parse(xml);
-		feed = xmlObj.rss.channel;
+		const xmlObj = parser.parse(xml);
+		const channel = xmlObj.rss.channel;
+		// Update the generator tag
+		channel.generator = feed.generator;
+
+		//normalizeExplicit
+		let explicit = channel['itunes:explicit'];
+		explicit = explicit?.toString()?.toLowerCase()?.trim();
+
+		if (['true', 'yes'].includes(explicit)) {
+			channel['itunes:explicit'] = 'yes';
+		} else if (['false', 'no'].includes(explicit)) {
+			channel['itunes:explicit'] = 'no';
+		} else {
+			channel['itunes:explicit'] = 'no';
+		}
+
+		// Insert missing keys
+		for (const [key, value] of Object.entries(feed)) {
+			if (!channel.hasOwnProperty(key)) {
+				channel[key] = value;
+			}
+		}
+		feed = channel;
 		console.log(feed);
 		screenIndex = 1;
 

@@ -1,14 +1,27 @@
 <script>
+	import { onMount, onDestroy } from 'svelte';
+	import { feedShowNotes } from '$/stores';
 	import AddingPrompt from './AddingPrompt.svelte';
-	import Channel from './Channel.svelte';
-	import ItemEditor from './Item.svelte';
-	import ItemValue from './ItemValue.svelte';
+	import PodcastInfo from './PodcastInfo.svelte';
+	import PodcastValue from './PodcastValue.svelte';
+	import EpisodeInfo from './EpisodeInfo.svelte';
+	import EpisodeValue from './EpisodeValue.svelte';
+	import ShowNotes from './ShowNotes.svelte';
 	import ChaptersTranscripts from './ChaptersTranscripts.svelte';
-	let screens = [AddingPrompt, Channel, ItemEditor, ItemValue, ChaptersTranscripts];
+	let screens = [
+		AddingPrompt,
+		PodcastInfo,
+		PodcastValue,
+		EpisodeInfo,
+		ShowNotes,
+		EpisodeValue,
+		ChaptersTranscripts
+	];
 	let screenIndex = 0;
 	let feed = {
 		image: { url: '' },
 		description: '',
+		author: '',
 		item: [],
 		'podcast:value': {
 			'podcast:valueRecipient': [
@@ -26,7 +39,11 @@
 			'@_suggested': '0.00000005000'
 		},
 		'podcast:medium': 'podcast',
-		'podcast:guid': ''
+		'podcast:guid': '',
+		generator: 'The Split Kit',
+		'itunes:category': { '@_text': 'Music' },
+		'itunes:keywords': '',
+		'itunes:explicit': 'no'
 	};
 	let item = {
 		title: '',
@@ -49,7 +66,6 @@
 			'@_length': '',
 			'@_type': ''
 		},
-		enclosureUrl: '',
 		'podcast:value': {
 			'podcast:valueRecipient': [
 				{
@@ -59,15 +75,6 @@
 					'@_customKey': '',
 					'@_customValue': '',
 					'@_split': ''
-				},
-				{
-					'@_name': 'The Split Kit',
-					'@_customKey': '696969',
-					'@_customValue': 'boPNspwDdt7axih5DfKs',
-					'@_address': '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
-					'@_type': 'node',
-					'@_split': 5,
-					'@_fee': true
 				}
 			],
 			'@_type': 'lightning',
@@ -75,10 +82,14 @@
 			'@_suggested': '0.00000005000'
 		},
 		chaptersUrl: '',
-		transcriptsUrl: ''
+		transcriptsUrl: '',
+		'itunes:explicit': 'no'
 	};
 
 	console.log(item);
+	onDestroy(() => {
+		$feedShowNotes = '';
+	});
 </script>
 
 <svelte:component this={screens[screenIndex]} bind:screenIndex bind:feed bind:item />
