@@ -6,7 +6,7 @@
 
 	import { decode } from 'html-entities';
 	import { remoteServer } from '$/stores';
-	let showInput = true;
+	let showInput = false;
 	let indexQuery = 'Boostagram Ball';
 	let indexResults = [];
 
@@ -111,13 +111,14 @@
 	};
 </script>
 
-<h3>Are you adding this event to an existing feed?</h3>
 {#if showInput}
-	<label>
-		<p>Find feed</p>
-		<input bind:value={indexQuery} />
-	</label>
-	<button on:click={searchPodcastIndex}>Get Feed</button>
+	<feed-finder>
+		<label>
+			<h3>Find feed</h3>
+			<input bind:value={indexQuery} />
+		</label>
+		<button on:click={searchPodcastIndex}>Get Feed</button>
+	</feed-finder>
 	<ul>
 		{#each indexResults as feed}
 			<li class="pi-result" on:click={fetchFeed.bind(this, feed)}>
@@ -127,13 +128,16 @@
 		{/each}
 	</ul>
 {:else}
+	<h3>Are you adding this event to an existing feed?</h3>
 	<button-row>
 		<button
+			class="yes"
 			on:click={() => {
 				showInput = true;
 			}}>Yes</button
 		>
 		<button
+			class="no"
 			on:click={() => {
 				screenIndex = 1;
 			}}>No</button
@@ -166,5 +170,54 @@
 	img {
 		border: 1px solid gray;
 		margin-right: 0.5em;
+	}
+
+	button {
+		width: 80px;
+		margin: 0 8px;
+	}
+
+	.yes {
+		background-color: var(--color-theme-blue);
+	}
+
+	.no {
+		background-color: var(--color-theme-purple);
+	}
+
+	feed-finder {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+	}
+
+	feed-finder h3 {
+		text-align: center;
+		margin: 0;
+	}
+	feed-finder label {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+	}
+
+	feed-finder input {
+		margin: 12px;
+		width: calc(100% - 24px);
+		max-width: 360px;
+	}
+
+	feed-finder button {
+		width: calc(100% - 16px);
+
+		max-width: 360px;
+		margin-bottom: 12px;
+	}
+
+	li {
+		cursor: pointer;
 	}
 </style>

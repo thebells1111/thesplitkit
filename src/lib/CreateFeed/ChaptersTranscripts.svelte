@@ -3,6 +3,7 @@
 	export let item;
 	export let screenIndex;
 	import DownloadFeed from './DownloadFeed.svelte';
+	import ChaptersCreator from '$routes/(main)/chapters/[guid]/+page.svelte';
 
 	let warningMessage = ''; // Initialize as empty string
 
@@ -22,21 +23,23 @@
 		warningMessage = '';
 
 		if (!isValidURL(url)) {
-			warningMessage = 'Invalid URL';
+			warningMessage = `Invalid ${type.charAt(0).toUpperCase() + type.slice(1)} URL`;
 			return;
 		}
 
 		try {
 			const response = await fetch(url);
 			if (!response.ok) {
-				warningMessage = 'No File is returned from that URL';
+				warningMessage = `No File is returned from the ${
+					type.charAt(0).toUpperCase() + type.slice(1)
+				} URL`;
 				return;
 			}
 			const contentType = response.headers.get('Content-Type');
 
 			if (type === 'chapters') {
 				if (!contentType || !contentType.includes('application/json')) {
-					warningMessage = "Improper Chapter File Type. Ensure it's a JSON file.";
+					warningMessage = "Improper Chapters File Type. Ensure it's a JSON file.";
 				}
 			} else if (type === 'transcript') {
 				if (
@@ -57,20 +60,29 @@
 	}
 </script>
 
+<h2>Chapters & Transcripts</h2>
 <container>
-	<label>
-		Link to Chapter File
-		<input bind:value={item['podcast:chapters']['@_url']} />
-	</label>
-	<button on:click={verifyFile.bind(this, 'chapters')}>Verify</button>
+	<verify>
+		<label>
+			Link to Chapters File
+			<input bind:value={item['podcast:chapters']['@_url']} />
+		</label>
+		<button on:click={verifyFile.bind(this, 'chapters')}>Verify</button>
+	</verify>
 
-	<label>
-		Link to Transcript File
-		<input bind:value={item['podcast:transcript']['@_url']} />
-	</label>
-	<button on:click={verifyFile.bind(this, 'transcript')}>Verify</button>
+	<verify>
+		<label>
+			Link to Transcript File
+			<input bind:value={item['podcast:transcript']['@_url']} />
+		</label>
+		<button on:click={verifyFile.bind(this, 'transcript')}>Verify</button>
+	</verify>
 
-	<p>{@html warningMessage}</p>
+	<p class="warning">{@html warningMessage}</p>
+
+	<chapters>
+		<ChaptersCreator />
+	</chapters>
 </container>
 
 <button-container>
@@ -84,16 +96,62 @@
 </button-container>
 
 <style>
+	h2 {
+		margin: 0;
+		color: var(--color-theme-2);
+		text-align: center;
+	}
+
 	container {
 		display: flex;
 		flex-direction: column;
 		width: calc(100% - 16px);
 		height: calc(100% - 50px);
+		overflow: auto;
+	}
+
+	chapters {
+		flex: 1;
+		position: relative;
+		top: -16px;
 	}
 	button-container {
 		width: calc(100% - 16px);
 		margin: 8px 8px 16px 8px;
 		display: flex;
 		justify-content: space-between;
+	}
+
+	label {
+		display: flex;
+		flex-direction: column;
+		font-weight: 600;
+		margin: 6px 8px;
+		color: var(--color-theme-2);
+	}
+
+	input {
+		margin: 0 8px;
+	}
+
+	.warning {
+		color: red;
+		font-weight: bold;
+		font-size: 0.9em;
+		text-align: center;
+		min-height: 32px;
+		margin: 0px;
+	}
+
+	verify {
+		display: flex;
+	}
+
+	verify label {
+		flex: 1;
+	}
+	verify button {
+		align-self: flex-end;
+		margin: 0 16px 8px 0;
 	}
 </style>

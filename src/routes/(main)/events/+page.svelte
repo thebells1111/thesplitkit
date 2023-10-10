@@ -2,21 +2,20 @@
 	import { onMount, beforeUpdate } from 'svelte';
 	import Delete from '$lib/icons/Delete.svelte';
 	import CopyIcon from '$lib/icons/Copy.svelte';
-	import { remoteServer, albyReady, copiedEvent } from '$/stores';
-	import Eye from '$lib/icons/Eye.svelte';
+	import { remoteServer, albyReady, events } from '$/stores';
 	import Event from '$lib/icons/Event.svelte';
-	import Save from '$lib/icons/Save.svelte';
 
-	let events = [];
-	let initiate = false;
-	let loading = true;
+	let copiedEvent;
+	let loading = false;
 	let screenWidth;
 
-	$: if (initiate && $albyReady) {
-		getEvents();
+	$: if ($albyReady) {
+		if (!$events.length) {
+			loading = true;
+			getEvents();
+		}
 	}
 	onMount(() => {
-		initiate = true;
 		screenWidth = window.innerWidth;
 		window.addEventListener('resize', updateScreenWidth); // update screen width on window resize
 	});
@@ -30,17 +29,28 @@
 	}
 
 	async function getEvents() {
-		setTimeout(() => (loading = false), 1000);
 		let res = await fetch(remoteServer + '/api/sk/getevents', { credentials: 'include' });
 		let data = await res.json();
-		events = data.events || [];
-		console.log(events);
+		$events = reverseArray(data.events) || [];
+		setTimeout(() => (loading = false), 1000);
+		console.log($events);
+	}
+
+	function reverseArray(arr) {
+		let start = 0;
+		let end = arr.length - 1;
+		while (start < end) {
+			[arr[start], arr[end]] = [arr[end], arr[start]];
+			start++;
+			end--;
+		}
+		return arr;
 	}
 
 	async function deleteEvent(eventObj) {
 		let remove = confirm(`Are you sure you want to delete ${eventObj.eventName}?`);
 		if (remove) {
-			events = events.filter((v) => eventObj.guid !== v.guid);
+			$events = events.filter((v) => eventObj.guid !== v.guid);
 			let res = await fetch(remoteServer + '/api/sk/deleteguid?guid=' + eventObj.guid, {
 				credentials: 'include'
 			});
@@ -49,7 +59,7 @@
 	}
 
 	function handleCopy(event) {
-		$copiedEvent = event;
+		copiedEvent = event;
 	}
 </script>
 
@@ -65,7 +75,7 @@
 				<p>Create New Event</p>
 				<Event size="30" />
 			</a>
-			{#each events as event}
+			{#each $events as event}
 				<a
 					href={screenWidth > 760
 						? '/events/dashboard/' + event.guid
@@ -84,9 +94,9 @@
 				</a>
 			{/each}
 
-			{#if $copiedEvent}
-				<a class="copy" href={`/events/creator/${$copiedEvent.guid}`}>
-					<p>Paste a copy of "{$copiedEvent.eventName}"</p>
+			{#if copiedEvent}
+				<a class="copy" href={`/events/creator/${copiedEvent.guid}`}>
+					<p>Paste a copy of "{copiedEvent.eventName}"</p>
 					<CopyIcon size="30" />
 				</a>
 			{/if}
@@ -161,7 +171,7 @@
 	img {
 		width: 200px;
 		height: 200px;
-		animation: fade-out 1s linear;
+		animation: fade-out 2s linear;
 		position: relative;
 		z-index: 999;
 	}

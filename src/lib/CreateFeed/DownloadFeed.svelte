@@ -17,13 +17,28 @@
 
 	async function verifyFeed() {
 		if (!feed.title) {
-			warningMessage += 'You podcast needs a title/n';
-		}
-		if (!feed.description) {
-			warningMessage += 'You podcast needs a description/n';
+			warningMessage += 'Your podcast needs a title./n';
 		}
 		if (!feed?.image?.url) {
-			warningMessage += 'You podcast needs an image/n';
+			warningMessage += 'Your podcast needs an image./n';
+		}
+		if (!feed?.link) {
+			warningMessage += 'Your podcast needs a website link./n';
+		}
+		if (!feed?.description) {
+			warningMessage += 'Your podcast needs a description./n';
+		}
+		if (!feed?.['itunes:explicit']) {
+			warningMessage += 'Click Yes or No on Podcast Explicit Content/n';
+		}
+		if (!item.title) {
+			warningMessage += 'Your episode needs a title./n';
+		}
+		if (!item?.enclosure?.['@_url']) {
+			warningMessage += 'Your episode needs an audio file./n';
+		}
+		if (!item?.duration) {
+			warningMessage += 'Click Get Audio Duration for your Episode./n';
 		}
 	}
 
