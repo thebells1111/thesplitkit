@@ -2,7 +2,7 @@
 	export let feed;
 	export let item;
 	export let screenIndex;
-	import { feedShowNotes } from '$/stores';
+	import clone from 'just-clone';
 
 	let warningMessage = ''; // Initialize as empty string
 
@@ -31,6 +31,8 @@
 		if (!feed?.['itunes:explicit']) {
 			warningMessage += 'Click Yes or No on Podcast Explicit Content/n';
 		}
+
+		warningMessage += checkValue(feed, 'podcast');
 		if (!item.title) {
 			warningMessage += 'Your episode needs a title./n';
 		}
@@ -40,6 +42,9 @@
 		if (!item?.duration) {
 			warningMessage += 'Click Get Audio Duration for your Episode./n';
 		}
+		warningMessage += checkValue(item, 'episode');
+
+		console.log(warningMessage);
 	}
 
 	async function verifyFile(type) {
@@ -77,14 +82,78 @@
 		}
 	}
 
+	function checkValue(obj, type) {
+		console.log(obj);
+		let warning = '';
+		let totalSplit = 0;
+
+		obj['podcast:value'] = obj?.['podcast:value'] || {
+			'podcast:valueRecipient': [
+				{
+					'@_name': '',
+					'@_address': '',
+					'@_type': 'node',
+					'@_customKey': '',
+					'@_customValue': '',
+					'@_split': ''
+				}
+			],
+			'@_type': 'lightning',
+			'@_method': 'keysend',
+			'@_suggested': '0.00000005000'
+		};
+		let value = obj['podcast:value'];
+
+		value['podcast:valueRecipient'] = [].concat(value['podcast:valueRecipient']).filter((v) => v);
+		console.log(value);
+
+		if (value?.['podcast:valueRecipient']?.length === 0) {
+			warning += `Provide a value recipient for your ${type}.\n`;
+		} else if (
+			value?.['podcast:valueRecipient']?.length === 1 &&
+			!value['podcast:valueRecipient']['@_name'] &&
+			!value['podcast:valueRecipient']['@_address']
+		) {
+			obj['podcast:value'] = clone(feed['podcast:value']);
+			value = obj['podcast:value'];
+		} else {
+			value['podcast:valueRecipient'].forEach((recipient, i) => {
+				if (!recipient['@_name']) {
+					warning += `Recipient ${i} in ${type} doesn't have a name.\n`;
+				}
+				if (!recipient['@_address']) {
+					let recipientName = recipient['@_name'] || `Recipient ${i}`;
+					warning += `${recipientName} in ${type} doesn't have an address.\n`;
+				}
+				if (!recipient['@_split']) {
+					let recipientName = recipient['@_name'] || `Recipient ${i}`;
+					warning += `${recipientName} in ${type} doesn't have a split.\n`;
+				} else {
+					recipient['@_split'] = Number(recipient['@_split']);
+					totalSplit += recipient['@_split'];
+				}
+			});
+
+			if (totalSplit !== 100) {
+				warning += type.charAt(0).toUpperCase() + type.slice(1) + " splits don't add up to 100%.\n";
+			}
+		}
+
+		return warning;
+	}
+
 	async function downloadFeed() {
+		verifyFeed();
 		console.log(feed);
 		console.log(item);
-		console.log($feedShowNotes);
 	}
 </script>
 
 <button on:click={downloadFeed}>Download Feed</button>
+
+<div>
+	<p>{@html warningMessage}</p>
+</div>
 
 <style>
 	/* Add your CSS here */

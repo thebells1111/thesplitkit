@@ -20,7 +20,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@ffmpeg/ffmpeg": "^0.12.6",
 		"@fontsource/fira-mono": "^5.0.3",
 		"@sveltejs/adapter-vercel": "^3.0.1",
 		"axios": "^1.4.0",
@@ -40,7 +39,7 @@
 		"mongodb": "^5.6.0",
 		"qrcode": "^1.5.3",
 		"socket.io-client": "^4.7.0",
-		"uuid": "^9.0.0",
-		"tinymce": "^5.10.4"
+		"tinymce": "^5.10.4",
+		"uuid": "^9.0.0"
 	}
 }

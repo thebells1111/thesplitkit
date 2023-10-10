@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
 	import { onMount } from 'svelte';
 	import { remoteServer } from '$/stores';
 
@@ -92,4 +92,4 @@
 
 <input type="text" bind:value={mp3Url} placeholder="MP3 URL" />
 <input type="text" bind:value={chaptersUrl} placeholder="Chapters JSON URL" />
-<button on:click={generateMp4}>Generate MP4</button>
+<button on:click={generateMp4}>Generate MP4</button> -->
