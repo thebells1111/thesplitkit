@@ -21,7 +21,7 @@
 	let feed = {
 		image: { url: '' },
 		description: '',
-		author: '',
+		'itunes:author': '',
 		item: [],
 		'podcast:value': {
 			'podcast:valueRecipient': [
