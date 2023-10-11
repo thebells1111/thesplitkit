@@ -151,9 +151,9 @@
 	}
 
 	async function downloadFeed() {
-		verifyFeed();
 		console.log(feed);
 		console.log(item);
+		verifyFeed();
 		createFeed();
 	}
 </script>
