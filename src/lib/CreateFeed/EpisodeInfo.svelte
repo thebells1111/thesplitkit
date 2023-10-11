@@ -11,28 +11,22 @@
 	async function handleImportAudio() {
 		warningMessage = ''; // Clear warning
 
-		const url =
-			'https://phantompowermusichour.nyc3.digitaloceanspaces.com/PPMHEpisode6/PPMHEpisode6.mp3' ||
-			item.enclosure['@_url'];
+		const url = item.enclosure['@_url'];
 		if (!url) return;
 
 		try {
-			const response = await fetch(url, { method: 'HEAD' });
-			const contentType = response.headers.get('Content-Type');
-
-			if (contentType && contentType.startsWith('audio/')) {
-				item.enclosure['@_url'] = url;
-				item.enclosure['@_length'] = response.headers.get('Content-Length') || '';
-				item.enclosure['@_type'] = contentType;
-
-				// Get audio duration
-				const audio = new Audio(url);
-				audio.addEventListener('loadedmetadata', function () {
-					item.duration = formatDuration(audio.duration);
-				});
-				audio.load();
-			} else {
-				warningMessage = 'Not an audio file.';
+			const audio = new Audio(url);
+			audio.addEventListener('loadedmetadata', function () {
+				item.duration = formatDuration(audio.duration);
+			});
+			audio.load();
+			const res = await fetch('/api/enclosurelength?q=' + encodeURIComponent(url));
+			const data = await res.json();
+			item.enclosure['@_url'] = data.url;
+			item.enclosure['@_length'] = Number(data.length) || 0;
+			item.enclosure['@_type'] = data.type;
+			if (data.error) {
+				throw new Error(data.error);
 			}
 		} catch (error) {
 			warningMessage = `An error occurred. <br/> <br/> This is usually because the file doesn't exist <br/> or Cross Origin Resource Sharing (CORS) <br/> is not enabled on your server.`;

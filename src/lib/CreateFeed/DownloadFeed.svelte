@@ -1,4 +1,6 @@
 <script>
+	import { v4 as uuidv4 } from 'uuid';
+
 	export let feed;
 	export let item;
 	export let screenIndex;
@@ -77,10 +79,16 @@
 		}
 	}
 
+	async function createFeed() {
+		feed['podcast:guid'] = feed['podcast:guid'] || uuidv4();
+
+		console.log(feed);
+	}
+
 	async function downloadFeed() {
 		console.log(feed);
 		console.log(item);
-		console.log($feedShowNotes);
+		createFeed();
 	}
 </script>
 

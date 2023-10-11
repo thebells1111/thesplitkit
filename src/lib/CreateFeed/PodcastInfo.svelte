@@ -7,7 +7,7 @@
 	console.log(item);
 	console.log(feed);
 
-	feed.author = feed.author || feed['itunes:author'];
+	feed['itunes:author'] = feed['itunes:author'] || feed.author;
 </script>
 
 <container>
@@ -51,7 +51,7 @@
 	<underline />
 	<optional>
 		<label>
-			Podcast Author <input bind:value={feed.author} placeholder="(optional)" />
+			Podcast Author <input bind:value={feed['itunes:author']} placeholder="(optional)" />
 		</label>
 		<label>
 			Podcast Keywords <input bind:value={feed['itunes:keywords']} placeholder="(optional)" />
