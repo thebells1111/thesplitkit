@@ -57,28 +57,24 @@
 		}
 
 		try {
-			const response = await fetch(url);
+			const response = await fetch(`/api/proxy?q=${encodeURIComponent(url)}`);
 			if (!response.ok) {
 				warningMessage = 'No File is returned from that URL';
 				return;
 			}
-			const contentType = response.headers.get('Content-Type');
 
-			if (type === 'chapters') {
-				if (!contentType || !contentType.includes('application/json')) {
-					warningMessage = "Improper Chapter File Type. Ensure it's a JSON file.";
-				}
-			} else if (type === 'transcript') {
-				if (
-					!contentType ||
-					(!contentType.includes('application/x-subrip') &&
-						!contentType.includes('application/srt'))
-				) {
-					warningMessage = "Improper Transcript File Type. Ensure it's an SRT file.";
-				}
+			const contentType = await response.text();
+
+			if (type === 'chapters' && contentType !== 'application/json') {
+				warningMessage = "Improper Chapter File Type. Ensure it's a JSON file.";
+			} else if (
+				type === 'transcript' &&
+				!['application/x-subrip', 'application/srt'].includes(contentType)
+			) {
+				warningMessage = "Improper Transcript File Type. Ensure it's an SRT file.";
 			}
 		} catch (error) {
-			warningMessage = `An error occurred. <br/> <br/> This is usually because the file doesn't exist <br/> or Cross Origin Resource Sharing (CORS) <br/> is not enabled on your server.`;
+			warningMessage = 'An error occurred while verifying the file.';
 		}
 	}
 
