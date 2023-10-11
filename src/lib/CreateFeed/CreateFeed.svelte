@@ -81,8 +81,6 @@
 			'@_method': 'keysend',
 			'@_suggested': '0.00000005000'
 		},
-		chaptersUrl: '',
-		transcriptsUrl: '',
 		'itunes:explicit': 'no'
 	};
 

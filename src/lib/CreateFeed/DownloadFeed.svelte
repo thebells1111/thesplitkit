@@ -45,8 +45,6 @@
 			warningMessage += 'Click Get Audio Duration for your Episode./n';
 		}
 		warningMessage += checkValue(item, 'episode');
-
-		console.log(warningMessage);
 	}
 
 	async function verifyFile(type) {
@@ -87,11 +85,31 @@
 	async function createFeed() {
 		feed['podcast:guid'] = feed['podcast:guid'] || uuidv4();
 
+		let _item = clone(item);
+
+		_item['itunes:author'] = feed['itunes:author'];
+		_item.guid['#text'] = uuidv4();
+
+		if (!_item['itunes:author']) {
+			delete _item['itunes:author'];
+		}
+		if (!_item?.description) {
+			delete _item.description;
+		}
+		if (!_item?.['itunes:image']?.['@_href']) {
+			delete _item['itunes:image'];
+		}
+		if (!_item?.['podcast:chapters']?.['@_url']) {
+			delete _item['podcast:chapters'];
+		}
+		if (!_item?.['podcast:transcript']?.['@_url']) {
+			delete _item['podcast:transcript'];
+		}
+		feed.item = [_item, ...feed.item];
 		console.log(feed);
 	}
 
 	function checkValue(obj, type) {
-		console.log(obj);
 		let warning = '';
 		let totalSplit = 0;
 
@@ -113,7 +131,6 @@
 		let value = obj['podcast:value'];
 
 		value['podcast:valueRecipient'] = [].concat(value['podcast:valueRecipient']).filter((v) => v);
-		console.log(value);
 
 		if (value?.['podcast:valueRecipient']?.length === 0) {
 			warning += `Provide a value recipient for your ${type}.\n`;
@@ -138,7 +155,7 @@
 					warning += `${recipientName} in ${type} doesn't have a split.\n`;
 				} else {
 					recipient['@_split'] = Number(recipient['@_split']);
-					totalSplit += recipient['@_split'];
+					totalSplit += recipient['@_fee'] ? 0 : recipient['@_split'];
 				}
 			});
 
