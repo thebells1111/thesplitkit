@@ -1,5 +1,6 @@
 <script>
 	import { v4 as uuidv4 } from 'uuid';
+	import parser from 'fast-xml-parser';
 
 	export let feed;
 	export let item;
@@ -7,6 +8,24 @@
 	import clone from 'just-clone';
 
 	let warningMessage = ''; // Initialize as empty string
+	let rssErrors = [];
+	let showErrorModal = false;
+	let showPublishModal = false;
+	let showXMLModal = false;
+	let xmlFile;
+
+	let js2xml = new parser.j2xParser({
+		attributeNamePrefix: '@_',
+		//attrNodeName: false,
+		textNodeName: '#text',
+		ignoreAttributes: false,
+		ignoreNameSpace: false,
+		format: true,
+		indentBy: '  ',
+		supressEmptyNode: true,
+		attrValueProcessor: (val, attrName) => escapeAttr(`${val}`),
+		tagValueProcessor: (val, tagName) => escapeTag(`${val}`)
+	});
 
 	function isValidURL(str) {
 		try {
@@ -18,33 +37,41 @@
 	}
 
 	async function verifyFeed() {
+		rssErrors = [];
 		if (!feed.title) {
-			warningMessage += 'Your podcast needs a title./n';
+			rssErrors.push('Your podcast needs a title.');
 		}
 		if (!feed?.image?.url) {
-			warningMessage += 'Your podcast needs an image./n';
+			rssErrors.push('Your podcast needs an image.');
 		}
 		if (!feed?.link) {
-			warningMessage += 'Your podcast needs a website link./n';
+			rssErrors.push('Your podcast needs a website link.');
 		}
 		if (!feed?.description) {
-			warningMessage += 'Your podcast needs a description./n';
+			rssErrors.push('Your podcast needs a description.');
 		}
 		if (!feed?.['itunes:explicit']) {
-			warningMessage += 'Click Yes or No on Podcast Explicit Content/n';
+			rssErrors.push('Click Yes or No on Podcast Explicit Content');
 		}
 
-		warningMessage += checkValue(feed, 'podcast');
+		rssErrors.push(checkValue(feed, 'podcast'));
 		if (!item.title) {
-			warningMessage += 'Your episode needs a title./n';
+			rssErrors.push('Your episode needs a title.');
 		}
 		if (!item?.enclosure?.['@_url']) {
-			warningMessage += 'Your episode needs an audio file./n';
+			rssErrors.push('Your episode needs an audio file.');
 		}
 		if (!item?.duration) {
-			warningMessage += 'Click Get Audio Duration for your Episode./n';
+			rssErrors.push('Click Get Audio Duration for your Episode.');
 		}
-		warningMessage += checkValue(item, 'episode');
+		rssErrors.push(checkValue(item, 'episode'));
+
+		if (rssErrors.length) {
+			showErrorModal = true;
+			console.log(rssErrors);
+		} else {
+			createFeed();
+		}
 	}
 
 	async function verifyFile(type) {
@@ -79,9 +106,19 @@
 	}
 
 	async function createFeed() {
+		let rss = {
+			'@_version': '2.0',
+			'@_xmlns:itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
+			'@_xmlns:podcast':
+				'https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md'
+		};
+
 		feed['podcast:guid'] = feed['podcast:guid'] || uuidv4();
 
 		let _item = clone(item);
+
+		_item.pubDate =
+			new Date(new Date().getTime() - 60000 * index).toUTCString().split(' GMT')[0] + ' +0000';
 
 		_item['itunes:author'] = feed['itunes:author'];
 		_item.guid['#text'] = uuidv4();
@@ -102,7 +139,13 @@
 			delete _item['podcast:transcript'];
 		}
 		feed.item = [_item, ...feed.item];
-		console.log(feed);
+
+		rss.channel = feed;
+
+		let xmlJson = { rss: rss };
+
+		xmlFile = js2xml.parse(xmlJson);
+		console.log(xmlJson.rss.channel);
 	}
 
 	function checkValue(obj, type) {
@@ -167,7 +210,6 @@
 		console.log(feed);
 		console.log(item);
 		verifyFeed();
-		createFeed();
 	}
 </script>
 
