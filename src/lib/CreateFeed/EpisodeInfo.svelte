@@ -1,14 +1,18 @@
 <script>
 	import { remoteServer } from '$/stores';
+	import Spinner from '$lib/loaders/Spinner.svelte';
 
 	export let screenIndex;
 	export let feed;
 	export let item;
 	console.log(item);
 
+	let showLoading = false;
+
 	let warningMessage = '';
 
 	async function handleImportAudio() {
+		showLoading = true;
 		warningMessage = ''; // Clear warning
 
 		const url = item.enclosure['@_url'];
@@ -32,6 +36,7 @@
 			warningMessage = `An error occurred. <br/> <br/> This is usually because the file doesn't exist <br/> or Cross Origin Resource Sharing (CORS) <br/> is not enabled on your server.`;
 			console.error('Fetch error:', error);
 		}
+		showLoading = false;
 	}
 
 	function formatDuration(seconds) {
@@ -111,6 +116,13 @@
 		<div class="warning">{@html warningMessage}</div>
 	{/if}
 </container>
+
+{#if showLoading}
+	<loader>
+		<Spinner color="var(--color-theme-purple)" />
+		<h1>Determining Duration</h1>
+	</loader>
+{/if}
 
 <button-container>
 	<button
@@ -234,5 +246,24 @@
 
 	optional label {
 		margin-bottom: 8px;
+	}
+
+	loader {
+		display: flex;
+		flex-direction: column;
+		position: fixed;
+		height: 100vh;
+		width: 100vw;
+		align-items: center;
+		justify-content: center;
+		bottom: 50px;
+		filter: drop-shadow(2px 2px 4px #000000);
+	}
+
+	loader h1 {
+		position: relative;
+		bottom: 80px;
+		margin: 0;
+		color: var(--color-theme-purple);
 	}
 </style>
