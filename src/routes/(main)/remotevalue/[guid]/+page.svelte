@@ -14,6 +14,8 @@
 	let remoteValues = [];
 	let xmlText = '';
 	let userDanger = true;
+	export let showDownloadFeed;
+	export let isFeedDownload;
 
 	onMount(loadBlocks);
 
@@ -25,7 +27,7 @@
 		}
 
 		if ($liveBlocks?.length) {
-			const blocks = $liveBlocks.filter((v) => !v?.settings?.default);
+			const blocks = $liveBlocks.slice(1);
 			badStartBlocks = blocks.filter((v) => v && !v.startTime);
 			badValueBlocks = blocks.filter((v) => v && !v?.value?.destinations?.length);
 
@@ -91,6 +93,10 @@
 				});
 			}
 		}
+
+		if (!(badStartBlocks?.length || badValueBlocks?.length)) {
+			showDownloadFeed = true;
+		}
 	}
 
 	function copyText() {
@@ -126,11 +132,17 @@
 		{/if}
 		<button
 			on:click={() => {
-				userDanger = false;
-				loadBlocks();
+				if (isFeedDownload) {
+					showDownloadFeed = true;
+				} else {
+					userDanger = false;
+					loadBlocks();
+				}
 			}}
 		>
-			I understand.<br />Show me the good splits.
+			I understand.<br />{isFeedDownload
+				? "I don't want those blocks in my feed"
+				: 'Show me the good splits.'}
 		</button>
 	</warning-container>
 {:else}

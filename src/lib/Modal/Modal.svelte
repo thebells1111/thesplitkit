@@ -2,6 +2,7 @@
 	import Close from '$lib/icons/Close.svelte';
 	export let showModal;
 	export let unsaved = false;
+	export let isFeedDownload = false;
 	export let onClose = () => {};
 	function closeModal() {
 		onClose();
@@ -10,6 +11,13 @@
 			if (userConfirmation) {
 				showModal = false;
 				unsaved = false;
+			}
+		} else if (isFeedDownload) {
+			const userConfirmation = window.confirm(
+				'Do you want to leave without downloading your feed? \nYour progress will be lost.'
+			);
+			if (userConfirmation) {
+				showModal = false;
 			}
 		} else {
 			showModal = false;

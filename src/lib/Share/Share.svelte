@@ -32,6 +32,7 @@
 	let showShowNotesModal = false;
 	let showImportModal = false;
 	let showFeedModal = false;
+	let showDownloadFeed = false;
 
 	if (liveGuid) {
 		guid = liveGuid;
@@ -284,8 +285,18 @@
 {/if}
 
 {#if showFeedModal}
-	<Modal bind:showModal={showFeedModal}>
-		<CreateFeed />
+	<Modal
+		bind:showModal={showFeedModal}
+		isFeedDownload={true}
+		onClose={() => {
+			showDownloadFeed = false;
+		}}
+	>
+		{#if showDownloadFeed}
+			<CreateFeed />
+		{:else}
+			<RemoteValue bind:showDownloadFeed isFeedDownload={true} />
+		{/if}
 	</Modal>
 {/if}
 

@@ -20,7 +20,7 @@
 	<button
 		on:click={() => {
 			screenIndex++;
-		}}>Chapters/Transcripts</button
+		}}>Chapters/Transcript</button
 	>
 </button-container>
 

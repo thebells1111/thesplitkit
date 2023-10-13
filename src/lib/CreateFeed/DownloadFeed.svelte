@@ -1,6 +1,8 @@
 <script>
 	import { v4 as uuidv4 } from 'uuid';
-	import parser from 'fast-xml-parser';
+	import { XMLParser, XMLBuilder } from 'fast-xml-parser';
+	import { onMount } from 'svelte';
+	import { liveBlocks } from '$/stores';
 
 	export let feed;
 	export let item;
@@ -9,23 +11,45 @@
 
 	let warningMessage = ''; // Initialize as empty string
 	let rssErrors = [];
-	let showErrorModal = false;
-	let showPublishModal = false;
-	let showXMLModal = false;
 	let xmlFile;
 
-	let js2xml = new parser.j2xParser({
+	onMount(verifyFeed);
+
+	let buildOptions = {
 		attributeNamePrefix: '@_',
-		//attrNodeName: false,
 		textNodeName: '#text',
 		ignoreAttributes: false,
-		ignoreNameSpace: false,
 		format: true,
 		indentBy: '  ',
+		processEntities: false,
 		supressEmptyNode: true,
-		attrValueProcessor: (val, attrName) => escapeAttr(`${val}`),
-		tagValueProcessor: (val, tagName) => escapeTag(`${val}`)
-	});
+		allowBooleanAttributes: true,
+		suppressBooleanAttributes: false,
+		attributeValueProcessor: (name, val, jPath) => escapeAttr(name, val, jPath),
+		tagValueProcessor: (name, val, jPath) => escapeTag(name, val, jPath)
+	};
+
+	const escapeAttr = (name, val, jPath) => {
+		return `${val}`.replace(
+			/[&<>'"]/g,
+			(tag) =>
+				({
+					'&': '&amp;',
+					'<': '&lt;',
+					'>': '&gt;',
+					"'": '&#39;',
+					'"': '&quot;'
+				}[tag])
+		);
+	};
+
+	const escapeTag = (name, val, jPath) => {
+		let str = `${val}`;
+		if (str.match(/[&<>'"]/g)) {
+			return '<![CDATA[' + str + ']]>';
+		}
+		return str;
+	};
 
 	function isValidURL(str) {
 		try {
@@ -65,13 +89,8 @@
 			rssErrors.push('Click Get Audio Duration for your Episode.');
 		}
 		rssErrors.push(checkValue(item, 'episode'));
-
-		if (rssErrors.length) {
-			showErrorModal = true;
-			console.log(rssErrors);
-		} else {
-			createFeed();
-		}
+		rssErrors = rssErrors.filter((v) => v);
+		createVTS();
 	}
 
 	async function verifyFile(type) {
@@ -117,8 +136,7 @@
 
 		let _item = clone(item);
 
-		_item.pubDate =
-			new Date(new Date().getTime() - 60000 * index).toUTCString().split(' GMT')[0] + ' +0000';
+		_item.pubDate = new Date().toUTCString().split(' GMT')[0] + ' +0000';
 
 		_item['itunes:author'] = feed['itunes:author'];
 		_item.guid['#text'] = uuidv4();
@@ -144,7 +162,9 @@
 
 		let xmlJson = { rss: rss };
 
-		xmlFile = js2xml.parse(xmlJson);
+		const builder = new XMLBuilder(buildOptions);
+		xmlFile = builder.build(xmlJson);
+		console.log(xmlFile);
 		console.log(xmlJson.rss.channel);
 	}
 
@@ -211,14 +231,110 @@
 		console.log(item);
 		verifyFeed();
 	}
+
+	function createVTS() {
+		let xmlText = '';
+		let vts = [];
+		if ($liveBlocks?.length) {
+			const blocks = $liveBlocks.slice(1);
+
+			vts = blocks.map((v) => {
+				let n = { 'podcast:remoteItem': {} };
+				if (v) {
+					if (v.startTime && v.duration && v?.value?.destinations?.length) {
+						if (v.startTime) {
+							n['@_startTime'] = Number(v.startTime);
+							n['@_remotePercentage'] = Number(v?.settings?.split || 100);
+						}
+						if (v.duration) {
+							n['@_duration'] = v.duration;
+						}
+
+						if (v.feedGuid) {
+							n['podcast:remoteItem']['@_feedGuid'] = v.feedGuid;
+						}
+						if (v.itemGuid) {
+							n['podcast:remoteItem']['@_itemGuid'] = v.itemGuid;
+						}
+
+						v.value.destinations.forEach((w) => {
+							// <podcast:valueRecipient name="Alice (Podcaster)" type="node" address="02d5c1bf8b940dc9cadca86d1b0a3c37fbe39cee4c7e839e33bef9174531d27f52" split="85" />
+							xmlText += '\n    ';
+							xmlText += `type="node"`;
+							if (w.name) {
+								xmlText += '\n    ';
+								xmlText += `name="${w.name}"`;
+							}
+							xmlText += '\n    ';
+							xmlText += `address="${w.address}"`;
+							if (w.customKey) {
+								xmlText += '\n    ';
+								xmlText += `customKey="${w.customKey}"`;
+							}
+							if (w.customValue) {
+								xmlText += '\n    ';
+								xmlText += `customValue="${w.customValue}"`;
+							}
+
+							xmlText += '\n    ';
+							xmlText += `split="${w.split || 100}"`;
+
+							console.log(w);
+						});
+
+						xmlText += '\n  />\n';
+					}
+
+					xmlText += '</podcast:valueTimeSplit>';
+					xmlText += '\n';
+				}
+				return n;
+			});
+		}
+
+		console.log(vts);
+	}
 </script>
 
-<button on:click={downloadFeed}>Download Feed</button>
-
-<div>
-	<p>{@html warningMessage}</p>
-</div>
+<container>
+	{#if rssErrors.length}
+		<h2>Go back and fix these issues.</h2>
+		<ul>
+			{#each rssErrors as errorMsg}
+				<li>{errorMsg}</li>
+			{/each}
+		</ul>
+	{:else}
+		<button on:click={downloadFeed}>Download Feed</button>
+	{/if}
+</container>
+<button-container>
+	<button
+		on:click={() => {
+			screenIndex--;
+		}}>Chapters/Transcript</button
+	>
+</button-container>
 
 <style>
-	/* Add your CSS here */
+	container {
+		display: flex;
+		flex-direction: column;
+		width: calc(100% - 16px);
+		height: calc(100% - 50px);
+		overflow: auto;
+		align-items: center;
+	}
+
+	h2 {
+		margin: 0;
+		color: var(--color-theme-2);
+		text-align: center;
+	}
+	button-container {
+		width: calc(100% - 16px);
+		margin: 8px 8px 16px 8px;
+		display: flex;
+		justify-content: space-between;
+	}
 </style>

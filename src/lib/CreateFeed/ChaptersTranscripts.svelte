@@ -92,7 +92,11 @@
 		}}>Episode Value</button
 	>
 
-	<DownloadFeed bind:screenIndex bind:feed bind:item />
+	<button
+		on:click={() => {
+			screenIndex++;
+		}}>Download Feed</button
+	>
 </button-container>
 
 <style>

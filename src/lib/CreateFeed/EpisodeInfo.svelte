@@ -258,6 +258,7 @@
 		justify-content: center;
 		bottom: 50px;
 		filter: drop-shadow(2px 2px 4px #000000);
+		backdrop-filter: blur(5px);
 	}
 
 	loader h1 {
