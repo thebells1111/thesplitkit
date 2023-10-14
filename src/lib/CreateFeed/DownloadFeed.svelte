@@ -1,15 +1,16 @@
 <script>
 	import { v4 as uuidv4 } from 'uuid';
 	import { XMLParser, XMLBuilder } from 'fast-xml-parser';
+	import { saveAs } from 'file-saver';
 	import { onMount } from 'svelte';
 	import { liveBlocks } from '$/stores';
 
 	export let feed;
 	export let item;
+	export let showFeedModal;
 	export let screenIndex;
 	import clone from 'just-clone';
 
-	let warningMessage = ''; // Initialize as empty string
 	let rssErrors = [];
 	let xmlFile;
 
@@ -88,45 +89,27 @@
 		if (!item?.duration) {
 			rssErrors.push('Click Get Audio Duration for your Episode.');
 		}
+		if (
+			item?.['podcast:chapters']?.['@_url'] &&
+			!isValidURL(item?.['podcast:chapters']?.['@_url'])
+		) {
+			rssErrors.push('Invalid Chapters URL');
+		}
+		if (
+			item?.['podcast:transcript']?.['@_url'] &&
+			!isValidURL(item?.['podcast:transcript']?.['@_url'])
+		) {
+			rssErrors.push('Invalid Transcript URL');
+		}
 		rssErrors.push(checkValue(item, 'episode'));
 		rssErrors = rssErrors.filter((v) => v);
 		createVTS();
 	}
 
-	async function verifyFile(type) {
-		let url = item[`podcast:${type}`]['@_url'];
-		warningMessage = '';
-
-		if (!isValidURL(url)) {
-			warningMessage = 'Invalid URL';
-			return;
-		}
-
-		try {
-			const response = await fetch(`/api/proxy?q=${encodeURIComponent(url)}`);
-			if (!response.ok) {
-				warningMessage = 'No File is returned from that URL';
-				return;
-			}
-
-			const contentType = await response.text();
-
-			if (type === 'chapters' && contentType !== 'application/json') {
-				warningMessage = "Improper Chapter File Type. Ensure it's a JSON file.";
-			} else if (
-				type === 'transcript' &&
-				!['application/x-subrip', 'application/srt'].includes(contentType)
-			) {
-				warningMessage = "Improper Transcript File Type. Ensure it's an SRT file.";
-			}
-		} catch (error) {
-			warningMessage = 'An error occurred while verifying the file.';
-		}
-	}
-
 	async function createFeed() {
 		let rss = {
 			'@_version': '2.0',
+			'@_endcoding': 'UTF-8',
 			'@_xmlns:itunes': 'http://www.itunes.com/dtds/podcast-1.0.dtd',
 			'@_xmlns:podcast':
 				'https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md'
@@ -164,8 +147,8 @@
 
 		const builder = new XMLBuilder(buildOptions);
 		xmlFile = builder.build(xmlJson);
-		console.log(xmlFile);
 		console.log(xmlJson.rss.channel);
+		return xmlFile;
 	}
 
 	function checkValue(obj, type) {
@@ -229,7 +212,10 @@
 	async function downloadFeed() {
 		console.log(feed);
 		console.log(item);
-		verifyFeed();
+		let xmlFile = await createFeed();
+		let date = new Date();
+		let d = date.toLocaleString('en-US', { hour12: false });
+		saveFeed(`sk-feed - ${d.replace(/\//g, '-').replace(',', '').replace(/:/g, '.')}`, xmlFile);
 	}
 
 	function createVTS() {
@@ -292,7 +278,17 @@
 			});
 		}
 
-		console.log(vts);
+		item['podcast:value']['podcast:valueTimeSplit'] = vts;
+	}
+
+	async function saveFeed(title, xmlFile) {
+		var blob = new Blob([xmlFile], { type: 'text/xml;charset=utf-8' });
+
+		saveAs(blob, `${title.toLowerCase()}.xml`);
+		alert(
+			`If updating your feed, remember to keep your file name the same as your old file.\n\nThen replace your old file with the new file.`
+		);
+		showFeedModal = false;
 	}
 </script>
 
@@ -305,6 +301,7 @@
 			{/each}
 		</ul>
 	{:else}
+		<h2>Everything looks good!</h2>
 		<button on:click={downloadFeed}>Download Feed</button>
 	{/if}
 </container>
@@ -327,7 +324,7 @@
 	}
 
 	h2 {
-		margin: 0;
+		margin: 8px;
 		color: var(--color-theme-2);
 		text-align: center;
 	}

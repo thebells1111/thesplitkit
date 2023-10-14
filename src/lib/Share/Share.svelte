@@ -293,7 +293,7 @@
 		}}
 	>
 		{#if showDownloadFeed}
-			<CreateFeed />
+			<CreateFeed bind:showFeedModal />
 		{:else}
 			<RemoteValue bind:showDownloadFeed isFeedDownload={true} />
 		{/if}

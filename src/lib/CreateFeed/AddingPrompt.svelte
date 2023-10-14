@@ -2,12 +2,13 @@
 	export let screenIndex;
 	export let feed;
 	export let item;
+	export let showFeedModal;
 	import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
 	import { decode } from 'html-entities';
 	import { remoteServer } from '$/stores';
 	let showInput = false;
-	let indexQuery = 'Boostagram Ball';
+	let indexQuery = '';
 	let indexResults = [];
 
 	async function handleSubmit() {
@@ -128,21 +129,28 @@
 		{/each}
 	</ul>
 {:else}
-	<h3>Are you adding this event to an existing feed?</h3>
-	<button-row>
-		<button
-			class="yes"
-			on:click={() => {
-				showInput = true;
-			}}>Yes</button
-		>
-		<button
-			class="no"
-			on:click={() => {
-				screenIndex = 1;
-			}}>No</button
-		>
-	</button-row>
+	<container>
+		<h3>Are you adding this event to an existing feed?</h3>
+		<button-row>
+			<button
+				class="yes"
+				on:click={() => {
+					showInput = true;
+				}}>Yes</button
+			>
+			<button
+				class="no"
+				on:click={() => {
+					screenIndex = 1;
+				}}>No</button
+			>
+		</button-row>
+		<p>
+			This tool is designed to easily add a new episode to your podcast. <br />If you require more
+			advanced features or need to edit an episode,<br />please consider using
+			<a href="https://sovereignfeeds.com/" target="_blank">Sovereign Feeds.</a>
+		</p>
+	</container>
 {/if}
 
 <style>
@@ -170,6 +178,17 @@
 	img {
 		border: 1px solid gray;
 		margin-right: 0.5em;
+	}
+
+	container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		height: 100%;
+	}
+
+	button-row {
+		flex: 1;
 	}
 
 	button {
@@ -219,5 +238,10 @@
 
 	li {
 		cursor: pointer;
+	}
+
+	p {
+		font-style: italic;
+		text-align: center;
 	}
 </style>

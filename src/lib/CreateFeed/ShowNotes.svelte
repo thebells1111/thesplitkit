@@ -3,6 +3,7 @@
 	export let screenIndex;
 	export let feed;
 	export let item;
+	export let showFeedModal;
 	import { feedShowNotes, liveBlocks } from '$/stores';
 
 	let editor;

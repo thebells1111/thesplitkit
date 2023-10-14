@@ -3,6 +3,7 @@
 	export let screenIndex;
 	export let feed;
 	export let item;
+	export let showFeedModal;
 	console.log(item);
 </script>
 

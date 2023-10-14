@@ -2,6 +2,7 @@
 	import ValueBlock from './ValueBlock/ValueBlock.svelte';
 	export let feed;
 	export let item;
+	export let showFeedModal;
 	export let screenIndex;
 
 	console.log(item);

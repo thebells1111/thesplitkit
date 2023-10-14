@@ -1,6 +1,7 @@
 <script>
 	export let feed;
 	export let item;
+	export let showFeedModal;
 	export let screenIndex;
 	import DownloadFeed from './DownloadFeed.svelte';
 	import ChaptersCreator from '$routes/(main)/chapters/[guid]/+page.svelte';
