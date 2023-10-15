@@ -1,5 +1,6 @@
 <script>
 	import JSZip from 'jszip';
+	import { ID3Writer } from 'browser-id3-writer';
 	import { mainSettings, remoteServer, liveBlocks } from '$/stores';
 	console.log($mainSettings);
 
@@ -20,26 +21,55 @@
 		mainUnsaved = true;
 	}
 
+	async function setMP3Metadata(blob, metadata) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsArrayBuffer(blob);
+			reader.onloadend = () => {
+				const buffer = reader.result;
+				const writer = new ID3Writer(buffer);
+				writer
+					.setFrame('TIT2', metadata.title)
+					.setFrame('TPE1', [metadata.artist])
+					.setFrame('TALB', metadata.album)
+					.setFrame('TXXX', metadata.internalId);
+				writer.addTag();
+				const taggedArrayBuffer = writer.arrayBuffer;
+				const taggedBlob = new Blob([taggedArrayBuffer], {
+					type: 'audio/mp3'
+				});
+				resolve(taggedBlob);
+			};
+		});
+	}
+
 	async function downloadZippedMP3s(mp3Links) {
 		const zip = new JSZip();
-
-		console.log($liveBlocks);
-
 		let blocks = $liveBlocks.slice(1);
 
 		if (blocks.length) {
 			for (const [index, block] of blocks.entries()) {
-				console.log(block);
-				console.log(`Downloading ${block.title}`);
-				downloadInfo = `Downloading ${block.title}`;
 				if (block?.duration < 10 * 60 && block.enclosureUrl) {
+					console.log(block);
+					console.log(`Downloading ${block.title}`);
+					downloadInfo = `Downloading ${block.title}`;
 					const res = await fetch(
 						remoteServer + '/api/proxy?url=' + encodeURIComponent(block.enclosureUrl),
 						{
 							headers: { 'User-Agent': 'TheSplitKit/0.1' }
 						}
 					);
-					const blob = await res.blob();
+					let blob = await res.blob();
+
+					const metadata = {
+						title: block.title,
+						artist: block?.line?.[1] || '',
+						album: block?.line?.[0] || '',
+						internalId: { description: 'ID', value: block.blockGuid }
+					};
+
+					blob = await setMP3Metadata(blob, metadata);
+
 					zip.file(`${block.title} - ${block?.line?.[1]} - ${block.blockGuid}.mp3`, blob);
 				}
 			}
@@ -51,9 +81,8 @@
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
-			downloadInfo = '';
 		} else {
-			downloadInfo = 'No valid files to download';
+			// Handle 'No valid files to download'
 		}
 	}
 </script>

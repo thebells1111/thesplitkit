@@ -23,6 +23,7 @@
 		"@fontsource/fira-mono": "^5.0.3",
 		"@sveltejs/adapter-vercel": "^3.0.1",
 		"axios": "^1.4.0",
+		"browser-id3-writer": "^6.0.0",
 		"canvas-confetti": "^1.6.0",
 		"crypto-browserify": "^3.12.0",
 		"dompurify": "^3.0.3",
