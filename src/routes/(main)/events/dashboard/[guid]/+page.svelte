@@ -71,6 +71,7 @@
 
 			setTimeout(() => (mainUnsaved = false), 500);
 		}
+		console.log($liveBlocks);
 	});
 
 	async function loadBlocks() {
