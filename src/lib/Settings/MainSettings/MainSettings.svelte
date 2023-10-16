@@ -8,6 +8,7 @@
 	import PlaylistSettings from './PlaylistSettings.svelte';
 	import PrerecordedSettings from './PrerecordedSettings.svelte';
 	import PodcastSettings from './PodcastSettings.svelte';
+	import RemoteCreds from './RemoteCreds.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
@@ -47,7 +48,11 @@
 			.catch((error) => console.error(error));
 
 		if (updateAllSplits) {
-			$liveBlocks.forEach((v) => (v.settings.split = $mainSettings.splits));
+			$liveBlocks.forEach((v) => {
+				if (v) {
+					v.settings.split = $mainSettings.splits;
+				}
+			});
 			$liveBlocks = $liveBlocks;
 			fetch(remoteServer + '/api/sk/saveblocks', {
 				method: 'POST',
@@ -87,6 +92,8 @@
 {#if $mainSettings?.broadcastMode === 'edit'}
 	<PrerecordedSettings bind:mainUnsaved />
 {/if}
+
+<RemoteCreds />
 
 <style>
 	button {

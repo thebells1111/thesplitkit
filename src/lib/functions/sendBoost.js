@@ -94,7 +94,7 @@ const getBaseRecord = (block, satAmount, boostagram, senderName) => {
 		remoteFeedGuid: block.feedGuid,
 		remoteItemGuid: block.itemGuid,
 		eventGuid: block.eventGuid,
-		blockGuid: block.blockGuid,
+		blockGuid: block?.blockGuid,
 		eventAPI: block.eventAPI
 	};
 };

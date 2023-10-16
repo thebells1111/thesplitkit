@@ -16,11 +16,13 @@
 	import RemoteValue from '$routes/(main)/remotevalue/[guid]/+page.svelte';
 	import DownloadChapters from '$routes/(main)/chapters/[guid]/+page.svelte';
 	import ShowNotes from './ShowNotes.svelte';
+	import CreateFeed from '$lib/CreateFeed/CreateFeed.svelte';
 
 	export let liveGuid;
 	export let eventGuid;
 	export let blockGuid;
 	export let shareEvent = false;
+	export let promotion = false;
 	let guid;
 	let code = '';
 	let podcastCode = '';
@@ -29,6 +31,8 @@
 	let showDownloadChaptersModal = false;
 	let showShowNotesModal = false;
 	let showImportModal = false;
+	let showFeedModal = false;
+	let showDownloadFeed = false;
 
 	if (liveGuid) {
 		guid = liveGuid;
@@ -53,7 +57,7 @@
 
 		try {
 			await QRCode.toCanvas(qrCodeCanvas, code, {
-				width: 300
+				width: 200
 			});
 		} catch (err) {
 			console.error(err);
@@ -127,7 +131,7 @@
 		</button-row>
 
 		<copy-link-row>
-			<h3>Sharable Link to View Your Event</h3>
+			<h3>Sharable Link to View Your {promotion ? 'Block' : 'Event'}</h3>
 			<div>
 				<input type="url" disabled value={code} />
 				<button class="dl-link" on:click={copyLinkToClipboard.bind(this, code)}>
@@ -178,7 +182,7 @@
 					</button>
 					<p>Download <br />Chapters</p>
 				</button-container>
-
+			</button-row><button-row>
 				<button-container>
 					<button class="podcast-link" on:click={() => (showPodcastModal = true)}>
 						<multi-icon>
@@ -200,6 +204,10 @@
 						</multi-icon>
 					</button>
 					<p>Import <br />ID</p>
+				</button-container>
+				<button-container>
+					<button class="create-feed" on:click={() => (showFeedModal = true)}>XML</button>
+					<p>Create <br />Feed</p>
 				</button-container>
 			</button-row>
 		{/if}
@@ -276,6 +284,22 @@
 	</Modal>
 {/if}
 
+{#if showFeedModal}
+	<Modal
+		bind:showModal={showFeedModal}
+		isFeedDownload={true}
+		onClose={() => {
+			showDownloadFeed = false;
+		}}
+	>
+		{#if showDownloadFeed}
+			<CreateFeed bind:showFeedModal />
+		{:else}
+			<RemoteValue bind:showDownloadFeed isFeedDownload={true} />
+		{/if}
+	</Modal>
+{/if}
+
 <style>
 	.qr-container {
 		display: flex;
@@ -300,7 +324,7 @@
 
 	button-row.top {
 		position: absolute;
-		top: 300px;
+		top: 200px;
 		max-width: 360px;
 	}
 
@@ -365,18 +389,19 @@
 
 	.copy-qr,
 	.value-time-splits,
-	.import-link {
+	.podcast-link {
 		background-color: var(--color-theme-yellow);
 		color: var(--color-text-0);
 	}
 
 	.dl-qr,
 	.show-notes,
-	.podcast-link {
+	.import-link {
 		color: hsl(278, 100%, 92%);
 		background-color: hsl(277, 100%, 44%);
 	}
 
+	.create-feed,
 	.dl-link,
 	.chapter-link {
 		background-color: var(--color-theme-blue);

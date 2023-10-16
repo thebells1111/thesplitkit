@@ -1,9 +1,12 @@
 <script>
-	import { mainSettings } from '$/stores';
+	import JSZip from 'jszip';
+	import { ID3Writer } from 'browser-id3-writer';
+	import { mainSettings, remoteServer, liveBlocks } from '$/stores';
 	console.log($mainSettings);
 
 	let enclosureUrl;
 	export let mainUnsaved;
+	let downloadInfo = '';
 
 	function handleInput(e) {
 		$mainSettings.liveEnclosure = e.target.value;
@@ -16,6 +19,71 @@
 		$mainSettings.podcast = $mainSettings.podcast || {};
 		$mainSettings.podcast.autoSwitch = e.target.checked;
 		mainUnsaved = true;
+	}
+
+	async function setMP3Metadata(blob, metadata) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsArrayBuffer(blob);
+			reader.onloadend = () => {
+				const buffer = reader.result;
+				const writer = new ID3Writer(buffer);
+				writer
+					.setFrame('TIT2', metadata.title)
+					.setFrame('TPE1', [metadata.artist])
+					.setFrame('TALB', metadata.album)
+					.setFrame('TXXX', metadata.internalId);
+				writer.addTag();
+				const taggedArrayBuffer = writer.arrayBuffer;
+				const taggedBlob = new Blob([taggedArrayBuffer], {
+					type: 'audio/mp3'
+				});
+				resolve(taggedBlob);
+			};
+		});
+	}
+
+	async function downloadZippedMP3s(mp3Links) {
+		const zip = new JSZip();
+		let blocks = $liveBlocks.slice(1);
+
+		if (blocks.length) {
+			for (const [index, block] of blocks.entries()) {
+				if (block?.duration < 10 * 60 && block.enclosureUrl) {
+					console.log(block);
+					console.log(`Downloading ${block.title}`);
+					downloadInfo = `Downloading ${block.title}`;
+					const res = await fetch(
+						remoteServer + '/api/proxy?url=' + encodeURIComponent(block.enclosureUrl),
+						{
+							headers: { 'User-Agent': 'TheSplitKit/0.1' }
+						}
+					);
+					let blob = await res.blob();
+
+					const metadata = {
+						title: block.title,
+						artist: block?.line?.[1] || '',
+						album: block?.line?.[0] || '',
+						internalId: { description: 'ID', value: block.blockGuid }
+					};
+
+					blob = await setMP3Metadata(blob, metadata);
+
+					zip.file(`${block.title} - ${block?.line?.[1]} - ${block.blockGuid}.mp3`, blob);
+				}
+			}
+
+			const content = await zip.generateAsync({ type: 'blob' });
+			const link = document.createElement('a');
+			link.href = URL.createObjectURL(content);
+			link.download = 'MP3Files.zip';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		} else {
+			// Handle 'No valid files to download'
+		}
 	}
 </script>
 
@@ -38,6 +106,19 @@
 			When Auto Broadcast is enabled, any block without a duration will be unable to auto broadcast.
 		</p>
 	</warning>
+
+	<button on:click={downloadZippedMP3s}>Download Zipped Audio Files</button>
+	<warning>
+		<p>
+			Zipped Audio Files is experimental, and may be a paid feature in the future if server costs
+			get out of hand. <br />
+			It's for downloading songs, so will only download files with a duration of 10 minutes or less.
+		</p>
+	</warning>
+
+	<download-info>
+		{downloadInfo}
+	</download-info>
 </div>
 
 <style>
@@ -76,5 +157,13 @@
 		text-align: center;
 		font-weight: bold;
 		font-size: 1.1em;
+	}
+
+	download-info {
+		display: block;
+		color: var(--color-theme-purple);
+		text-align: center;
+		font-weight: bold;
+		font-size: 1.3em;
 	}
 </style>

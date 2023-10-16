@@ -18,7 +18,13 @@
 	import Save from '$lib/icons/Save.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
-	import { remoteServer, liveBlocks, defaultBlockGuid, changeDefault } from '$/stores';
+	import {
+		remoteServer,
+		liveBlocks,
+		defaultBlockGuid,
+		changeDefault,
+		mainSettings
+	} from '$/stores';
 
 	export let filterType;
 	export let mainUnsaved = false;
@@ -120,7 +126,7 @@
 		class:disabled={false}
 		on:click={() => {
 			showSelectBlock = true;
-			if (!$defaultBlockGuid) {
+			if (!$defaultBlockGuid && $mainSettings.broadcastMode !== 'edit') {
 				$changeDefault = true;
 			}
 		}}

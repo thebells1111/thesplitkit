@@ -3,6 +3,7 @@
 	import AddBlocksIcon from '$lib/icons/AddBlocks.svelte';
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
+	import DownloadIcon from '$lib/icons/Download.svelte';
 	import { tick } from 'svelte';
 	export let episodes = [];
 	export let addFeed = () => {};
@@ -25,7 +26,23 @@
 		player.onplay = function () {
 			isPaused = false;
 		};
+		player.muted = true;
 	});
+
+	function downloadSong(audioSrc) {
+		if (audioSrc) {
+			const extension = audioSrc.split('.').pop();
+			downloadFile(audioSrc, `song.${extension}`);
+		}
+	}
+
+	function downloadFile(url, filename) {
+		const anchor = document.createElement('a');
+		anchor.href = url;
+		anchor.download = filename;
+		anchor.target = '_blank'; // Open in new tabs
+		anchor.click();
+	}
 </script>
 
 <song-select>
@@ -37,7 +54,7 @@
 		<img src={feed?.artwork || feed?.image} alt={feed?.title} />
 		<h2>{feed?.title}</h2>
 		<h3>{feed?.author}</h3>
-		<audio controls bind:this={player} autoplay />
+		<audio controls bind:this={player} autoplay muted />
 
 		<button
 			on:click|stopPropagation={() => {
@@ -57,7 +74,7 @@
 	{#if episodes.length}
 		<h3>Songs</h3>
 		<ul>
-			{#each episodes as episode, index (episode.id)}
+			{#each episodes as episode, index (episode?.id)}
 				<!-- The key should be unique for each episode -->
 				<li>
 					<card
@@ -86,6 +103,9 @@
 							{:else}
 								<PlayIcon size="27" />
 							{/if}
+						</button>
+						<button on:click={downloadSong.bind(this, episode?.enclosureUrl)} class="download">
+							<DownloadIcon size="27" />
 						</button>
 						<song-info>
 							<img
@@ -194,6 +214,10 @@
 		padding: 0;
 	}
 
+	button.download {
+		background-color: var(--color-theme-purple);
+		color: var(--color-text-purple);
+	}
 	album-card {
 		display: flex;
 		flex-direction: column;

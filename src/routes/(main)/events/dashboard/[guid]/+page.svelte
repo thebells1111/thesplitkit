@@ -26,6 +26,8 @@
 		changeDefault
 	} from '$/stores';
 
+	$: console.log($mainSettings);
+
 	let showShareModal = false;
 	let showMainSettingsModal = false;
 	let showFilterModal = false;
@@ -69,6 +71,7 @@
 
 			setTimeout(() => (mainUnsaved = false), 500);
 		}
+		console.log($liveBlocks);
 	});
 
 	async function loadBlocks() {
@@ -76,32 +79,34 @@
 		const data = await res.json();
 		console.log(data);
 
-		const blocks = data.blocks || [];
-		$mainSettings = data.settings || $mainSettings;
+		const blocks = data.blocks || [null];
+		$mainSettings = Object.keys(data.settings).length ? data.settings : $mainSettings;
 
 		blocks.forEach((block) => {
-			if (block?.settings?.default) {
-				$defaultBlockGuid = block.blockGuid;
-				$activePageGuid = guid;
-			}
-			if (!block.link.text) {
-				block.link.text = 'Link - click to edit';
-			}
-			if (!block.title) {
-				block.title = 'Title - click to edit';
-			}
-			for (let i = 0; i < block.line.length; i++) {
-				if (!block.line[i]) {
-					block.line[i] = 'Text - click to edit';
+			if (block) {
+				if (block?.settings?.default) {
+					$defaultBlockGuid = block?.blockGuid;
+					$activePageGuid = guid;
 				}
-			}
-			if (!block.blockGuid) {
-				let blockGuid;
-				do {
-					blockGuid = generateBlockGuid();
-				} while (!isBlockGuidUnique(blockGuid, blocks));
+				if (!block?.link?.text) {
+					block.link = { text: 'Link - click to edit' };
+				}
+				if (!block?.title) {
+					block.title = 'Title - click to edit';
+				}
+				for (let i = 0; i < block?.line?.length; i++) {
+					if (!block.line[i]) {
+						block.line[i] = 'Text - click to edit';
+					}
+				}
+				if (!block?.blockGuid) {
+					let blockGuid;
+					do {
+						blockGuid = generateBlockGuid();
+					} while (!isBlockGuidUnique(blockGuid, blocks));
 
-				block.blockGuid = blockGuid;
+					block.blockGuid = blockGuid;
+				}
 			}
 		});
 		if (!$defaultBlockGuid) {
@@ -119,7 +124,7 @@
 
 	function isBlockGuidUnique(blockGuid, blocks) {
 		for (let block of blocks) {
-			if (block.blockGuid === blockGuid) {
+			if (block?.blockGuid === blockGuid) {
 				return false;
 			}
 		}
@@ -131,12 +136,12 @@
 		showSaved = true;
 		setTimeout(() => (showSaved = false), 500);
 		editingBlock?.value?.destinations?.forEach((v) => (v.split = Number(v.split)));
-		const index = $liveBlocks.findIndex((v) => v.blockGuid === activeBlockGuid);
+		const index = $liveBlocks.findIndex((v) => v?.blockGuid === activeBlockGuid);
 		if (index > -1) {
 			$liveBlocks[index] = clone(editingBlock);
 		}
 
-		const filteredIndex = filteredBlocks.findIndex((v) => v.blockGuid === activeBlockGuid);
+		const filteredIndex = filteredBlocks.findIndex((v) => v?.blockGuid === activeBlockGuid);
 		if (filteredIndex > -1) {
 			filteredBlocks[index] = clone(editingBlock);
 		}
@@ -170,7 +175,7 @@
 
 		newBlock.blockGuid = blockGuid;
 		newBlock.settings = {
-			split: $mainSettings.splits
+			split: $mainSettings.splits || 95
 		};
 
 		activeBlockGuid = blockGuid;
@@ -264,6 +269,8 @@
 				newBlock.settings.default = true;
 				$liveBlocks[0] = newBlock;
 				$changeDefault = false;
+			} else if ($mainSettings.broadcastMode === 'edit' && !$liveBlocks.length) {
+				$liveBlocks = [undefined, newBlock];
 			} else {
 				$liveBlocks = $liveBlocks.concat(newBlock);
 			}
@@ -318,7 +325,7 @@
 {#if showEditor}
 	<Modal bind:showModal={showEditor} bind:unsaved>
 		<PromoEditor
-			baseBlock={clone($liveBlocks?.find((v) => v.blockGuid === activeBlockGuid))}
+			baseBlock={clone($liveBlocks?.find((v) => v?.blockGuid === activeBlockGuid))}
 			{saveState}
 			bind:unsaved
 		/>
@@ -333,7 +340,7 @@
 
 {#if showOptionsModal}
 	<EditOptions
-		block={$liveBlocks.find((v) => v.blockGuid === activeBlockGuid) || {}}
+		block={$liveBlocks.find((v) => v?.blockGuid === activeBlockGuid) || {}}
 		bind:showOptionsModal
 		bind:showEditor
 		{activeBlockGuid}

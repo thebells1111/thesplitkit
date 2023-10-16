@@ -14,6 +14,8 @@
 	let remoteValues = [];
 	let xmlText = '';
 	let userDanger = true;
+	export let showDownloadFeed;
+	export let isFeedDownload;
 
 	onMount(loadBlocks);
 
@@ -25,69 +27,75 @@
 		}
 
 		if ($liveBlocks?.length) {
-			const blocks = $liveBlocks.filter((v) => !v?.settings?.default);
-			badStartBlocks = blocks.filter((v) => !v.startTime);
-			badValueBlocks = blocks.filter((v) => !v?.value?.destinations?.length);
+			const blocks = $liveBlocks.slice(1);
+			badStartBlocks = blocks.filter((v) => v && !v.startTime);
+			badValueBlocks = blocks.filter((v) => v && !v?.value?.destinations?.length);
 
 			if ((!badStartBlocks?.length && !badValueBlocks?.length) || !userDanger) {
 				blocks.forEach((v) => {
-					if (v.startTime && v.duration && v?.value?.destinations?.length) {
-						xmlText += '<podcast:valueTimeSplit';
-						if (v.startTime) {
-							xmlText += `\n   startTime="${v.startTime}"\n   remotePercentage="${
-								v?.settings?.split || 100
-							}"`;
-						}
-						if (v.duration) {
-							xmlText += `\n   duration="${v.duration}"`;
-						}
-
-						xmlText += '\n>';
-						xmlText += '\n';
-
-						if (v.feedGuid) {
-							xmlText += `  <podcast:remoteItem \n    feedGuid="${v.feedGuid}"`;
-							if (v.itemGuid) {
-								xmlText += `\n    itemGuid="${v.itemGuid}"`;
+					if (v) {
+						if (v.startTime && v.duration && v?.value?.destinations?.length) {
+							xmlText += '<podcast:valueTimeSplit';
+							if (v.startTime) {
+								xmlText += `\n   startTime="${v.startTime}"\n   remotePercentage="${
+									v?.settings?.split || 100
+								}"`;
+							}
+							if (v.duration) {
+								xmlText += `\n   duration="${v.duration}"`;
 							}
 
-							xmlText += '\n  />\n';
-						} else {
-							xmlText += '  <podcast:valueRecipient';
+							xmlText += '\n>';
+							xmlText += '\n';
 
-							v.value.destinations.forEach((w) => {
-								// <podcast:valueRecipient name="Alice (Podcaster)" type="node" address="02d5c1bf8b940dc9cadca86d1b0a3c37fbe39cee4c7e839e33bef9174531d27f52" split="85" />
-								xmlText += '\n    ';
-								xmlText += `type="node"`;
-								if (w.name) {
-									xmlText += '\n    ';
-									xmlText += `name="${w.name}"`;
-								}
-								xmlText += '\n    ';
-								xmlText += `address="${w.address}"`;
-								if (w.customKey) {
-									xmlText += '\n    ';
-									xmlText += `customKey="${w.customKey}"`;
-								}
-								if (w.customValue) {
-									xmlText += '\n    ';
-									xmlText += `customValue="${w.customValue}"`;
+							if (v.feedGuid) {
+								xmlText += `  <podcast:remoteItem \n    feedGuid="${v.feedGuid}"`;
+								if (v.itemGuid) {
+									xmlText += `\n    itemGuid="${v.itemGuid}"`;
 								}
 
-								xmlText += '\n    ';
-								xmlText += `split="${w.split || 100}"`;
+								xmlText += '\n  />\n';
+							} else {
+								xmlText += '  <podcast:valueRecipient';
 
-								console.log(w);
-							});
+								v.value.destinations.forEach((w) => {
+									// <podcast:valueRecipient name="Alice (Podcaster)" type="node" address="02d5c1bf8b940dc9cadca86d1b0a3c37fbe39cee4c7e839e33bef9174531d27f52" split="85" />
+									xmlText += '\n    ';
+									xmlText += `type="node"`;
+									if (w.name) {
+										xmlText += '\n    ';
+										xmlText += `name="${w.name}"`;
+									}
+									xmlText += '\n    ';
+									xmlText += `address="${w.address}"`;
+									if (w.customKey) {
+										xmlText += '\n    ';
+										xmlText += `customKey="${w.customKey}"`;
+									}
+									if (w.customValue) {
+										xmlText += '\n    ';
+										xmlText += `customValue="${w.customValue}"`;
+									}
 
-							xmlText += '\n  />\n';
+									xmlText += '\n    ';
+									xmlText += `split="${w.split || 100}"`;
+
+									console.log(w);
+								});
+
+								xmlText += '\n  />\n';
+							}
+
+							xmlText += '</podcast:valueTimeSplit>';
+							xmlText += '\n';
 						}
-
-						xmlText += '</podcast:valueTimeSplit>';
-						xmlText += '\n';
 					}
 				});
 			}
+		}
+
+		if (!(badStartBlocks?.length || badValueBlocks?.length)) {
+			showDownloadFeed = true;
 		}
 	}
 
@@ -124,11 +132,17 @@
 		{/if}
 		<button
 			on:click={() => {
-				userDanger = false;
-				loadBlocks();
+				if (isFeedDownload) {
+					showDownloadFeed = true;
+				} else {
+					userDanger = false;
+					loadBlocks();
+				}
 			}}
 		>
-			I understand.<br />Show me the good splits.
+			I understand.<br />{isFeedDownload
+				? "I don't want those blocks in my feed"
+				: 'Show me the good splits.'}
 		</button>
 	</warning-container>
 {:else}

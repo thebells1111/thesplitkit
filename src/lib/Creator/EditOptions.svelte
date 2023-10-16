@@ -33,9 +33,10 @@
 			'Are you sure you want to delete ' + (block?.line?.[0] || 'this block?')
 		);
 		if (confirmation) {
-			$liveBlocks = $liveBlocks.filter((v) => v.blockGuid !== block.blockGuid);
-			if (block.blockGuid === $defaultBlockGuid) {
-				$defaultBlockGuid = $liveBlocks?.[0]?.blockGuid;
+			$liveBlocks = $liveBlocks.filter((v) => v?.blockGuid !== block?.blockGuid);
+			if (block?.blockGuid === $defaultBlockGuid) {
+				$defaultBlockGuid = null;
+				$liveBlocks.unshift(null);
 			}
 
 			showOptionsModal = false;
@@ -81,6 +82,14 @@
 	>
 		<top>
 			{#if $defaultBlockGuid === block?.blockGuid}
+				<button
+					class="default-share"
+					on:click={() => {
+						showShareModal = true;
+					}}
+				>
+					<ShareIcon size="24" />
+				</button>
 				<button
 					class="change-default"
 					on:click={() => {
@@ -148,7 +157,7 @@
 
 {#if showShareModal}
 	<Modal bind:showModal={showShareModal}>
-		<Share eventGuid={block.eventGuid} blockGuid={block.blockGuid} />
+		<Share eventGuid={block.eventGuid} blockGuid={block?.blockGuid} promotion={true} />
 	</Modal>
 {/if}
 
@@ -211,6 +220,7 @@
 		height: 40px;
 		padding: 4px;
 		align-items: center;
+		position: relative;
 	}
 
 	top p icon {
@@ -314,6 +324,8 @@
 	.change-default {
 		color: var(--color-text-purple);
 		background-color: var(--color-theme-purple);
+		position: absolute;
+		top: 64px;
 	}
 
 	.change-default p {

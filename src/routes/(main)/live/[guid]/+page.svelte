@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import io from 'socket.io-client';
+	import QRCode from 'qrcode';
 	import clone from 'just-clone';
 	import Info from '$lib/icons/Info.svelte';
 	import Close from '$lib/icons/Close.svelte';
@@ -20,6 +21,7 @@
 		liveEnclosure,
 		defaultBlockGuid
 	} from '$/stores';
+	export let isQR;
 	let boostagram = '';
 	let showInfoModal = false;
 	let amount = 1;
@@ -33,6 +35,23 @@
 	let loaded = false;
 	const guid = $page.params.guid;
 	let defaultBlock;
+
+	let qrCodeCanvas;
+	let code = '';
+
+	async function generateQRCode() {
+		if (!qrCodeCanvas) {
+			return;
+		}
+
+		try {
+			await QRCode.toCanvas(qrCodeCanvas, code, {
+				width: 300
+			});
+		} catch (err) {
+			console.error(err);
+		}
+	}
 
 	onMount(async () => {
 		const url = remoteServer + '/event?event_id=' + $page.params.guid;
@@ -51,8 +70,16 @@
 			}
 
 			if (block?.blockGuid && defaultBlock?.blockGuid) {
-				isDefault = block.blockGuid === defaultBlock.blockGuid;
+				isDefault = block?.blockGuid === defaultBlock?.blockGuid;
 			}
+			console.log(`${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`);
+
+			code = `${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`;
+			generateQRCode();
+		});
+		liveItemSocket.on('playerPause', function (data) {
+			// You will need to adjust this part based on the actual format of the data sent by the server
+			console.log(data);
 		});
 		loaded = true;
 		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
@@ -67,7 +94,7 @@
 			}
 		}
 		if (block?.blockGuid && defaultBlock?.blockGuid) {
-			isDefault = block.blockGuid === defaultBlock.blockGuid;
+			isDefault = block?.blockGuid === defaultBlock?.blockGuid;
 		}
 	});
 
@@ -131,25 +158,33 @@
 	}
 
 	function getTitle(block) {
-		let text = block?.title || block?.feedTitle || '';
-		text = text === 'undefined' ? '' : text;
-		return DOMPurify.sanitize(text?.replace(/\r?\n/g, '<br/>'));
+		return getText(block?.title || block?.feedTitle || '');
 	}
 
 	function getLine0(block) {
-		let text = block?.line?.[0] || block?.itemTitle || '';
-		text = text === 'undefined' ? '' : text;
-		text = text === 'Text - click to edit' ? '' : text;
-		return DOMPurify.sanitize(text?.replace(/\r?\n/g, '<br/>'));
+		return getText(block?.line?.[0] || block?.itemTitle || '');
 	}
 
 	function getLine1(block) {
-		let text = block?.line?.[1] || block?.author || '';
-		text = text === 'undefined' ? '' : text;
-		text = text === 'Text - click to edit' ? '' : text;
+		return getText(block?.line?.[1] || block?.author || '');
+	}
+
+	function getText(text) {
+		text =
+			text === 'undefined' || text === 'Title - click to edit' || text === 'Text - click to edit'
+				? ''
+				: text;
 		return DOMPurify.sanitize(text?.replace(/\r?\n/g, '<br/>'));
 	}
+
+	function getHeaderTitle(block) {
+		return block?.title || block?.feedTitle || 'The Split Kit';
+	}
 </script>
+
+<svelte:head>
+	<title>{`${getHeaderTitle(block)}`}</title>
+</svelte:head>
 
 {#if loaded}
 	<container>
@@ -187,18 +222,23 @@
 		{:else}
 			<spacer />
 		{/if}
-		<button
-			class="boost"
-			on:click={() => {
-				if ($user.loggedIn) {
-					showModal = true;
-					activeBlock = clone(block);
-				} else {
-					console.log(redirectUrl);
-					goto(redirectUrl);
-				}
-			}}>Boost 🚀</button
-		>
+
+		{#if isQR}
+			<canvas bind:this={qrCodeCanvas} />
+		{:else}
+			<button
+				class="boost"
+				on:click={() => {
+					if ($user.loggedIn) {
+						showModal = true;
+						activeBlock = clone(block);
+					} else {
+						console.log(redirectUrl);
+						goto(redirectUrl);
+					}
+				}}>Boost 🚀</button
+			>
+		{/if}
 	</container>
 {/if}
 

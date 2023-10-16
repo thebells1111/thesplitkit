@@ -12,7 +12,7 @@
 </script>
 
 <div class="broadcast-mode">
-	<label for="broadcast-select">Broadcast Mode: </label>
+	<label for="broadcast-select">Event Type: </label>
 	<select id="broadcast-select" bind:value={selectedOption} on:change={handleChange}>
 		<option value="manual">Manual</option>
 		<option value="playlist">Playlist</option>

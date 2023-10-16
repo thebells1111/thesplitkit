@@ -17,6 +17,7 @@
 	$: showBackButton = [
 		'/(main)/events/dashboard/[guid]',
 		'/(main)/events/creator',
+		'/(main)/events/import',
 		'/(main)/remotevalue/[guid]',
 		'/(main)/chapters/[guid]'
 	].find((v) => v === route);
@@ -44,7 +45,11 @@
 	}
 
 	function handleBackButton() {
-		if (['/(main)/events/dashboard/[guid]', '/(main)/events/creator'].find((v) => v === route)) {
+		if (
+			['/(main)/events/dashboard/[guid]', '/(main)/events/creator', '/(main)/events/import'].find(
+				(v) => v === route
+			)
+		) {
 			goto('/events');
 		}
 
