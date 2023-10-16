@@ -83,7 +83,8 @@
 		$socket.on('nextBlock', (message) => {
 			console.log(message);
 			console.log(broadcastingBlockGuid);
-			let block = getNextBlock({ blockGuid: broadcastingBlockGuid });
+			let block = $liveBlocks.find((v) => v.blockGuid === message);
+			block = block || getNextBlock({ blockGuid: broadcastingBlockGuid });
 			broadcastingBlockGuid = block.blockGuid;
 			console.log(block);
 
