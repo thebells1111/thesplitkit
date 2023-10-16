@@ -8,6 +8,7 @@
 	import PlaylistSettings from './PlaylistSettings.svelte';
 	import PrerecordedSettings from './PrerecordedSettings.svelte';
 	import PodcastSettings from './PodcastSettings.svelte';
+	import RemoteCreds from './RemoteCreds.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
@@ -91,6 +92,8 @@
 {#if $mainSettings?.broadcastMode === 'edit'}
 	<PrerecordedSettings bind:mainUnsaved />
 {/if}
+
+<RemoteCreds />
 
 <style>
 	button {
