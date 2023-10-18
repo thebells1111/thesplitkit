@@ -214,6 +214,7 @@
 		if (!isDefault) {
 			feeDestinations.push(splitKitObject);
 		}
+		feeDestinations.forEach((v) => (v.split = v.split.toString()));
 		return feeDestinations;
 	}
 
@@ -221,7 +222,7 @@
 		return clone(destinations)
 			?.filter((v) => !v.fee)
 			?.map((v) => {
-				v.split = (v.split * split) / 100;
+				v.split = ((v.split * split) / 100).toString();
 				return v || [];
 			});
 	}

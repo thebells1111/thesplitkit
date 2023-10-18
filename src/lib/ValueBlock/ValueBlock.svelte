@@ -17,7 +17,7 @@
 		editingIndex = data.value.destinations.length;
 		data.value.destinations = [
 			...data.value.destinations,
-			{ split: '', name: '', address: '', customKey: '', customValue: '' }
+			{ name: '', address: '', type: 'node', customKey: '', customValue: '', split: '' }
 		];
 		showWalletModal = true;
 	}

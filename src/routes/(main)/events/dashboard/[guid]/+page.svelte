@@ -135,7 +135,7 @@
 		console.log('saved');
 		showSaved = true;
 		setTimeout(() => (showSaved = false), 500);
-		editingBlock?.value?.destinations?.forEach((v) => (v.split = Number(v.split)));
+		editingBlock?.value?.destinations?.forEach((v) => (v.split = v.split.toString()));
 		const index = $liveBlocks.findIndex((v) => v?.blockGuid === activeBlockGuid);
 		if (index > -1) {
 			$liveBlocks[index] = clone(editingBlock);
