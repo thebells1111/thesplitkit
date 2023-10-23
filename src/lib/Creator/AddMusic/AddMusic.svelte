@@ -9,7 +9,7 @@
 	let podcastIndexSearchResults = [];
 	let episodes = [];
 	let showSongs = false;
-	// import archivedFeeds from './archivedFeeds.json';
+	import archivedFeeds from './archivedFeeds.json';
 
 	let searchQuery = '';
 	let filteredResults = [];
@@ -17,12 +17,12 @@
 	onMount(fetchAlbums);
 
 	async function fetchAlbums() {
-		const res = await fetch(
-			remoteServer + `/api/queryindex?q=podcasts/bymedium?medium=music&max=2000`
-		);
-		let data = await res.json();
+		// const res = await fetch(
+		// 	remoteServer + `/api/queryindex?q=podcasts/bymedium?medium=music&max=2000`
+		// );
+		// let data = await res.json();
 
-		// let data = { feeds: archivedFeeds };
+		let data = { feeds: archivedFeeds };
 
 		try {
 			episodes = [];
