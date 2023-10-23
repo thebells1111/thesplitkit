@@ -141,7 +141,7 @@
 				}}
 			>
 				<img src="/splitkit64.png" width="40" height="40" />
-				<div>Latest Releases</div>
+				<h3>Latest Releases</h3>
 				<div style={'width: 40px;'} />
 			</card>
 		</li>
