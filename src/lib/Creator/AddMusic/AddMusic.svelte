@@ -4,13 +4,14 @@
 	import clone from 'just-clone';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import SongSelect from './SongSelect.svelte';
+	import LatestSongs from './LatestSongs.svelte';
 	export let addFeed = () => {};
 	let selectedFeed = {};
 	let podcastIndexSearchResults = [];
 	let episodes = [];
 	let showSongs = false;
+	let showLatest = false;
 	import archivedFeeds from './archivedFeeds.json';
-	import latestSongs from './latestSongs.json';
 
 	let searchQuery = '';
 	let filteredResults = [];
@@ -125,18 +126,6 @@
 				console.error('Error fetching episodes:', err);
 			});
 	}
-
-	async function fetchNewReleases() {
-		showSongs = true;
-		let feed = { image: '/splitkit64.png', title: 'New Releases', author: 'The Split Kit' };
-
-		feed.episodes = latestSongs;
-
-		episodes = feed.episodes || [];
-		selectedFeed = feed;
-
-		console.log(episodes);
-	}
 </script>
 
 <albums>
@@ -146,7 +135,11 @@
 	</albums-top>
 	<ul>
 		<li class="albums">
-			<card on:click={fetchNewReleases}>
+			<card
+				on:click={() => {
+					showLatest = true;
+				}}
+			>
 				<img src="/splitkit64.png" width="40" height="40" />
 				<div>Latest Releases</div>
 				<div style={'width: 40px;'} />
@@ -169,6 +162,10 @@
 
 <Modal bind:showModal={showSongs}>
 	<SongSelect {addFeed} {episodes} feed={selectedFeed} />
+</Modal>
+
+<Modal bind:showModal={showLatest}>
+	<LatestSongs {addFeed} />
 </Modal>
 
 <style>
