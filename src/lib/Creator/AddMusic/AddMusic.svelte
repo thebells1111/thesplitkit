@@ -10,6 +10,7 @@
 	let episodes = [];
 	let showSongs = false;
 	import archivedFeeds from './archivedFeeds.json';
+	import latestSongs from './latestSongs.json';
 
 	let searchQuery = '';
 	let filteredResults = [];
@@ -124,6 +125,18 @@
 				console.error('Error fetching episodes:', err);
 			});
 	}
+
+	async function fetchNewReleases() {
+		showSongs = true;
+		let feed = { image: '/splitkit64.png', title: 'New Releases', author: 'The Split Kit' };
+
+		feed.episodes = latestSongs;
+
+		episodes = feed.episodes || [];
+		selectedFeed = feed;
+
+		console.log(episodes);
+	}
 </script>
 
 <albums>
@@ -132,6 +145,13 @@
 		<fade-top />
 	</albums-top>
 	<ul>
+		<li class="albums">
+			<card on:click={fetchNewReleases}>
+				<img src="/splitkit64.png" width="40" height="40" />
+				<div>Latest Releases</div>
+				<div style={'width: 40px;'} />
+			</card>
+		</li>
 		{#each filteredResults as feed, index}
 			<li class="albums">
 				<card on:click={fetchEpisodes.bind(this, feed?.podcastGuid, index, feed)}>

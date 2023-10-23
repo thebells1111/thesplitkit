@@ -74,8 +74,7 @@
 	{#if episodes.length}
 		<h3>Songs</h3>
 		<ul>
-			{#each episodes as episode, index (episode?.id)}
-				<!-- The key should be unique for each episode -->
+			{#each episodes as episode, index}
 				<li>
 					<card
 						class={`songs ${episode.shimmer ? 'shimmer' : ''}`}
@@ -109,12 +108,21 @@
 						</button>
 						<song-info>
 							<img
-								src={episode?.artwork || episode?.image || feed?.artwork || feed?.image}
+								src={episode?.artwork ||
+									episode?.image ||
+									episode?.albumArt ||
+									feed?.artwork ||
+									feed?.image}
 								alt={episode?.title}
 								width="40"
 								height="40"
 							/>
-							<p>{episode?.title}</p>
+							<p>
+								{`${episode?.title}${episode.artist ? ` - ${episode.artist}` : ''}`}
+								{#if episode.artist}
+									<br />Released {new Date(episode.datePublished * 1000).toLocaleDateString()}
+								{/if}
+							</p>
 						</song-info>
 						<button
 							on:click={() => {
