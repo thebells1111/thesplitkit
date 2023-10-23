@@ -51,25 +51,31 @@
 			<expanding-circle class:ripple={rippleAlbum} />
 		</button-ripple>
 
-		<img src={feed?.artwork || feed?.image} alt={feed?.title} />
-		<h2>{feed?.title}</h2>
-		<h3>{feed?.author}</h3>
-		<audio controls bind:this={player} autoplay muted />
+		{#if feed.title !== 'New Releases' && feed.author !== 'The Split Kit'}
+			<img src={feed?.artwork || feed?.image} alt={feed?.title} />
+			<h2>{feed?.title}</h2>
+			<h3>{feed?.author}</h3>
 
-		<button
-			on:click|stopPropagation={() => {
-				rippleAlbum = true;
-				tick();
-				console.log(feed);
-				addFeed(feed, 'music');
-				setTimeout(() => {
-					rippleAlbum = false;
-				}, 200);
-			}}
-			class="add-icon"
-		>
-			<AddBlocksIcon size="24" />
-		</button>
+			<audio controls bind:this={player} autoplay muted />
+
+			<button
+				on:click|stopPropagation={() => {
+					rippleAlbum = true;
+					tick();
+					console.log(feed);
+					addFeed(feed, 'music');
+					setTimeout(() => {
+						rippleAlbum = false;
+					}, 200);
+				}}
+				class="add-icon"
+			>
+				<AddBlocksIcon size="24" />
+			</button>
+		{:else}
+			<h2>New Releases</h2>
+			<audio controls bind:this={player} autoplay muted />
+		{/if}
 	</album-card>
 	{#if episodes.length}
 		<h3>Songs</h3>
@@ -144,10 +150,22 @@
 </song-select>
 
 <style>
+	song-select {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		overflow: auto;
+		margin-top: 8px;
+		padding: 0 16px;
+		overflow: hidden;
+	}
 	ul {
 		padding: 20px 0;
 		margin: 0 8px;
 		width: calc(100% - 16px);
+		overflow: auto;
 	}
 
 	li {
@@ -256,17 +274,6 @@
 		position: absolute;
 		right: calc(50% - 88px);
 		top: 112px;
-	}
-
-	song-select {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		width: 100%;
-		height: 100%;
-		overflow: auto;
-		margin-top: 8px;
-		padding: 0 16px;
 	}
 
 	.shimmer {
