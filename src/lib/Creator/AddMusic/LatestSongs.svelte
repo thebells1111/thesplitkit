@@ -13,8 +13,6 @@
 	let rippleAlbum = false;
 	let loading = true;
 
-	console.log(latestSongs);
-
 	setTimeout(() => {
 		loading = false;
 	}, 1000);
@@ -54,7 +52,6 @@
 	}
 
 	async function fetchEpisode(episode) {
-		console.log(episode);
 		let feedUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
 			`/podcasts/byguid?guid=${episode.podcastGuid}`
 		)}`;
@@ -71,9 +68,7 @@
 		let episodesResults = episodesData.items || [];
 
 		feed.episodes = episodesResults;
-		console.log(episodesResults[0]);
 		let foundEpisode = episodesResults.find((v) => v.guid === episode.guid);
-		console.log(foundEpisode);
 
 		addFeed(foundEpisode, 'music', feed);
 	}
