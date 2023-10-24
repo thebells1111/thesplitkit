@@ -56,7 +56,7 @@
 			<h2>{feed?.title}</h2>
 			<h3>{feed?.author}</h3>
 
-			<audio controls bind:this={player} autoplay muted />
+			<audio controls bind:this={player} autoplay />
 
 			<button
 				on:click|stopPropagation={() => {
@@ -74,7 +74,7 @@
 			</button>
 		{:else}
 			<h2>New Releases</h2>
-			<audio controls bind:this={player} autoplay muted />
+			<audio controls bind:this={player} autoplay />
 		{/if}
 	</album-card>
 	{#if episodes.length}

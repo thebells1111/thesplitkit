@@ -81,7 +81,7 @@
 		</button-ripple>
 
 		<h2>New Releases</h2>
-		<audio controls bind:this={player} autoplay muted />
+		<audio controls bind:this={player} autoplay />
 	</album-card>
 	{#if latestSongs.length}
 		<h3>Songs</h3>
