@@ -33,7 +33,7 @@
 		player.onplay = function () {
 			isPaused = false;
 		};
-		player.muted = true;
+		// player.muted = true;
 	});
 
 	function downloadSong(audioSrc) {
