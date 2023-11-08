@@ -57,8 +57,6 @@
 	}
 
 	function submitData() {
-		showSaved = true;
-		setTimeout(() => (showSaved = false), 500);
 		const newBlocks = $liveBlocks.map((block) => {
 			const newBlock = clone(block);
 			newBlock.line = newBlock.line
@@ -98,7 +96,14 @@
 		})
 			.then((response) => response.json())
 			.then((newData) => {
+				console.log('header');
 				console.log(newData);
+				if (newData.status !== 'success') {
+					alert('You are no longer logged in, and your changes are not being saved.');
+				} else {
+					showSaved = true;
+					setTimeout(() => (showSaved = false), 500);
+				}
 			})
 			.catch((error) => console.error(error));
 	}
