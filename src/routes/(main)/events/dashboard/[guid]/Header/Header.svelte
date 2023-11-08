@@ -96,8 +96,6 @@
 		})
 			.then((response) => response.json())
 			.then((newData) => {
-				console.log('header');
-				console.log(newData);
 				if (newData.status !== 'success') {
 					alert('You are no longer logged in, and your changes are not being saved.');
 				} else {
