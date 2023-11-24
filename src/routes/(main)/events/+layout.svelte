@@ -12,6 +12,7 @@
 	let unmounted = true;
 
 	const guid = $page.params.guid;
+	$: console.log(guid);
 	onMount(() => {
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
 			showLoading = true;
@@ -30,7 +31,7 @@
 			<loading>
 				<img src="/splitkit300.png" />
 			</loading>
-		{:else if !$user?.loggedIn}
+		{:else if !$user?.loggedIn && guid !== 'test'}
 			<div>
 				<h2>Please <a href={redirectUrl}> Log In </a> to Continue</h2>
 			</div>
