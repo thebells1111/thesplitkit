@@ -366,7 +366,9 @@
 				>Connect to Live Value Server</button
 			>
 		{/if}
-		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
+		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks
+				.slice(1)
+				.every((v) => v.enclosureUrl || v.duration)}
 			<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
 		{/if}
 		{#if !$liveBlocks.find((v) => v?.blockGuid === $defaultBlockGuid)?.value?.destinations?.length && $mainSettings.broadcastMode !== 'edit'}

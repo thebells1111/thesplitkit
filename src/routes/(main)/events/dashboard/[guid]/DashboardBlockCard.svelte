@@ -180,6 +180,8 @@
 					<button class="broadcast" on:click={updateStartTime.bind(this, block, index)}
 						><TimerIcon size="32" /></button
 					>
+				{:else if ['playlist'].find((v) => v === $mainSettings?.broadcastMode) && block?.blockGuid === $defaultBlockGuid}
+					<span />
 				{:else}
 					<button class="broadcast" on:click={broadcast.bind(this, block, index)}
 						><BroadcastIcon size="32" /></button
