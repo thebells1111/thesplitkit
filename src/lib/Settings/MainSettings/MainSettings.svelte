@@ -31,44 +31,47 @@
 	}
 
 	export const saveMainSettings = () => {
-		showSaved = true;
-		setTimeout(() => (showSaved = false), 500);
-		fetch(remoteServer + '/api/sk/savesettings', {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ settings: $mainSettings, guid: $page.params.guid })
-		})
-			.then((response) => response.json())
-			.then((newData) => {
-				console.log(newData);
-			})
-			.catch((error) => console.error(error));
-
-		if (updateAllSplits) {
-			$liveBlocks.forEach((v) => {
-				if (v) {
-					v.settings.split = $mainSettings.splits;
-				}
-			});
-			$liveBlocks = $liveBlocks;
-			fetch(remoteServer + '/api/sk/saveblocks', {
+		if ($page.params.guid !== 'test') {
+			showSaved = true;
+			setTimeout(() => (showSaved = false), 500);
+			fetch(remoteServer + '/api/sk/savesettings', {
 				method: 'POST',
 				credentials: 'include',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ blocks: $liveBlocks, guid: $page.params.guid })
+				body: JSON.stringify({ settings: $mainSettings, guid: $page.params.guid })
 			})
 				.then((response) => response.json())
 				.then((newData) => {
 					console.log(newData);
 				})
 				.catch((error) => console.error(error));
-		}
 
+			if (updateAllSplits) {
+				$liveBlocks.forEach((v) => {
+					if (v) {
+						v.settings.split = $mainSettings.splits;
+					}
+				});
+				$liveBlocks = $liveBlocks;
+				fetch(remoteServer + '/api/sk/saveblocks', {
+					method: 'POST',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({ blocks: $liveBlocks, guid: $page.params.guid })
+				})
+					.then((response) => response.json())
+					.then((newData) => {
+						if (newData.status !== 200) {
+							alert('You are no longer logged in, and your changes are not being saved.');
+						}
+					})
+					.catch((error) => console.error(error));
+			}
+		}
 		mainUnsaved = false;
 	};
 </script>

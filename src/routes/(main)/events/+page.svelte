@@ -50,7 +50,7 @@
 	async function deleteEvent(eventObj) {
 		let remove = confirm(`Are you sure you want to delete ${eventObj.eventName}?`);
 		if (remove) {
-			$events = events.filter((v) => eventObj.guid !== v.guid);
+			$events = $events.filter((v) => eventObj.guid !== v.guid);
 			let res = await fetch(remoteServer + '/api/sk/deleteguid?guid=' + eventObj.guid, {
 				credentials: 'include'
 			});

@@ -57,8 +57,6 @@
 	}
 
 	function submitData() {
-		showSaved = true;
-		setTimeout(() => (showSaved = false), 500);
 		const newBlocks = $liveBlocks.map((block) => {
 			const newBlock = clone(block);
 			newBlock.line = newBlock.line
@@ -88,19 +86,26 @@
 	}
 
 	function saveEntry(blocks) {
-		fetch(remoteServer + '/api/sk/saveblocks', {
-			method: 'POST',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ blocks, guid: $page.params.guid })
-		})
-			.then((response) => response.json())
-			.then((newData) => {
-				console.log(newData);
+		if ($page.params.guid !== 'test') {
+			fetch(remoteServer + '/api/sk/saveblocks', {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ blocks, guid: $page.params.guid })
 			})
-			.catch((error) => console.error(error));
+				.then((response) => response.json())
+				.then((newData) => {
+					if (newData.status !== 'success') {
+						alert('You are no longer logged in, and your changes are not being saved.');
+					} else {
+						showSaved = true;
+						setTimeout(() => (showSaved = false), 500);
+					}
+				})
+				.catch((error) => console.error(error));
+		}
 	}
 </script>
 

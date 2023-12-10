@@ -1,19 +1,26 @@
 <script>
 	import { onMount } from 'svelte';
+	import latestSongs from './latestSongs.json';
 	import AddBlocksIcon from '$lib/icons/AddBlocks.svelte';
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
 	import DownloadIcon from '$lib/icons/Download.svelte';
 	import { tick } from 'svelte';
-	export let episodes = [];
+
+	import { remoteServer } from '$/stores';
+
 	export let addFeed = () => {};
-	export let feed = {};
 	let rippleAlbum = false;
+	let loading = true;
+
+	setTimeout(() => {
+		loading = false;
+	}, 1000);
 
 	async function shimmerCard(index) {
-		episodes[index].shimmer = true;
+		latestSongs[index].shimmer = true;
 		setTimeout(() => {
-			episodes[index].shimmer = false;
+			latestSongs[index].shimmer = false;
 		}, 200);
 	}
 	let player;
@@ -43,6 +50,28 @@
 		anchor.target = '_blank'; // Open in new tabs
 		anchor.click();
 	}
+
+	async function fetchEpisode(episode) {
+		let feedUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
+			`/podcasts/byguid?guid=${episode.podcastGuid}`
+		)}`;
+		let episodesUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
+			`/episodes/bypodcastguid?guid=${episode.podcastGuid}`
+		)}`;
+
+		let [feedRes, episodesRes] = await Promise.all([fetch(feedUrl), fetch(episodesUrl)]);
+
+		let data = await feedRes.json();
+		let feed = data.feed;
+
+		let episodesData = await episodesRes.json();
+		let episodesResults = episodesData.items || [];
+
+		feed.episodes = episodesResults;
+		let foundEpisode = episodesResults.find((v) => v.guid === episode.guid);
+
+		addFeed(foundEpisode, 'music', feed);
+	}
 </script>
 
 <song-select>
@@ -51,101 +80,72 @@
 			<expanding-circle class:ripple={rippleAlbum} />
 		</button-ripple>
 
-		{#if feed.title !== 'New Releases' && feed.author !== 'The Split Kit'}
-			<img src={feed?.artwork || feed?.image} alt={feed?.title} />
-			<h2>{feed?.title}</h2>
-			<h3>{feed?.author}</h3>
-
-			<audio controls bind:this={player} autoplay />
-
-			<button
-				on:click|stopPropagation={() => {
-					rippleAlbum = true;
-					tick();
-					console.log(feed);
-					addFeed(feed, 'music');
-					setTimeout(() => {
-						rippleAlbum = false;
-					}, 200);
-				}}
-				class="add-icon"
-			>
-				<AddBlocksIcon size="24" />
-			</button>
-		{:else}
-			<h2>New Releases</h2>
-			<audio controls bind:this={player} autoplay />
-		{/if}
+		<h2>New Releases</h2>
+		<audio controls bind:this={player} autoplay />
 	</album-card>
-	{#if episodes.length}
+	{#if latestSongs.length}
 		<h3>Songs</h3>
-		<ul>
-			{#each episodes as episode, index}
-				<li>
-					<card
-						class={`songs ${episode.shimmer ? 'shimmer' : ''}`}
-						class:active={player?.src === episode.enclosureUrl}
-					>
-						<button
-							on:click={() => {
-								if (player.src === episode.enclosureUrl) {
-									if (isPaused) {
-										player.play();
+		{#if loading}
+			<h1>Loading Songs</h1>
+		{:else}
+			<ul>
+				{#each latestSongs as episode, index}
+					<li>
+						<card
+							class={`songs ${episode.shimmer ? 'shimmer' : ''}`}
+							class:active={player?.src === episode.enclosureUrl}
+						>
+							<button
+								on:click={() => {
+									if (player.src === episode.enclosureUrl) {
+										if (isPaused) {
+											player.play();
+										} else {
+											player.pause();
+										}
 									} else {
-										player.pause();
+										player.src = episode.enclosureUrl;
 									}
-								} else {
-									player.src = episode.enclosureUrl;
-								}
-							}}
-						>
-							{#if player?.src === episode?.enclosureUrl}
-								{#if isPaused}
-									<PlayIcon size="27" />
+								}}
+							>
+								{#if player?.src === episode?.enclosureUrl}
+									{#if isPaused}
+										<PlayIcon size="27" />
+									{:else}
+										<PauseIcon size="27" />
+									{/if}
 								{:else}
-									<PauseIcon size="27" />
+									<PlayIcon size="27" />
 								{/if}
-							{:else}
-								<PlayIcon size="27" />
-							{/if}
-						</button>
-						<button on:click={downloadSong.bind(this, episode?.enclosureUrl)} class="download">
-							<DownloadIcon size="27" />
-						</button>
-						<song-info>
-							<img
-								src={episode?.artwork ||
-									episode?.image ||
-									episode?.albumArt ||
-									feed?.artwork ||
-									feed?.image}
-								alt={episode?.title}
-								width="40"
-								height="40"
-							/>
-							<p>
-								{`${episode?.title}${episode.artist ? ` - ${episode.artist}` : ''}`}
-								{#if episode.artist}
-									<br />Released {new Date(episode.datePublished * 1000).toLocaleDateString()}
-								{/if}
-							</p>
-						</song-info>
-						<button
-							on:click={() => {
-								shimmerCard(index);
-								tick();
-								console.log(feed);
-								console.log(episode);
-								addFeed(episode, 'music', feed);
-							}}
-							class="add-icon"
-						>
-							<AddBlocksIcon size="24" />
-						</button>
-					</card>
-				</li>
-			{/each}
-		</ul>
+							</button>
+							<button on:click={downloadSong.bind(this, episode?.enclosureUrl)} class="download">
+								<DownloadIcon size="27" />
+							</button>
+							<song-info>
+								<img src={episode?.albumArt} alt={episode?.title} width="40" height="40" />
+								<p>
+									{`${episode?.title}${episode.artist ? ` - ${episode.artist}` : ''}`}
+									{#if episode.artist}
+										<br />Released {new Date(episode.datePublished * 1000).toLocaleDateString()}
+									{/if}
+								</p>
+							</song-info>
+							<button
+								on:click={() => {
+									shimmerCard(index);
+									tick();
+									console.log(episode);
+									fetchEpisode(episode);
+								}}
+								class="add-icon"
+							>
+								<AddBlocksIcon size="24" />
+							</button>
+						</card>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 	{/if}
 </song-select>
 

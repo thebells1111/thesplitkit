@@ -238,6 +238,7 @@
 		if (!isDefault) {
 			feeDestinations.push(splitKitObject);
 		}
+		feeDestinations.forEach((v) => (v.split = v.split.toString()));
 		return feeDestinations;
 	}
 
@@ -245,7 +246,7 @@
 		return clone(destinations)
 			?.filter((v) => !v.fee)
 			?.map((v) => {
-				v.split = (v.split * split) / 100;
+				v.split = ((v.split * split) / 100).toString();
 				return v || [];
 			});
 	}
@@ -389,7 +390,9 @@
 				>Connect to Live Value Server</button
 			>
 		{/if}
-		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks.every((v) => v.enclosureUrl || v.duration)}
+		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks
+				.slice(1)
+				.every((v) => v.enclosureUrl || v.duration)}
 			<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
 		{/if}
 		{#if !$liveBlocks.find((v) => v?.blockGuid === $defaultBlockGuid)?.value?.destinations?.length && $mainSettings.broadcastMode !== 'edit'}
@@ -397,7 +400,7 @@
 		{/if}
 
 		{#if ['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)}
-			<audio autoplay controls bind:this={player} class:hidden={player?.src} muted />
+			<audio autoplay controls bind:this={player} class:hidden={player?.src} />
 		{/if}
 
 		{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}

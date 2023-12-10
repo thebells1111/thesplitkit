@@ -4,12 +4,14 @@
 	import clone from 'just-clone';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import SongSelect from './SongSelect.svelte';
+	import LatestSongs from './LatestSongs.svelte';
 	export let addFeed = () => {};
 	let selectedFeed = {};
 	let podcastIndexSearchResults = [];
 	let episodes = [];
 	let showSongs = false;
-	import archivedFeeds from './archivedFeeds.json';
+	let showLatest = false;
+	// import archivedFeeds from './archivedFeeds.json';
 
 	let searchQuery = '';
 	let filteredResults = [];
@@ -17,18 +19,33 @@
 	onMount(fetchAlbums);
 
 	async function fetchAlbums() {
-		// const res = await fetch(
-		// 	remoteServer + `/api/queryindex?q=podcasts/bymedium?medium=music&max=1500`
-		// );
-		// let data = await res.json();
+		const res = await fetch(
+			remoteServer +
+				`/api/queryindex?q=${encodeURIComponent(
+					'podcasts/bymedium?medium=music&val=lightning&max=2000'
+				)}`
+		);
+		let data = await res.json();
+		console.log(data);
 
-		let data = { feeds: archivedFeeds };
+		// let data = { feeds: archivedFeeds };
 
 		try {
 			episodes = [];
 
-			podcastIndexSearchResults = data.feeds;
-			filteredResults = sortArrayAlphabetically(clone(data.feeds));
+			podcastIndexSearchResults = sortByPubDate(data.feeds).filter((v) => {
+				let addFeed = true;
+				if (
+					//this removes 100% Retro Live Feed
+					[5718023].find((w) => v.id === w) ||
+					v.author === 'Gabe Barrett' ||
+					[6612768].find((w) => v.id === w)
+				) {
+					addFeed = false;
+				}
+				return addFeed;
+			});
+			filteredResults = podcastIndexSearchResults;
 		} catch (error) {}
 	}
 
@@ -57,6 +74,13 @@
 			}
 			return 0;
 		});
+		return arr;
+	}
+
+	function sortByPubDate(arr) {
+		console.log(arr);
+		arr.sort((a, b) => (a.newestItemPubdate < b.newestItemPubdate ? 1 : -1));
+		console.log(arr);
 		return arr;
 	}
 
@@ -132,23 +156,49 @@
 		<fade-top />
 	</albums-top>
 	<ul>
-		{#each filteredResults as feed, index}
-			<li class="albums">
-				<card on:click={fetchEpisodes.bind(this, feed?.podcastGuid, index, feed)}>
-					<img src={feed?.artwork || feed?.image} alt={feed?.title} width="40" height="40" />
-					<div>
-						<h3>{feed?.title}</h3>
-						<p>{feed?.author}</p>
-					</div>
-					<div style={'width: 40px;'} />
-				</card>
-			</li>
-		{/each}
+		<!-- <li class="albums">
+			<card
+				on:click={() => {
+					showLatest = true;
+				}}
+			>
+				<img src="/splitkit64.png" width="40" height="40" />
+				<h3>Latest Releases</h3>
+				<div style={'width: 40px;'} />
+			</card>
+		</li> -->
+		{#if podcastIndexSearchResults.length}
+			{#each filteredResults as feed, index}
+				<li class="albums">
+					<card on:click={fetchEpisodes.bind(this, feed?.podcastGuid, index, feed)}>
+						<img src={feed?.artwork || feed?.image} alt={feed?.title} width="60" height="60" />
+						<div>
+							<h3>{feed?.title}</h3>
+							<p>{feed?.author}</p>
+
+							<p>
+								{feed?.newestItemPubdate
+									? 'Latest release: ' +
+									  new Date(feed?.newestItemPubdate * 1000).toLocaleDateString()
+									: ''}
+							</p>
+						</div>
+						<div style={'width: 40px;'} />
+					</card>
+				</li>
+			{/each}
+		{:else}
+			<h2>Loading Songs</h2>
+		{/if}
 	</ul>
 </albums>
 
 <Modal bind:showModal={showSongs}>
 	<SongSelect {addFeed} {episodes} feed={selectedFeed} />
+</Modal>
+
+<Modal bind:showModal={showLatest}>
+	<LatestSongs {addFeed} />
 </Modal>
 
 <style>
@@ -196,6 +246,9 @@
 		padding: 0;
 		width: 100%;
 	}
+	h2 {
+		text-align: center;
+	}
 
 	h3 {
 		margin: 0;
@@ -217,6 +270,7 @@
 	img {
 		border: 1px solid gray;
 		margin-right: 0.5em;
+		border-radius: 4px;
 	}
 	h3 {
 		margin: 0;
