@@ -32,6 +32,7 @@
 					.setFrame('TIT2', metadata.title)
 					.setFrame('TPE1', [metadata.artist])
 					.setFrame('TALB', metadata.album)
+					.setFrame('COMM', metadata.comment)
 					.setFrame('TXXX', metadata.internalId);
 				writer.addTag();
 				const taggedArrayBuffer = writer.arrayBuffer;
@@ -65,13 +66,33 @@
 						title: block.title,
 						artist: block?.line?.[1] || '',
 						album: block?.line?.[0] || '',
-						internalId: { description: 'ID', value: block.blockGuid }
+						comment: {
+							description: 'SplitKitMeta',
+							text: `SplitKitMeta: {eventGuid:${'12345-12321'}, blockGuid:${block.blockGuid}}`
+						},
+						internalId: {
+							description: 'mAirList',
+							value: `<PlaylistItem Class="File"><Comment>{eventGuid:${'12345-12321'}, blockGuid:${
+								block.blockGuid
+							}}</Comment><ExternalID>{eventGuid:${'12345-12321'}, blockGuid:${
+								block.blockGuid
+							}}</ExternalID></PlaylistItem>`
+						}
 					};
 
 					blob = await setMP3Metadata(blob, metadata);
 
-					zip.file(`${block.title} - ${block?.line?.[1]} - ${block.blockGuid}.mp3`, blob);
+					zip.file(
+						`${sanitizeFilename(block.title)} - ${sanitizeFilename(block?.line?.[1])} - ${
+							block.blockGuid
+						}.mp3`,
+						blob
+					);
 				}
+			}
+
+			function sanitizeFilename(filename) {
+				return filename.replace(/[\\/:*?"<>|\x00-\x1F\x80-\x9F]/g, '');
 			}
 
 			const content = await zip.generateAsync({ type: 'blob' });
