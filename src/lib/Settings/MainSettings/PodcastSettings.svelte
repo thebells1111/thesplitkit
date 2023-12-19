@@ -72,7 +72,13 @@
 						},
 						internalId: {
 							description: 'mAirList',
-							value: `<PlaylistItem Class="File"><Comment>{eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}}</ExternalID></PlaylistItem>`
+							value: `<PlaylistItem Class="File"><Title>${block.title}</Title><Artist>${
+								block?.line?.[1] || ''
+							}</Artist><Comment>{eventGuid:${block.eventGuid}, blockGuid:${
+								block.blockGuid
+							}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${
+								block.blockGuid
+							}}</ExternalID></PlaylistItem>`
 						}
 					};
 
