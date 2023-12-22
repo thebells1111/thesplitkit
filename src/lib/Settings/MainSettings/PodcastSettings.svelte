@@ -37,7 +37,7 @@
 				writer.addTag();
 				const taggedArrayBuffer = writer.arrayBuffer;
 				const taggedBlob = new Blob([taggedArrayBuffer], {
-					type: 'audio/mp3'
+					type: 'audio/mpeg'
 				});
 				resolve(taggedBlob);
 			};
@@ -68,13 +68,15 @@
 						album: block?.line?.[0] || '',
 						comment: {
 							description: 'SplitKitMeta',
-							text: `SplitKitMeta: {eventGuid:${'12345-12321'}, blockGuid:${block.blockGuid}}`
+							text: `SplitKitMeta: {eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}}`
 						},
 						internalId: {
 							description: 'mAirList',
-							value: `<PlaylistItem Class="File"><Comment>{eventGuid:${'12345-12321'}, blockGuid:${
+							value: `<PlaylistItem Class="File"><Title>${block.title}</Title><Artist>${
+								block?.line?.[1] || ''
+							}</Artist><Comment>{eventGuid:${block.eventGuid}, blockGuid:${
 								block.blockGuid
-							}}</Comment><ExternalID>{eventGuid:${'12345-12321'}, blockGuid:${
+							}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${
 								block.blockGuid
 							}}</ExternalID></PlaylistItem>`
 						}
