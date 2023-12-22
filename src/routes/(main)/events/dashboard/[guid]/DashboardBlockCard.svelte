@@ -15,6 +15,8 @@
 
 	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 
+	// curl -X GET "http://localhost:8000/mair?ex_id=%7B%22eventGuid%22%3A%20%226ef10222-af2a-48eb-beda-45c61f80ea4d%22%2C%20%22blockGuid%22%3A%20%22b5a9b459-af84-43db-a22c-bfe73021966c%22%7D&lightning_address=steven%40getalby.com" -H "Authorization: Basic Qm9iOmlzIGNvb2w="
+
 	export let block = {};
 	export let index;
 	export let broadcastingBlockGuid;
@@ -136,17 +138,19 @@
 		</card-info>
 		<middle-container>
 			<time-container>
-				{#if ['playlist', 'edit'].find((v) => v === $mainSettings.broadcastMode) || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)}
+				{#if ['playlist', 'edit'].find((v) => v === $mainSettings.broadcastMode) || $mainSettings?.broadcastMode === 'podcast'}
 					{#if block?.blockGuid !== $defaultBlockGuid}
-						<duration>
-							<strong>Duration:</strong>
+						{#if $mainSettings?.podcast?.autoSwitch || $mainSettings?.broadcastMode === 'playlist'}
+							<duration>
+								<strong>Duration:</strong>
 
-							{#if ($mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) && !block.duration}
-								<warning>This block has no duration.</warning>
-							{:else}
-								<span>{block.duration ? formatTime(block.duration) : ''}</span>
-							{/if}
-						</duration>
+								{#if ($mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) && !block.duration}
+									<warning>This block has no duration.</warning>
+								{:else}
+									<span>{block.duration ? formatTime(block.duration) : ''}</span>
+								{/if}
+							</duration>
+						{/if}
 						<start-time>
 							<strong>Start:</strong>
 							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>

@@ -41,6 +41,7 @@
 
 	$: compareBlocks($liveBlocks);
 	$: if (mainUnsaved) {
+		console.log('mainUnsaved saved');
 		saveEntry($liveBlocks);
 		mainUnsaved = false;
 	}
@@ -100,7 +101,6 @@
 					if (newData.status !== 'success') {
 						alert('You are no longer logged in, and your changes are not being saved.');
 					} else {
-						showSaved = true;
 						setTimeout(() => (showSaved = false), 500);
 					}
 				})
