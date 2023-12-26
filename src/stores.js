@@ -7,7 +7,7 @@ export const albyClientId = dev ? '32dVOIuGiA' : 'GshATUDCSc';
 export const albyReady = writable(false);
 export const events = writable([]);
 
-export const user = writable({ loggedIn: true });
+export const user = writable({ loggedIn: false });
 export const catalog = writable([]);
 
 export const liveBlocks = writable([]);

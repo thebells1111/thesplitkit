@@ -9,6 +9,7 @@
 	import PrerecordedSettings from './PrerecordedSettings.svelte';
 	import PodcastSettings from './PodcastSettings.svelte';
 	import RemoteCreds from './RemoteCreds.svelte';
+	import EditTimes from './EditTimes.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
@@ -76,13 +77,11 @@
 	};
 </script>
 
-<DefaultSplits bind:mainUnsaved bind:updateAllSplits />
-<button
-	on:click={() => {
-		showOffsetStartTimes = true;
-	}}>Offset Start Times</button
->
+<h2><span>Event ID:</span> {$page.params.guid}</h2>
 <BroadcastMode bind:mainUnsaved />
+<DefaultSplits bind:mainUnsaved bind:updateAllSplits />
+<EditTimes bind:showOffsetStartTimes />
+<RemoteCreds />
 
 {#if $mainSettings?.broadcastMode === 'playlist'}
 	<!-- <PlaylistSettings bind:mainUnsaved /> -->
@@ -96,11 +95,8 @@
 	<PrerecordedSettings bind:mainUnsaved />
 {/if}
 
-<RemoteCreds />
-
 <style>
-	button {
-		margin: 8px;
-		align-self: flex-start;
+	span {
+		color: var(--color-theme-blue);
 	}
 </style>

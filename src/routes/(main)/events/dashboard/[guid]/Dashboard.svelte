@@ -84,6 +84,9 @@
 			console.log(message);
 			console.log(broadcastingBlockGuid);
 			let block = $liveBlocks.find((v) => v.blockGuid === message);
+			if (!isRunning) {
+				startTimer();
+			}
 			block = block || getNextBlock({ blockGuid: broadcastingBlockGuid });
 			broadcastingBlockGuid = block.blockGuid;
 			console.log(block);

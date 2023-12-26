@@ -151,7 +151,7 @@
 	}
 
 	label {
-		margin: 12px 0;
+		margin: 12px 0 4px 0;
 		color: var(--color-theme-blue);
 	}
 	label p {
@@ -177,9 +177,13 @@
 
 	warning {
 		color: red;
-		text-align: center;
+		text-align: left;
 		font-weight: bold;
 		font-size: 1.1em;
+	}
+
+	warning > p {
+		margin: 0 8px 16px 8px;
 	}
 
 	download-info {
@@ -188,5 +192,9 @@
 		text-align: center;
 		font-weight: bold;
 		font-size: 1.3em;
+	}
+
+	button {
+		margin-bottom: 4px;
 	}
 </style>
