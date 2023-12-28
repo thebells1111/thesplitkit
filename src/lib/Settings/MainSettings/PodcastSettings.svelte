@@ -169,6 +169,7 @@
 		display: flex;
 		width: 100%;
 		align-items: flex-start;
+		margin-top: 24px;
 	}
 
 	label.checkbox input {

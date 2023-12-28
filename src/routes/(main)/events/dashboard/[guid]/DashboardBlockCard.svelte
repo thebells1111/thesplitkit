@@ -1,5 +1,6 @@
 <script>
-	import { page } from '$app/stores';
+	import { saveAs } from 'file-saver';
+	import { ID3Writer } from 'browser-id3-writer';
 	import BlockSettings from '$lib/Settings/BlockSettings/BlockSettings.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
@@ -11,6 +12,7 @@
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
 	import TimerIcon from '$lib/icons/Timer.svelte';
+	import DownloadIcon from '$lib/icons/Download.svelte';
 	import { remoteServer, defaultBlockGuid, mainSettings, liveBlocks } from '$/stores';
 
 	import getMediaDuration from '$lib/functions/getMediaDuration.js';
@@ -103,6 +105,72 @@
 			$liveBlocks[activeIndex] = block;
 		}
 	}
+
+	async function setMP3Metadata(blob, metadata) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsArrayBuffer(blob);
+			reader.onloadend = () => {
+				const buffer = reader.result;
+				const writer = new ID3Writer(buffer);
+				writer
+					.setFrame('TIT2', metadata.title)
+					.setFrame('TPE1', [metadata.artist])
+					.setFrame('TALB', metadata.album)
+					.setFrame('COMM', metadata.comment)
+					.setFrame('TXXX', metadata.internalId);
+				writer.addTag();
+				const taggedArrayBuffer = writer.arrayBuffer;
+				const taggedBlob = new Blob([taggedArrayBuffer], {
+					type: 'audio/mpeg'
+				});
+				resolve(taggedBlob);
+			};
+		});
+	}
+
+	async function downloadMP3(block) {
+		const res = await fetch(
+			remoteServer + '/api/proxy?url=' + encodeURIComponent(block.enclosureUrl),
+			{
+				headers: { 'User-Agent': 'TheSplitKit/0.1' }
+			}
+		);
+		let blob = await res.blob();
+
+		const metadata = {
+			title: block.title,
+			artist: block?.line?.[1] || '',
+			album: block?.line?.[0] || '',
+			comment: {
+				description: 'SplitKitMeta',
+				text: `SplitKitMeta: {eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}}`
+			},
+			internalId: {
+				description: 'mAirList',
+				value: `<PlaylistItem Class="File"><Title>${block.title}</Title><Artist>${
+					block?.line?.[1] || ''
+				}</Artist><Comment>{eventGuid:${block.eventGuid}, blockGuid:${
+					block.blockGuid
+				}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${
+					block.blockGuid
+				}}</ExternalID></PlaylistItem>`
+			}
+		};
+
+		blob = await setMP3Metadata(blob, metadata);
+
+		saveAs(
+			blob,
+			`${sanitizeFilename(block.title)} - ${sanitizeFilename(block?.line?.[1])} - ${
+				block.blockGuid
+			}.mp3`
+		);
+
+		function sanitizeFilename(filename) {
+			return filename.replace(/[\\/:*?"<>|\x00-\x1F\x80-\x9F]/g, '');
+		}
+	}
 </script>
 
 {#if block}
@@ -128,6 +196,9 @@
 				<top>
 					<h3>{block.title === 'Title - click to edit' ? '' : block.title || ''}</h3>
 					<p class="block-type"><icon><svelte:component this={Icons[typeText]} /></icon></p>
+					<button on:click={downloadMP3.bind(this, block)} class="download">
+						<DownloadIcon size="27" />
+					</button>
 				</top>
 				{#if block.type === 'music'}
 					<p>{block?.line?.[1] === 'Text - click to edit' ? '' : block?.line?.[1] || ''}</p>
@@ -165,6 +236,7 @@
 					{/if}
 				{/if}
 			</time-container>
+
 			<button-container>
 				<button
 					class="edit"
@@ -272,13 +344,23 @@
 		width: 100%;
 	}
 
-	top {
+	card-text > top {
 		display: flex;
 		width: 100%;
 		margin-top: 2px;
 	}
 	top h3 {
 		width: 100%;
+	}
+
+	top > button {
+		position: absolute;
+		right: 0;
+		top: 36px;
+		background-color: transparent;
+		height: 24px;
+		width: 40px;
+		box-shadow: none;
 	}
 
 	div:first-child {
