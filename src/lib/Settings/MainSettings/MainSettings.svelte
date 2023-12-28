@@ -9,12 +9,13 @@
 	import PrerecordedSettings from './PrerecordedSettings.svelte';
 	import PodcastSettings from './PodcastSettings.svelte';
 	import RemoteCreds from './RemoteCreds.svelte';
+	import EditTimes from './EditTimes.svelte';
+	import CopyIcon from '$lib/icons/Copy.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
 	let savedSettings = {};
 	let updateAllSplits = false;
-	let showSaved = false;
 	export let showOffsetStartTimes;
 
 	$: compareSettings($mainSettings);
@@ -32,8 +33,6 @@
 
 	export const saveMainSettings = () => {
 		if ($page.params.guid !== 'test') {
-			showSaved = true;
-			setTimeout(() => (showSaved = false), 500);
 			fetch(remoteServer + '/api/sk/savesettings', {
 				method: 'POST',
 				credentials: 'include',
@@ -74,15 +73,28 @@
 		}
 		mainUnsaved = false;
 	};
+
+	async function copyToClipboard(text) {
+		navigator.clipboard
+			.writeText(text)
+			.then(() => {
+				alert('ID copied to clipboard');
+			})
+			.catch((err) => {
+				alert('Error copying ID to clipboard');
+			});
+	}
 </script>
 
-<DefaultSplits bind:mainUnsaved bind:updateAllSplits />
-<button
-	on:click={() => {
-		showOffsetStartTimes = true;
-	}}>Offset Start Times</button
->
+<h2 on:click={copyToClipboard.bind(this, $page.params.guid)}>
+	<span>Event ID:</span>
+	{$page.params.guid}
+	<CopyIcon size="24" />
+</h2>
 <BroadcastMode bind:mainUnsaved />
+<DefaultSplits bind:mainUnsaved bind:updateAllSplits />
+<EditTimes bind:showOffsetStartTimes />
+<RemoteCreds />
 
 {#if $mainSettings?.broadcastMode === 'playlist'}
 	<!-- <PlaylistSettings bind:mainUnsaved /> -->
@@ -96,11 +108,11 @@
 	<PrerecordedSettings bind:mainUnsaved />
 {/if}
 
-<RemoteCreds />
-
 <style>
-	button {
-		margin: 8px;
-		align-self: flex-start;
+	h2 {
+		cursor: copy;
+	}
+	span {
+		color: var(--color-theme-blue);
 	}
 </style>

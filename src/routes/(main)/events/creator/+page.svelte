@@ -232,12 +232,6 @@
 	h2 {
 		margin: 0;
 	}
-	p {
-		text-align: center;
-		padding: 0;
-		margin: 0;
-		width: 75px;
-	}
 
 	event-selector {
 		display: block;

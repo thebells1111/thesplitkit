@@ -25,6 +25,7 @@
 	export let filterType;
 	export let showOptionsModal = false;
 	export let activeBlockGuid;
+	$: console.log(activeBlockGuid);
 
 	let broadcastingBlockGuid;
 	let player;
@@ -47,6 +48,7 @@
 		if (!$liveBlocks?.length) {
 			loadSocket();
 		}
+		loadSocket();
 	});
 
 	$: if (guid && $activeBroadcastGuid !== guid) {
@@ -61,10 +63,14 @@
 		console.log('socket connect');
 	}
 
+	let storedGuid = '';
+
 	function socketConnect() {
 		$socket = io(remoteServer + '/event?event_id=' + guid, { withCredentials: true });
 
 		$socket.on('connect', () => {
+			storedGuid = $socket.id;
+			console.log(storedGuid);
 			if (guid) {
 				// Send a message with the valueGuid
 				$socket.emit('connected', guid);
@@ -73,6 +79,27 @@
 				console.log('guid is not defined');
 			}
 		});
+
+		$socket.on('nextBlock', (message) => {
+			console.log(message);
+			console.log(broadcastingBlockGuid);
+			let block = $liveBlocks.find((v) => v.blockGuid === message);
+			if (!isRunning) {
+				startTimer();
+			}
+			block = block || getNextBlock({ blockGuid: broadcastingBlockGuid });
+			broadcastingBlockGuid = block.blockGuid;
+			console.log(block);
+
+			handleBroadcast(block);
+		});
+	}
+
+	async function handleNext() {
+		console.log(storedGuid);
+		let res = await fetch(remoteServer + '/api/sk/nextblock?guid=' + storedGuid);
+		let data = await res.text();
+		console.log(data);
 	}
 
 	async function handleBroadcast(block) {
@@ -287,39 +314,51 @@
 	let isRunning = false;
 	let resetTimer;
 
-	$: if ($mainSettings?.broadcastMode === 'manual' && timeStamp) {
+	$: if ($mainSettings?.broadcastMode === 'manual' && interval) {
 		let confirmation = confirm('Do you want to reset your timer?');
 		if (confirmation) {
+			clearInterval(interval);
+			interval = undefined;
+			isRunning = false;
 			timeStamp = 0;
 			resetTimer = true;
 		}
 	}
 
 	function handleTimer() {
-		isRunning = !isRunning;
-
 		if (isRunning) {
-			startTime = startTime && startTime > 0 ? startTime : performance.now();
-			if (pauseTime) {
-				totalPausedTime += performance.now() - pauseTime;
-				pauseTime = 0; // reset pauseTime
-			}
-
-			interval = setInterval(() => {
-				const now = performance.now();
-				if (resetTimer) {
-					startTime = now;
-					pauseTime = 0;
-					totalPausedTime = 0;
-					resetTimer = false;
-				}
-				const deltaTime = now - startTime - totalPausedTime;
-				timeStamp = deltaTime / 1000; // update the elapsed time in seconds
-			}, 25);
+			pauseTimer();
 		} else {
-			pauseTime = performance.now(); // capture the time when timer is paused
-			clearInterval(interval);
+			startTimer();
 		}
+	}
+
+	function startTimer() {
+		isRunning = true;
+
+		startTime = startTime && startTime > 0 ? startTime : performance.now();
+		if (pauseTime) {
+			totalPausedTime += performance.now() - pauseTime;
+			pauseTime = 0; // reset pauseTime
+		}
+
+		interval = setInterval(() => {
+			const now = performance.now();
+			if (resetTimer) {
+				startTime = now;
+				pauseTime = 0;
+				totalPausedTime = 0;
+				resetTimer = false;
+			}
+			const deltaTime = now - startTime - totalPausedTime;
+			timeStamp = deltaTime / 1000; // update the elapsed time in seconds
+		}, 25);
+	}
+
+	function pauseTimer() {
+		isRunning = false;
+		pauseTime = performance.now(); // capture the time when timer is paused
+		clearInterval(interval);
 	}
 
 	function handleResetTimer() {

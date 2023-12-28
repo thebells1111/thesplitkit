@@ -117,5 +117,9 @@
 			overflow-x: hidden;
 			border-radius: 0;
 		}
+
+		fade-bottom {
+			display: none;
+		}
 	}
 </style>

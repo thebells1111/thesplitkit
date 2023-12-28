@@ -69,6 +69,17 @@
 		showSelectBlock = false;
 		$liveBlocks = $liveBlocks;
 	}
+
+	async function copyToClipboard(text) {
+		navigator.clipboard
+			.writeText(text)
+			.then(() => {
+				alert('ID copied to clipboard');
+			})
+			.catch((err) => {
+				alert('Error copying ID to clipboard');
+			});
+	}
 </script>
 
 <blurred-background class="link" on:click|self={closeOptionsModal} on:keyup={closeOptionsModal}>
@@ -115,6 +126,13 @@
 			</button>
 			<button class="close" on:click={closeOptionsModal}><Close size="32" /></button>
 		</top>
+		<block-id on:click={copyToClipboard.bind(this, block.blockGuid)}>
+			<div>
+				<p>Block ID:</p>
+				<CopyIcon size="14" />
+			</div>
+			<p>{block.blockGuid}</p>
+		</block-id>
 		<img src={block?.image || '/splitkit300.png'} alt="the artwork for this block" />
 		<card-text>
 			<h3>
@@ -259,6 +277,20 @@
 		box-shadow: none;
 	}
 
+	block-id {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		cursor: copy;
+	}
+
+	block-id > div > p {
+		display: inline;
+	}
+
+	block-id > p {
+		font-size: 0.8em;
+	}
 	img {
 		width: 200px;
 		height: 200px;

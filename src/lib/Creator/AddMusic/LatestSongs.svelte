@@ -4,7 +4,6 @@
 	import AddBlocksIcon from '$lib/icons/AddBlocks.svelte';
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
-	import DownloadIcon from '$lib/icons/Download.svelte';
 	import { tick } from 'svelte';
 
 	import { remoteServer } from '$/stores';
@@ -35,21 +34,6 @@
 		};
 		// player.muted = true;
 	});
-
-	function downloadSong(audioSrc) {
-		if (audioSrc) {
-			const extension = audioSrc.split('.').pop();
-			downloadFile(audioSrc, `song.${extension}`);
-		}
-	}
-
-	function downloadFile(url, filename) {
-		const anchor = document.createElement('a');
-		anchor.href = url;
-		anchor.download = filename;
-		anchor.target = '_blank'; // Open in new tabs
-		anchor.click();
-	}
 
 	async function fetchEpisode(episode) {
 		let feedUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
@@ -117,9 +101,6 @@
 								{:else}
 									<PlayIcon size="27" />
 								{/if}
-							</button>
-							<button on:click={downloadSong.bind(this, episode?.enclosureUrl)} class="download">
-								<DownloadIcon size="27" />
 							</button>
 							<song-info>
 								<img src={episode?.albumArt} alt={episode?.title} width="40" height="40" />

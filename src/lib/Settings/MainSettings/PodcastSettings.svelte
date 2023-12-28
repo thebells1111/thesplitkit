@@ -32,11 +32,12 @@
 					.setFrame('TIT2', metadata.title)
 					.setFrame('TPE1', [metadata.artist])
 					.setFrame('TALB', metadata.album)
+					.setFrame('COMM', metadata.comment)
 					.setFrame('TXXX', metadata.internalId);
 				writer.addTag();
 				const taggedArrayBuffer = writer.arrayBuffer;
 				const taggedBlob = new Blob([taggedArrayBuffer], {
-					type: 'audio/mp3'
+					type: 'audio/mpeg'
 				});
 				resolve(taggedBlob);
 			};
@@ -65,13 +66,35 @@
 						title: block.title,
 						artist: block?.line?.[1] || '',
 						album: block?.line?.[0] || '',
-						internalId: { description: 'ID', value: block.blockGuid }
+						comment: {
+							description: 'SplitKitMeta',
+							text: `SplitKitMeta: {eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}}`
+						},
+						internalId: {
+							description: 'mAirList',
+							value: `<PlaylistItem Class="File"><Title>${block.title}</Title><Artist>${
+								block?.line?.[1] || ''
+							}</Artist><Comment>{eventGuid:${block.eventGuid}, blockGuid:${
+								block.blockGuid
+							}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${
+								block.blockGuid
+							}}</ExternalID></PlaylistItem>`
+						}
 					};
 
 					blob = await setMP3Metadata(blob, metadata);
 
-					zip.file(`${block.title} - ${block?.line?.[1]} - ${block.blockGuid}.mp3`, blob);
+					zip.file(
+						`${sanitizeFilename(block.title)} - ${sanitizeFilename(block?.line?.[1])} - ${
+							block.blockGuid
+						}.mp3`,
+						blob
+					);
 				}
+			}
+
+			function sanitizeFilename(filename) {
+				return filename.replace(/[\\/:*?"<>|\x00-\x1F\x80-\x9F]/g, '');
 			}
 
 			const content = await zip.generateAsync({ type: 'blob' });
@@ -128,7 +151,7 @@
 	}
 
 	label {
-		margin: 12px 0;
+		margin: 12px 0 4px 0;
 		color: var(--color-theme-blue);
 	}
 	label p {
@@ -146,6 +169,7 @@
 		display: flex;
 		width: 100%;
 		align-items: flex-start;
+		margin-top: 24px;
 	}
 
 	label.checkbox input {
@@ -154,9 +178,13 @@
 
 	warning {
 		color: red;
-		text-align: center;
+		text-align: left;
 		font-weight: bold;
 		font-size: 1.1em;
+	}
+
+	warning > p {
+		margin: 0 8px 16px 8px;
 	}
 
 	download-info {
@@ -165,5 +193,9 @@
 		text-align: center;
 		font-weight: bold;
 		font-size: 1.3em;
+	}
+
+	button {
+		margin-bottom: 4px;
 	}
 </style>

@@ -10,6 +10,10 @@
 	let screenWidth;
 
 	$: if ($albyReady) {
+		loadEvents();
+	}
+
+	function loadEvents() {
 		if (!$events.length) {
 			loading = true;
 			getEvents();
