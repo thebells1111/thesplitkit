@@ -2,7 +2,7 @@
 	import './styles.css';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { remoteServer, user, catalog, albyReady, loaded } from '$/stores';
+	import { remoteServer, user, albyReady, loaded } from '$/stores';
 
 	import Header from '$lib/MainHeader/Header.svelte';
 
@@ -46,15 +46,6 @@
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
 				$user.balance = data.balance;
-
-				fetch('/api/database/fetch-user')
-					.then((res) => res.json())
-					.then((data) => {
-						console.log(data);
-						$catalog = data.catalog || [];
-						console.log($user);
-						console.log($catalog);
-					});
 			}
 
 			$albyReady = true;

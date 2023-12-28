@@ -17,8 +17,6 @@
 
 	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 
-	// curl -X GET "http://localhost:8000/mair?ex_id=%7B%22eventGuid%22%3A%20%226ef10222-af2a-48eb-beda-45c61f80ea4d%22%2C%20%22blockGuid%22%3A%20%22b5a9b459-af84-43db-a22c-bfe73021966c%22%7D&lightning_address=steven%40getalby.com" -H "Authorization: Basic Qm9iOmlzIGNvb2w="
-
 	export let block = {};
 	export let index;
 	export let broadcastingBlockGuid;
