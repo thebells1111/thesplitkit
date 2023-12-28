@@ -4,14 +4,16 @@
 	import { page } from '$app/stores';
 	import { remoteServer, user, albyReady, loaded } from '$/stores';
 
+	import Modal from '$lib/Modal/Modal.svelte';
+
 	import Header from '$lib/MainHeader/Header.svelte';
+	let showRegisterModal = false;
 
 	onMount(() => {
 		loadAlby();
 	});
 
 	async function loadAlby() {
-		console.log('load alby');
 		const code = $page.url.searchParams.get('code');
 		// $user.loggedIn = true;
 		if (code) {
@@ -39,7 +41,6 @@
 			let res = await fetch(remoteServer + '/api/alby/refresh', {
 				credentials: 'include'
 			});
-			console.log(res);
 			let data = await res.json();
 			console.log(data);
 			if (data.lightning_address) {
@@ -48,15 +49,24 @@
 				$user.balance = data.balance;
 			}
 
+			let userRes = await fetch(remoteServer + '/api/sk/checkforuser', {
+				credentials: 'include'
+			});
+			let userData = await userRes.json();
+			console.log(userData);
+			if (!userData.hasCreds) {
+				showRegisterModal = true;
+			}
+
 			$albyReady = true;
 		} else {
 			console.log('user already logged in');
 			$albyReady = true;
 		}
 		$loaded = true;
-
-		console.log('yo');
 	}
+
+	$: console.log(showRegisterModal);
 </script>
 
 <svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
@@ -68,6 +78,14 @@
 		<slot />
 	</main>
 </div>
+
+{#if !['/(main)/promotion/[eventGuid]/[blockGuid]', '/(main)/live/[guid]'].find((v) => v === $page.route.id)}
+	{#if showRegisterModal}
+		<Modal bind:showModal={showRegisterModal}>
+			<div>Hello</div>
+		</Modal>
+	{/if}
+{/if}
 
 <style>
 	.app {
