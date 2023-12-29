@@ -53,9 +53,6 @@
 		background-color: white;
 
 		box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 1);
-		height: calc(100% - 56px);
-		min-height: 400px;
-		max-height: calc(100svh - 32px);
 	}
 
 	modal-content {

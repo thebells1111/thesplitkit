@@ -65,7 +65,7 @@
 		height: 1200px;
 		animation: ripple 4s linear;
 		position: fixed;
-		z-index: 999;
+		z-index: 99;
 	}
 
 	@keyframes ripple {

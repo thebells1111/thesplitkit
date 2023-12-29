@@ -177,7 +177,7 @@
 		height: 200px;
 		animation: fade-out 2s linear;
 		position: relative;
-		z-index: 999;
+		z-index: 100;
 	}
 
 	.copy {

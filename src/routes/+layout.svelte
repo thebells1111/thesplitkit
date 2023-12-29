@@ -4,14 +4,30 @@
 	import { page } from '$app/stores';
 	import { remoteServer, user, albyReady, loaded } from '$/stores';
 
-	import Modal from '$lib/Modal/Modal.svelte';
+	import Modal from '$lib/Modal/SmallModal.svelte';
 
 	import Header from '$lib/MainHeader/Header.svelte';
-	let showRegisterModal = false;
 
-	onMount(() => {
-		loadAlby();
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
+	let username = '';
+	let password = '';
+	let showSaved = false;
+	let showRegisterModal = true;
+
+	onMount(async () => {
+		if (!(await loadSKC())) {
+			loadAlby();
+		}
 	});
+
+	async function loadSKC() {
+		console.log('refresh');
+		let res = await fetch(remoteServer + '/api/sk/refresh', {
+			credentials: 'include'
+		});
+		let data = await res.json();
+		return data.status === 'success';
+	}
 
 	async function loadAlby() {
 		const code = $page.url.searchParams.get('code');
@@ -32,6 +48,14 @@
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
 				$user.balance = data.balance;
+				let userRes = await fetch(remoteServer + '/api/sk/checkforuser', {
+					credentials: 'include'
+				});
+				let userData = await userRes.json();
+				console.log(userData);
+				if (!userData.hasCreds) {
+					showRegisterModal = true;
+				}
 				$albyReady = true;
 			}
 			const urlWithoutQuery = window.location.href.split('?')[0];
@@ -66,7 +90,25 @@
 		$loaded = true;
 	}
 
-	$: console.log(showRegisterModal);
+	const saveCredentials = async () => {
+		const payload = { username, password };
+
+		const response = await fetch(remoteServer + '/api/sk/register', {
+			method: 'POST',
+			credentials: 'include',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+
+		const data = await response.json();
+		console.log(data);
+		showSaved = true;
+		setTimeout(() => {
+			showSaved = false;
+			// showRegisterModal = false;
+		}, 500);
+		console.log(showSaved);
+	};
 </script>
 
 <svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
@@ -82,7 +124,22 @@
 {#if !['/(main)/promotion/[eventGuid]/[blockGuid]', '/(main)/live/[guid]'].find((v) => v === $page.route.id)}
 	{#if showRegisterModal}
 		<Modal bind:showModal={showRegisterModal}>
-			<div>Hello</div>
+			<credentials>
+				<p>
+					The Split Kit is providing username and password as an alternative to Alby for log in.
+				</p>
+				<p>This will ensure your continued access to the Split Kit.</p>
+				<p>Please provide a username and password for future log in.</p>
+				<input type="text" bind:value={username} placeholder="Username" />
+				<input type="password" bind:value={password} placeholder="Password" />
+				<button on:click={saveCredentials}>Submit</button>
+			</credentials>
+
+			{#if showSaved}
+				<SaveModal>
+					<h2>Saved</h2>
+				</SaveModal>
+			{/if}
 		</Modal>
 	{/if}
 {/if}
@@ -103,5 +160,24 @@
 		box-sizing: border-box;
 		overflow: hidden;
 		height: calc(100vh - 46px);
+	}
+
+	credentials {
+		display: flex;
+		flex-direction: column;
+		margin: 32px 0 72px 0;
+	}
+
+	credentials > input {
+		margin-bottom: 8px;
+	}
+
+	credentials > p {
+		margin: 2px 0;
+		font-weight: 550;
+	}
+
+	credentials > p:last-of-type {
+		margin-bottom: 8px;
 	}
 </style>

@@ -50,7 +50,7 @@
 		background: transparent;
 		top: 0;
 		right: 0;
-		z-index: 99;
+		z-index: 100;
 		backdrop-filter: blur(5px);
 	}
 
