@@ -9,7 +9,7 @@
 	import Header from '$lib/MainHeader/Header.svelte';
 
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
-	let username = '';
+	let email = '';
 	let password = '';
 	let showSaved = false;
 	let showRegisterModal = true;
@@ -91,7 +91,7 @@
 	}
 
 	const saveCredentials = async () => {
-		const payload = { username, password };
+		const payload = { email, password };
 
 		const response = await fetch(remoteServer + '/api/sk/register', {
 			method: 'POST',
@@ -125,12 +125,11 @@
 	{#if showRegisterModal}
 		<Modal bind:showModal={showRegisterModal}>
 			<credentials>
-				<p>
-					The Split Kit is providing username and password as an alternative to Alby for log in.
-				</p>
+				<p>The Split Kit is providing email and password as an alternative to Alby for log in.</p>
 				<p>This will ensure your continued access to the Split Kit.</p>
-				<p>Please provide a username and password for future log in.</p>
-				<input type="text" bind:value={username} placeholder="Username" />
+				<p>Please provide a email and password for future log in.</p>
+				<p>A valid email is required for password recovery.</p>
+				<input type="email" bind:value={email} placeholder="E-mail" />
 				<input type="password" bind:value={password} placeholder="Password" />
 				<button on:click={saveCredentials}>Submit</button>
 			</credentials>
