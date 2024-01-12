@@ -12,11 +12,16 @@
 	let email = '';
 	let password = '';
 	let showSaved = false;
-	let showRegisterModal = true;
+	let showRegisterModal = false;
 
 	onMount(async () => {
 		if (!(await loadSKC())) {
 			loadAlby();
+		} else {
+			// loadAlby();
+			$albyReady = true;
+			$user.loggedIn = true;
+			$loaded = true;
 		}
 	});
 
