@@ -3,16 +3,13 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { remoteServer, user, albyReady, loaded } from '$/stores';
-
-	import Modal from '$lib/Modal/SmallModal.svelte';
+	import { goto } from '$app/navigation';
 
 	import Header from '$lib/MainHeader/Header.svelte';
 
-	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	let email = '';
 	let password = '';
 	let showSaved = false;
-	let showRegisterModal = false;
 
 	onMount(async () => {
 		if (!(await loadSKC())) {
@@ -57,9 +54,8 @@
 					credentials: 'include'
 				});
 				let userData = await userRes.json();
-				console.log(userData);
 				if (!userData.hasCreds) {
-					showRegisterModal = true;
+					goto('/register');
 				}
 				$albyReady = true;
 			}
@@ -84,7 +80,7 @@
 			let userData = await userRes.json();
 			console.log(userData);
 			if (!userData.hasCreds) {
-				showRegisterModal = true;
+				goto('/register');
 			}
 
 			$albyReady = true;
@@ -106,11 +102,9 @@
 		});
 
 		const data = await response.json();
-		console.log(data);
 		showSaved = true;
 		setTimeout(() => {
 			showSaved = false;
-			// showRegisterModal = false;
 		}, 500);
 		console.log(showSaved);
 	};

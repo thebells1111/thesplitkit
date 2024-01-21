@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { albyClientId } from '$/stores';
 	import { goto } from '$app/navigation';
+	import { user } from '$/stores';
 
 	let email = '';
 	let password = '';
@@ -18,6 +19,7 @@
 
 		const data = await response.json();
 		if (data?.status === 'success') {
+			$user.loggedIn = true;
 			goto('/events');
 		}
 		console.log(data);
