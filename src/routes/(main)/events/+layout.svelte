@@ -2,17 +2,12 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	import { user, albyClientId, loaded, albyReady, liveBlocks, activePageGuid } from '$/stores';
-
-	const redirectUrl =
-		`https://getalby.com/oauth?client_id=${albyClientId}&response_type=code&redirect_uri=${$page.url.href}` +
-		`&scope=account:read%20balance:read%20payments:send%20invoices:read`;
+	import { user, loaded, albyReady, liveBlocks, activePageGuid } from '$/stores';
 
 	let showLoading = false;
 	let unmounted = true;
 
 	const guid = $page.params.guid;
-	$: console.log(guid);
 	onMount(() => {
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
 			showLoading = true;
@@ -33,7 +28,7 @@
 			</loading>
 		{:else if !$user?.loggedIn && guid !== 'test'}
 			<div>
-				<h2>Please <a href={redirectUrl}> Log In </a> to Continue</h2>
+				<h2>Please <a href="/login"> Log In </a> to Continue</h2>
 			</div>
 		{:else}
 			<slot />

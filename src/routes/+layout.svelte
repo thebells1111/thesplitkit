@@ -126,28 +126,6 @@
 	</main>
 </div>
 
-{#if !['/(main)/promotion/[eventGuid]/[blockGuid]', '/(main)/live/[guid]'].find((v) => v === $page.route.id)}
-	{#if showRegisterModal}
-		<Modal bind:showModal={showRegisterModal}>
-			<credentials>
-				<p>The Split Kit is providing email and password as an alternative to Alby for log in.</p>
-				<p>This will ensure your continued access to the Split Kit.</p>
-				<p>Please provide a email and password for future log in.</p>
-				<p>A valid email is required for password recovery.</p>
-				<input type="email" bind:value={email} placeholder="E-mail" />
-				<input type="password" bind:value={password} placeholder="Password" />
-				<button on:click={saveCredentials}>Submit</button>
-			</credentials>
-
-			{#if showSaved}
-				<SaveModal>
-					<h2>Saved</h2>
-				</SaveModal>
-			{/if}
-		</Modal>
-	{/if}
-{/if}
-
 <style>
 	.app {
 		display: flex;

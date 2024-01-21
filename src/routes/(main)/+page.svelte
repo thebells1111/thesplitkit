@@ -33,7 +33,7 @@
 						appreciation.
 					</p>
 					<p>
-						<a href={redirectUrl}> Log In </a>
+						<a href="/login"> Log In </a>
 						to view your <a href="/events">Events</a> to get started today and elevate your project to
 						new heights with The Split Kit!
 					</p>
