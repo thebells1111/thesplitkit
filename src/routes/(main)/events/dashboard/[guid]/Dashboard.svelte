@@ -33,7 +33,17 @@
 	let broadcastIntervalTimer;
 	let broadcastTimeInterval;
 	let chapterIndex;
+	let episode;
+	let chapters;
+	let vts;
 	export let guid = $page.params.guid;
+
+	onMount(async () => {
+		if (!$liveBlocks?.length) {
+			loadSocket();
+		}
+		loadSocket();
+	});
 
 	$: if (player && !['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)) {
 		player.src = null;
@@ -44,17 +54,30 @@
 		player.src = $mainSettings?.editEnclosure;
 	}
 
-	$: onMount(async () => {
-		if (!$liveBlocks?.length) {
-			loadSocket();
-		}
-		loadSocket();
-	});
-
 	$: if (guid && $activeBroadcastGuid !== guid) {
 		$activeBroadcastGuid = guid;
 		loadSocket();
 	}
+
+	$: if (chapterIndex > -1) {
+		let block = $liveBlocks.find((v) => {
+			return v?.blockGuid === broadcastingBlockGuid;
+		});
+		let chapters = block?.chapters?.chapters || [];
+		let activeChapter = chapters[chapterIndex];
+		if (activeChapter) {
+			let chapterBlock = clone(block);
+			chapterBlock.title = activeChapter.title;
+			chapterBlock.line = [];
+			chapterBlock.image = activeChapter.img;
+			chapterBlock.link = activeChapter.url
+				? { text: activeChapter.url, url: activeChapter.url }
+				: undefined;
+			broadcastBlock(chapterBlock);
+		}
+	}
+
+	$: console.log($mainSettings);
 
 	function loadSocket() {
 		$socket = null;
@@ -95,14 +118,15 @@
 		});
 	}
 
-	async function handleNext() {
-		console.log(storedGuid);
-		let res = await fetch(remoteServer + '/api/sk/nextblock?guid=' + storedGuid);
-		let data = await res.text();
-		console.log(data);
-	}
-
 	async function handleBroadcast(block) {
+		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
+			episode = _episode;
+			console.log(episode);
+			chapters = fetchChapters(episode).then((_chapters) => {
+				chapters = _chapters;
+				console.log(chapters);
+			});
+		});
 		broadcastIntervalTimer = null;
 		clearInterval(broadcastTimeInterval);
 		await tick();
@@ -125,7 +149,7 @@
 						$socket.emit('playerPlay', { valueGuid: guid });
 					};
 					player.src = block.enclosureUrl;
-					chapterIndex = undefined;
+
 					player.onended = () => {
 						handleBroadcast(nextBlock);
 					};
@@ -138,8 +162,7 @@
 								handleBroadcast(nextBlock);
 							}
 						}
-						if (block?.chapters && block?.settings?.chaptersEnabled === true) {
-							let chapters = block.chapters?.chapters;
+						if (chapters && (block?.settings?.chaptersEnabled === true || true)) {
 							if (!chapterIndex) {
 								chapterIndex = 0;
 							}
@@ -236,13 +259,13 @@
 			fee: true
 		};
 
-		let feeDestinations = destinations?.filter((v) => v.fee) || [];
+		let episodeestinations = destinations?.filter((v) => v.fee) || [];
 
 		if (!isDefault) {
-			feeDestinations.push(splitKitObject);
+			episodeestinations.push(splitKitObject);
 		}
-		feeDestinations.forEach((v) => (v.split = v.split.toString()));
-		return feeDestinations;
+		episodeestinations.forEach((v) => (v.split = v.split.toString()));
+		return episodeestinations;
 	}
 
 	function updateSplits(destinations, split) {
@@ -375,25 +398,40 @@
 		$liveBlocks = $liveBlocks;
 	}
 
-	$: if (chapterIndex > -1) {
-		let block = $liveBlocks.find((v) => {
-			return v?.blockGuid === broadcastingBlockGuid;
-		});
-		let chapters = block?.chapters?.chapters || [];
-		let activeChapter = chapters[chapterIndex];
-		if (activeChapter) {
-			let chapterBlock = clone(block);
-			chapterBlock.title = activeChapter.title;
-			chapterBlock.line = [];
-			chapterBlock.image = activeChapter.img;
-			chapterBlock.link = activeChapter.url
-				? { text: activeChapter.url, url: activeChapter.url }
-				: undefined;
-			broadcastBlock(chapterBlock);
+	console.log(chapterIndex);
+
+	async function fetchEpisode(feedGuid, itemGuid) {
+		if (guid) {
+			let url =
+				remoteServer +
+				`/api/queryindex?q=${encodeURIComponent(
+					`/episodes/byguid?guid=${itemGuid}&podcastguid=${feedGuid}`
+				)}`;
+
+			const res = await fetch(url);
+			let data = await res.json();
+			console.log(data);
+			if (data.status === 'true') {
+				return data.episode;
+			}
 		}
 	}
 
-	$: console.log($mainSettings);
+	async function fetchChapters(episode) {
+		if (episode?.chaptersUrl) {
+			try {
+				const response = await fetch(remoteServer + '/api/proxy?url=' + episode.chaptersUrl);
+				if (!response.ok) {
+					throw new Error('Network response was not OK');
+				}
+				const data = await response.json();
+				console.log(data);
+				return data;
+			} catch (error) {
+				console.error('Error fetching chapter data:', error);
+			}
+		}
+	}
 </script>
 
 <div>
