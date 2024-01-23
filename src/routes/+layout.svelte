@@ -33,7 +33,6 @@
 
 	async function loadAlby() {
 		const code = $page.url.searchParams.get('code');
-		console.log($page);
 		// $user.loggedIn = true;
 		if (code) {
 			console.log('checking Alby code');
