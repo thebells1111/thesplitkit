@@ -87,29 +87,29 @@
 		// const builder = new XMLBuilder(buildOptions);
 		// let newXml = builder.build(feed);
 		// console.log(newXml);
+
+		const escapeAttr = (name, val, jPath) => {
+			return `${val}`.replace(
+				/[&<>'"]/g,
+				(tag) =>
+					({
+						'&': '&amp;',
+						'<': '&lt;',
+						'>': '&gt;',
+						"'": '&#39;',
+						'"': '&quot;'
+					}[tag])
+			);
+		};
+
+		const escapeTag = (name, val, jPath) => {
+			let str = `${val}`;
+			if (str.match(/[&<>'"]/g)) {
+				return '<![CDATA[' + str + ']]>';
+			}
+			return str;
+		};
 	}
-
-	const escapeAttr = (name, val, jPath) => {
-		return `${val}`.replace(
-			/[&<>'"]/g,
-			(tag) =>
-				({
-					'&': '&amp;',
-					'<': '&lt;',
-					'>': '&gt;',
-					"'": '&#39;',
-					'"': '&quot;'
-				}[tag])
-		);
-	};
-
-	const escapeTag = (name, val, jPath) => {
-		let str = `${val}`;
-		if (str.match(/[&<>'"]/g)) {
-			return '<![CDATA[' + str + ']]>';
-		}
-		return str;
-	};
 </script>
 
 {#if showInput}

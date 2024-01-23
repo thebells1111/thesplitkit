@@ -1,4 +1,5 @@
 <script>
+	import { XMLParser } from 'fast-xml-parser';
 	import { onMount, tick } from 'svelte';
 	import io from 'socket.io-client';
 	import clone from 'just-clone';
@@ -32,10 +33,11 @@
 	let broadcastTimeRemaining;
 	let broadcastIntervalTimer;
 	let broadcastTimeInterval;
-	let chapterIndex;
+	let feed;
 	let episode;
 	let chapters;
-	let vts;
+	let chapterIndex;
+	let VTS;
 	export let guid = $page.params.guid;
 
 	onMount(async () => {
@@ -122,7 +124,16 @@
 		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
 			episode = _episode;
 			console.log(episode);
-			chapters = fetchChapters(episode).then((_chapters) => {
+			fetchFeed(episode?.feedUrl).then((_feed) => {
+				feed = _feed;
+				if (feed) {
+					episode.rss = getEpisode(feed, block.itemGuid);
+					VTS = getVTS(episode.rss);
+					console.log(VTS);
+					console.log(episode.rss);
+				}
+			});
+			fetchChapters(episode).then((_chapters) => {
 				chapters = _chapters;
 				console.log(chapters);
 			});
@@ -401,19 +412,47 @@
 	console.log(chapterIndex);
 
 	async function fetchEpisode(feedGuid, itemGuid) {
-		if (guid) {
-			let url =
-				remoteServer +
-				`/api/queryindex?q=${encodeURIComponent(
-					`/episodes/byguid?guid=${itemGuid}&podcastguid=${feedGuid}`
-				)}`;
+		try {
+			if (guid) {
+				let url =
+					remoteServer +
+					`/api/queryindex?q=${encodeURIComponent(
+						`/episodes/byguid?guid=${itemGuid}&podcastguid=${feedGuid}`
+					)}`;
 
-			const res = await fetch(url);
-			let data = await res.json();
-			console.log(data);
-			if (data.status === 'true') {
-				return data.episode;
+				const res = await fetch(url);
+				let data = await res.json();
+				console.log(data);
+				if (data.status === 'true') {
+					return data.episode;
+				}
 			}
+		} catch (error) {
+			console.log('fetchFeed Error: ', error);
+		}
+	}
+
+	async function fetchFeed(url) {
+		if (url) {
+			const res = await fetch(remoteServer + '/api/proxy?url=' + encodeURIComponent(url), {
+				headers: { 'User-Agent': 'TheSplitKit/0.1' }
+			});
+			const xml = await res.text();
+			if (!xml.includes('<rss')) throw new Error('Not XML');
+
+			const options = {
+				attributeNamePrefix: '@_',
+				textNodeName: '#text',
+				ignoreAttributes: false,
+				allowBooleanAttributes: true
+			};
+
+			const parser = new XMLParser(options);
+			const xmlObj = parser.parse(xml);
+			const channel = xmlObj.rss.channel;
+
+			feed = channel;
+			return feed;
 		}
 	}
 
@@ -425,11 +464,54 @@
 					throw new Error('Network response was not OK');
 				}
 				const data = await response.json();
-				console.log(data);
 				return data;
 			} catch (error) {
-				console.error('Error fetching chapter data:', error);
+				console.error('Error fetching chapter data: ', error);
 			}
+		}
+	}
+
+	function getEpisode(feed, blockGuid) {
+		if (!feed || !blockGuid) {
+			return;
+		}
+		if (feed.item) {
+			feed.item = [].concat(feed.item);
+		}
+		return (feed?.item || []).find((v) => {
+			return v?.guid?.['#text'] === blockGuid;
+		});
+	}
+
+	function getVTS(episodeRSS) {
+		const valueTimeSplits = episodeRSS?.['podcast:value']?.['podcast:valueTimeSplit'];
+
+		// Ensure valueTimeSplits is always treated as an array
+		const normalizedValueTimeSplits = [].concat(valueTimeSplits || []);
+
+		const processedValueTimeSplits = normalizedValueTimeSplits.map((vts) => removePrefixes(vts));
+
+		// Return undefined if the processed array is empty
+		return processedValueTimeSplits.length > 0 ? processedValueTimeSplits : undefined;
+
+		function removePrefixes(obj) {
+			if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+
+			const newObject = {};
+			Object.keys(obj).forEach((key) => {
+				let newKey = key;
+				if (newKey.startsWith('@_')) {
+					newKey = newKey.substring(2);
+				} else if (newKey.startsWith('podcast:')) {
+					newKey = newKey.substring(8);
+				}
+
+				const value = obj[key];
+				newObject[newKey] =
+					typeof value === 'object' && value !== null ? removePrefixes(value) : value;
+			});
+
+			return newObject;
 		}
 	}
 </script>
