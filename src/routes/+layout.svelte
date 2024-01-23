@@ -33,6 +33,7 @@
 
 	async function loadAlby() {
 		const code = $page.url.searchParams.get('code');
+		console.log($page);
 		// $user.loggedIn = true;
 		if (code) {
 			console.log('checking Alby code');
@@ -54,7 +55,10 @@
 					credentials: 'include'
 				});
 				let userData = await userRes.json();
-				if (!userData.hasCreds) {
+				if (
+					!userData.hasCreds &&
+					($page.route.id === '/(main)' || $page.route.id === '/(main)/events')
+				) {
 					goto('/register');
 				}
 				$albyReady = true;
@@ -79,7 +83,10 @@
 			});
 			let userData = await userRes.json();
 			console.log(userData);
-			if (!userData.hasCreds) {
+			if (
+				!userData.hasCreds &&
+				($page.route.id === '/(main)' || $page.route.id === '/(main)/events')
+			) {
 				goto('/register');
 			}
 
