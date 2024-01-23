@@ -76,18 +76,18 @@
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
 				$user.balance = data.balance;
-			}
 
-			let userRes = await fetch(remoteServer + '/api/sk/checkforuser', {
-				credentials: 'include'
-			});
-			let userData = await userRes.json();
-			console.log(userData);
-			if (
-				!userData.hasCreds &&
-				($page.route.id === '/(main)' || $page.route.id === '/(main)/events')
-			) {
-				goto('/register');
+				let userRes = await fetch(remoteServer + '/api/sk/checkforuser', {
+					credentials: 'include'
+				});
+				let userData = await userRes.json();
+				console.log(userData);
+				if (
+					!userData.hasCreds &&
+					($page.route.id === '/(main)' || $page.route.id === '/(main)/events')
+				) {
+					goto('/register');
+				}
 			}
 
 			$albyReady = true;
