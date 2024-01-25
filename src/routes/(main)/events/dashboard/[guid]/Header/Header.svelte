@@ -59,31 +59,36 @@
 
 	function submitData() {
 		const newBlocks = $liveBlocks.map((block) => {
-			const newBlock = clone(block);
-			newBlock.line = newBlock.line
-				.map((v) => {
-					if (v !== 'Text - click to edit') {
-						return v;
-					} else {
-						return '';
-					}
-				})
-				.filter((v) => v);
+			if (block) {
+				const newBlock = clone(block);
+				console.log(newBlock);
+				newBlock.line = newBlock.line
+					.map((v) => {
+						if (v !== 'Text - click to edit') {
+							return v;
+						} else {
+							return '';
+						}
+					})
+					.filter((v) => v);
 
-			if (newBlock?.title === 'Title - click to edit') {
-				newBlock.title = '';
+				if (newBlock?.title === 'Title - click to edit') {
+					newBlock.title = '';
+				}
+				if (newBlock?.link?.text === 'Link - click to edit') {
+					newBlock.link.text = '';
+				}
+				if (!newBlock?.link?.text || !newBlock?.link?.url) {
+					newBlock.link = { text: '', url: '' };
+				}
+				return newBlock;
 			}
-			if (newBlock?.link?.text === 'Link - click to edit') {
-				newBlock.link.text = '';
-			}
-			if (!newBlock?.link?.text || !newBlock?.link?.url) {
-				newBlock.link = { text: '', url: '' };
-			}
-			return newBlock;
 		});
 
 		saveEntry(newBlocks);
 		mainUnsaved = false;
+		showSaved = true;
+		setTimeout(() => (showSaved = false), 500);
 	}
 
 	function saveEntry(blocks) {
