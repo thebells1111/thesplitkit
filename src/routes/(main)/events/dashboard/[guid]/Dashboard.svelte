@@ -11,6 +11,7 @@
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
 	import NoDefault from './NoDefault/NoDefault.svelte';
+	import combineValues from '$lib/functions/combineValues.js';
 
 	import { page } from '$app/stores';
 	import {
@@ -22,11 +23,11 @@
 		mainSettings,
 		blocksList
 	} from '$/stores';
+	export let guid = $page.params.guid;
 	export let blocks = [];
 	export let filterType;
 	export let showOptionsModal = false;
 	export let activeBlockGuid;
-	$: console.log(activeBlockGuid);
 
 	let broadcastingBlockGuid;
 	let player;
@@ -38,7 +39,14 @@
 	let chapters;
 	let chapterIndex;
 	let VTS;
-	export let guid = $page.params.guid;
+	let VTSIndex;
+	$: activeBlock = getActiveBlock(broadcastingBlockGuid);
+
+	function getActiveBlock(broadcastingBlockGuid) {
+		return $liveBlocks.find((v) => {
+			return v?.blockGuid === broadcastingBlockGuid;
+		});
+	}
 
 	onMount(async () => {
 		if (!$liveBlocks?.length) {
@@ -61,21 +69,73 @@
 		loadSocket();
 	}
 
-	$: if (chapterIndex > -1) {
-		let block = $liveBlocks.find((v) => {
-			return v?.blockGuid === broadcastingBlockGuid;
-		});
-		let chapters = block?.chapters?.chapters || [];
-		let activeChapter = chapters[chapterIndex];
-		if (activeChapter) {
-			let chapterBlock = clone(block);
-			chapterBlock.title = activeChapter.title;
-			chapterBlock.line = [];
-			chapterBlock.image = activeChapter.img;
-			chapterBlock.link = activeChapter.url
-				? { text: activeChapter.url, url: activeChapter.url }
-				: undefined;
-			broadcastBlock(chapterBlock);
+	$: broadcastNextChapter(chapterIndex);
+	$: getNextVTS(VTSIndex);
+
+	function broadcastNextChapter(chapterIndex) {
+		if (chapterIndex > -1) {
+			let activeChapter = chapters[chapterIndex];
+			if (activeChapter) {
+				let chapterBlock = clone(activeBlock);
+				chapterBlock.title = activeChapter.title;
+				chapterBlock.line = [];
+				chapterBlock.image = activeChapter.img;
+				chapterBlock.link = activeChapter.url
+					? { text: activeChapter.url, url: activeChapter.url }
+					: undefined;
+				broadcastBlock(chapterBlock);
+			}
+		}
+	}
+
+	async function getNextVTS(VTSIndex) {
+		if (VTSIndex > -1) {
+			let splits = await handleSplit(VTS[VTSIndex]);
+			combineValues({
+				remotePercent: activeBlock?.settings?.split || 95,
+				activeValue: activeBlock?.value,
+				splits
+			});
+		}
+
+		async function handleSplit(split) {
+			let podcastData = await fetch(
+				remoteServer +
+					`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${activeBlock.feedGuid}`)}`
+			);
+			let podcast = await podcastData.json();
+			const baseValueBlock = episode?.value || (podcast.status === 'true' && podcast?.feed?.value);
+			if (split?.remoteItem) {
+				const feedGuid = split.remoteItem?.feedGuid;
+				const itemGuid = split.remoteItem?.itemGuid;
+				const feedGuidUrl =
+					remoteServer +
+					`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${feedGuid}`)}`;
+				const itemsUrl =
+					remoteServer +
+					`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${feedGuid}`)}`;
+
+				let splitInfo = {};
+				let valueBlock = { feed: null, item: null };
+
+				const [feedData, itemsData] = await Promise.all([
+					fetch(feedGuidUrl).then((res) => res.json()),
+					fetch(itemsUrl).then((res) => res.json())
+				]).catch((error) => {
+					console.error('Error:', error);
+				});
+
+				let feed = feedData?.feed;
+				valueBlock.feed = feed?.value;
+
+				let items = itemsData?.items;
+				let item = items?.find((v) => v.guid === itemGuid);
+				valueBlock.item = item?.value;
+
+				splitInfo.baseValue = baseValueBlock;
+				splitInfo.remoteValue = valueBlock.item || valueBlock.feed;
+				return splitInfo;
+			}
 		}
 	}
 
@@ -123,19 +183,15 @@
 	async function handleBroadcast(block) {
 		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
 			episode = _episode;
-			console.log(episode);
 			fetchFeed(episode?.feedUrl).then((_feed) => {
 				feed = _feed;
 				if (feed) {
 					episode.rss = getEpisode(feed, block.itemGuid);
 					VTS = getVTS(episode.rss);
-					console.log(VTS);
-					console.log(episode.rss);
 				}
 			});
 			fetchChapters(episode).then((_chapters) => {
 				chapters = _chapters;
-				console.log(chapters);
 			});
 		});
 		broadcastIntervalTimer = null;
@@ -173,6 +229,22 @@
 								handleBroadcast(nextBlock);
 							}
 						}
+
+						if (VTS && (block?.settings?.VTSEnabled === true || true)) {
+							if (!VTSIndex) {
+								VTSIndex = 0;
+							}
+							while (player.currentTime >= VTS?.[VTSIndex + 1]?.startTime) {
+								VTSIndex++;
+							}
+
+							while (player.currentTime < VTS?.[VTSIndex]?.startTime) {
+								VTSIndex--;
+							}
+						} else {
+							VTSIndex = undefined;
+						}
+
 						if (chapters && (block?.settings?.chaptersEnabled === true || true)) {
 							if (!chapterIndex) {
 								chapterIndex = 0;
@@ -409,8 +481,6 @@
 		$liveBlocks = $liveBlocks;
 	}
 
-	console.log(chapterIndex);
-
 	async function fetchEpisode(feedGuid, itemGuid) {
 		try {
 			if (guid) {
@@ -464,7 +534,7 @@
 					throw new Error('Network response was not OK');
 				}
 				const data = await response.json();
-				return data;
+				if (data.chapters) return data.chapters;
 			} catch (error) {
 				console.error('Error fetching chapter data: ', error);
 			}
@@ -510,7 +580,6 @@
 				newObject[newKey] =
 					typeof value === 'object' && value !== null ? removePrefixes(value) : value;
 			});
-
 			return newObject;
 		}
 	}
