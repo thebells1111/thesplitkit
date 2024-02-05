@@ -61,6 +61,7 @@
 
 	$: if (player && ['edit'].find((v) => v === $mainSettings?.broadcastMode)) {
 		player.autoplay = false;
+
 		player.src = $mainSettings?.editEnclosure;
 	}
 
@@ -71,6 +72,10 @@
 
 	$: broadcastNextChapter(chapterIndex);
 	$: getNextVTS(VTSIndex);
+
+	$: if (player) {
+		player.volume = 0;
+	}
 
 	function broadcastNextChapter(chapterIndex) {
 		if (chapterIndex > -1) {
@@ -92,7 +97,7 @@
 		if (VTSIndex > -1) {
 			let splits = await handleSplit(VTS[VTSIndex]);
 			combineValues({
-				remotePercent: activeBlock?.settings?.split || 95,
+				defaultRemotePercent: activeBlock?.settings?.split || 95,
 				activeValue: activeBlock?.value,
 				splits
 			});
@@ -131,9 +136,9 @@
 				let items = itemsData?.items;
 				let item = items?.find((v) => v.guid === itemGuid);
 				valueBlock.item = item?.value;
-
 				splitInfo.baseValue = baseValueBlock;
 				splitInfo.remoteValue = valueBlock.item || valueBlock.feed;
+				splitInfo.remotePercentage = Number(split.remotePercentage);
 				return splitInfo;
 			}
 		}

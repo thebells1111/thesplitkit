@@ -1,6 +1,6 @@
 export default function normalizeDestinations(data) {
-	const nonFeeItems = data.filter((item) => !item.fee);
-	const feeItems = data.filter((item) => item.fee);
+	const nonFeeItems = [].concat(data).filter((item) => !item.fee);
+	const feeItems = [].concat(data).filter((item) => item.fee);
 
 	// Calculate total split of non-fee items
 	const totalSplit = nonFeeItems.reduce((acc, item) => acc + item.split, 0);
