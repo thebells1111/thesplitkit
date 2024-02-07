@@ -96,11 +96,12 @@
 	async function getNextVTS(VTSIndex) {
 		if (VTSIndex > -1) {
 			let splits = await handleSplit(VTS[VTSIndex]);
-			combineValues({
+			let destinations = combineValues({
 				defaultRemotePercent: activeBlock?.settings?.split || 95,
 				activeValue: activeBlock?.value,
 				splits
 			});
+			console.log(destinations);
 		}
 
 		async function handleSplit(split) {
