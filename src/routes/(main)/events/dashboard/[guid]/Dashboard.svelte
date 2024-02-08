@@ -1,5 +1,4 @@
 <script>
-	import { XMLParser } from 'fast-xml-parser';
 	import { onMount, tick } from 'svelte';
 	import io from 'socket.io-client';
 	import clone from 'just-clone';
@@ -11,7 +10,15 @@
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
 	import NoDefault from './NoDefault/NoDefault.svelte';
-	import combineValues from '$lib/functions/combineValues.js';
+	import fetchChapters from '$lib/functions/dashboard/fetchChapters.js';
+	import getEpisode from '$lib/functions/dashboard/getEpisode.js';
+	import processBlock from '$lib/functions/dashboard/processBlock.js';
+	import getNextBlock from '$lib/functions/dashboard/getNextBlock.js';
+	import findCurrentChapter from '$lib/functions/dashboard/findCurrentChapter.js';
+	import getVTS from '$lib/functions/dashboard/getVTS.js';
+	import getNextVTS from '$lib/functions/dashboard/getNextVTS.js';
+	import fetchFeed from '$lib/functions/dashboard/fetchFeed.js';
+	import createChapterBroadcast from '$lib/functions/dashboard/createChapterBroadcast.js';
 
 	import { page } from '$app/stores';
 	import {
@@ -40,13 +47,14 @@
 	let chapterIndex;
 	let VTS;
 	let VTSIndex;
-	$: activeBlock = getActiveBlock(broadcastingBlockGuid);
-
-	function getActiveBlock(broadcastingBlockGuid) {
-		return $liveBlocks.find((v) => {
-			return v?.blockGuid === broadcastingBlockGuid;
-		});
-	}
+	let startTime = 0;
+	let pauseTime = 0;
+	let timeStamp = 0;
+	let totalPausedTime = 0;
+	let interval;
+	let isRunning = false;
+	let resetTimer;
+	let storedGuid = '';
 
 	onMount(async () => {
 		if (!$liveBlocks?.length) {
@@ -55,13 +63,27 @@
 		loadSocket();
 	});
 
+	$: if (player) {
+		player.volume = 0; //DELETE THIS WHEN DONE!!!!
+		console.log('--------------------------------');
+		console.log("Don't forget to delete 0 volume");
+		console.log('--------------------------------');
+	}
+
+	$: activeBlock = getActiveBlock(broadcastingBlockGuid);
+
+	function getActiveBlock(broadcastingBlockGuid) {
+		return $liveBlocks.find((v) => {
+			return v?.blockGuid === broadcastingBlockGuid;
+		});
+	}
+
 	$: if (player && !['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)) {
 		player.src = null;
 	}
 
 	$: if (player && ['edit'].find((v) => v === $mainSettings?.broadcastMode)) {
 		player.autoplay = false;
-
 		player.src = $mainSettings?.editEnclosure;
 	}
 
@@ -70,82 +92,24 @@
 		loadSocket();
 	}
 
-	$: broadcastNextChapter(chapterIndex);
-	$: getNextVTS(VTSIndex);
-
-	$: if (player) {
-		player.volume = 0;
-	}
-
-	function broadcastNextChapter(chapterIndex) {
-		if (chapterIndex > -1) {
-			let activeChapter = chapters[chapterIndex];
-			if (activeChapter) {
-				let chapterBlock = clone(activeBlock);
-				chapterBlock.title = activeChapter.title;
-				chapterBlock.line = [];
-				chapterBlock.image = activeChapter.img;
-				chapterBlock.link = activeChapter.url
-					? { text: activeChapter.url, url: activeChapter.url }
-					: undefined;
-				broadcastBlock(chapterBlock);
-			}
+	$: if ($mainSettings?.broadcastMode === 'manual' && interval) {
+		let confirmation = confirm('Do you want to reset your timer?');
+		if (confirmation) {
+			clearInterval(interval);
+			interval = undefined;
+			isRunning = false;
+			timeStamp = 0;
+			resetTimer = true;
 		}
 	}
 
-	async function getNextVTS(VTSIndex) {
-		if (VTSIndex > -1) {
-			let splits = await handleSplit(VTS[VTSIndex]);
-			let destinations = combineValues({
-				defaultRemotePercent: activeBlock?.settings?.split || 95,
-				activeValue: activeBlock?.value,
-				splits
-			});
-			console.log(destinations);
-		}
-
-		async function handleSplit(split) {
-			let podcastData = await fetch(
-				remoteServer +
-					`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${activeBlock.feedGuid}`)}`
-			);
-			let podcast = await podcastData.json();
-			const baseValueBlock = episode?.value || (podcast.status === 'true' && podcast?.feed?.value);
-			if (split?.remoteItem) {
-				const feedGuid = split.remoteItem?.feedGuid;
-				const itemGuid = split.remoteItem?.itemGuid;
-				const feedGuidUrl =
-					remoteServer +
-					`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${feedGuid}`)}`;
-				const itemsUrl =
-					remoteServer +
-					`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${feedGuid}`)}`;
-
-				let splitInfo = {};
-				let valueBlock = { feed: null, item: null };
-
-				const [feedData, itemsData] = await Promise.all([
-					fetch(feedGuidUrl).then((res) => res.json()),
-					fetch(itemsUrl).then((res) => res.json())
-				]).catch((error) => {
-					console.error('Error:', error);
-				});
-
-				let feed = feedData?.feed;
-				valueBlock.feed = feed?.value;
-
-				let items = itemsData?.items;
-				let item = items?.find((v) => v.guid === itemGuid);
-				valueBlock.item = item?.value;
-				splitInfo.baseValue = baseValueBlock;
-				splitInfo.remoteValue = valueBlock.item || valueBlock.feed;
-				splitInfo.remotePercentage = Number(split.remotePercentage);
-				return splitInfo;
-			}
+	$: if (chapterIndex > -1 && activeBlock) {
+		const nextChapter = createChapterBroadcast(chapters, chapterIndex, clone(activeBlock));
+		if (nextChapter) {
+			broadcastBlock(nextChapter);
 		}
 	}
-
-	$: console.log($mainSettings);
+	$: getNextVTS(VTS, VTSIndex, clone(activeBlock), episode);
 
 	function loadSocket() {
 		$socket = null;
@@ -153,8 +117,6 @@
 		socketConnect();
 		console.log('socket connect');
 	}
-
-	let storedGuid = '';
 
 	function socketConnect() {
 		$socket = io(remoteServer + '/event?event_id=' + guid, { withCredentials: true });
@@ -189,7 +151,7 @@
 	async function handleBroadcast(block) {
 		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
 			episode = _episode;
-			fetchFeed(episode?.feedUrl).then((_feed) => {
+			feed = fetchFeed(episode?.feedUrl).then((_feed) => {
 				feed = _feed;
 				if (feed) {
 					episode.rss = getEpisode(feed, block.itemGuid);
@@ -252,19 +214,11 @@
 						}
 
 						if (chapters && (block?.settings?.chaptersEnabled === true || true)) {
-							if (!chapterIndex) {
-								chapterIndex = 0;
-							}
-							while (player.currentTime >= chapters?.[chapterIndex + 1]?.startTime) {
-								chapterIndex++;
-							}
-
-							while (player.currentTime < chapters?.[chapterIndex]?.startTime) {
-								chapterIndex--;
-							}
+							chapterIndex = findCurrentChapter(chapters, player.currentTime);
 						} else {
 							chapterIndex = undefined;
 						}
+						console.log(chapterIndex);
 					};
 				}
 				broadcastBlock(block);
@@ -326,115 +280,6 @@
 		}
 
 		$socket.emit('valueBlock', { valueGuid: guid, serverData });
-	}
-
-	function getNextBlock(block) {
-		let index = $liveBlocks.findIndex((v) => v?.blockGuid === block?.blockGuid);
-		if (index > -1 && index < $liveBlocks.length - 1) {
-			return $liveBlocks[index + 1];
-		} else {
-			return null;
-		}
-	}
-
-	function addFees(destinations, isDefault) {
-		let splitKitObject = {
-			name: 'The Split Kit',
-			customKey: '696969',
-			customValue: 'boPNspwDdt7axih5DfKs',
-			address: '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
-			type: 'node',
-			split: '5',
-			fee: true
-		};
-
-		let episodeestinations = destinations?.filter((v) => v.fee) || [];
-
-		if (!isDefault) {
-			episodeestinations.push(splitKitObject);
-		}
-		episodeestinations.forEach((v) => (v.split = v.split.toString()));
-		return episodeestinations;
-	}
-
-	function updateSplits(destinations, split) {
-		return clone(destinations)
-			?.filter((v) => !v.fee)
-			?.map((v) => {
-				v.split = ((v.split * split) / 100).toString();
-				return v || [];
-			});
-	}
-
-	function processBlock(block) {
-		let defaultBlock =
-			block?.blockGuid === $defaultBlockGuid
-				? undefined
-				: $liveBlocks.find((v) => v?.blockGuid === $defaultBlockGuid);
-		let split = defaultBlock ? block.settings.split : 100;
-
-		let newDestinations = [];
-
-		if (['playlist', 'podcast'].find((v) => v === $mainSettings.broadcastMode)) {
-			if (defaultBlock) {
-				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
-				let splitDeduct = block?.value?.destinations?.length ? split : 0;
-
-				newDestinations = newDestinations.concat(
-					updateSplits(defaultBlock?.value?.destinations, 100 - splitDeduct)
-				);
-				newDestinations = newDestinations.concat(addFees(block?.value?.destinations));
-				newDestinations = newDestinations.concat(updateSplits(block?.value?.destinations, split));
-			} else {
-				newDestinations = block?.value?.destinations ? block.value.destinations : [];
-			}
-		} else {
-			if (defaultBlock) {
-				newDestinations = newDestinations.concat(addFees(defaultBlock?.value?.destinations, true));
-				let splitDeduct = block?.value?.destinations?.length ? split : 0;
-				newDestinations = newDestinations.concat(
-					updateSplits(defaultBlock?.value?.destinations, 100 - splitDeduct, true)
-				);
-			}
-			newDestinations = newDestinations.concat(addFees(block?.value?.destinations));
-			newDestinations = newDestinations.concat(updateSplits(block?.value?.destinations, split));
-		}
-
-		delete block.settings;
-
-		if (!block?.link?.text || block?.link?.text === 'Link - click to edit') {
-			block.link = block.link || {};
-			block.link.text = block?.link?.url;
-		}
-
-		if (!block?.link?.url) {
-			delete block.link;
-		}
-
-		if (block?.value?.destinations) {
-			block.value.destinations = newDestinations;
-		}
-
-		return block;
-	}
-
-	let startTime = 0;
-	let pauseTime = 0;
-	let timeStamp = 0;
-	let totalPausedTime = 0;
-	let interval;
-	let isRunning = false;
-	let resetTimer;
-
-	$: if ($mainSettings?.broadcastMode === 'manual' && interval) {
-		let confirmation = confirm('Do you want to reset your timer?');
-		if (confirmation) {
-			clearInterval(interval);
-			interval = undefined;
-			isRunning = false;
-			timeStamp = 0;
-			resetTimer = true;
-		}
 	}
 
 	function handleTimer() {
@@ -505,88 +350,6 @@
 			}
 		} catch (error) {
 			console.log('fetchFeed Error: ', error);
-		}
-	}
-
-	async function fetchFeed(url) {
-		if (url) {
-			const res = await fetch(remoteServer + '/api/proxy?url=' + encodeURIComponent(url), {
-				headers: { 'User-Agent': 'TheSplitKit/0.1' }
-			});
-			const xml = await res.text();
-			if (!xml.includes('<rss')) throw new Error('Not XML');
-
-			const options = {
-				attributeNamePrefix: '@_',
-				textNodeName: '#text',
-				ignoreAttributes: false,
-				allowBooleanAttributes: true
-			};
-
-			const parser = new XMLParser(options);
-			const xmlObj = parser.parse(xml);
-			const channel = xmlObj.rss.channel;
-
-			feed = channel;
-			return feed;
-		}
-	}
-
-	async function fetchChapters(episode) {
-		if (episode?.chaptersUrl) {
-			try {
-				const response = await fetch(remoteServer + '/api/proxy?url=' + episode.chaptersUrl);
-				if (!response.ok) {
-					throw new Error('Network response was not OK');
-				}
-				const data = await response.json();
-				if (data.chapters) return data.chapters;
-			} catch (error) {
-				console.error('Error fetching chapter data: ', error);
-			}
-		}
-	}
-
-	function getEpisode(feed, blockGuid) {
-		if (!feed || !blockGuid) {
-			return;
-		}
-		if (feed.item) {
-			feed.item = [].concat(feed.item);
-		}
-		return (feed?.item || []).find((v) => {
-			return v?.guid?.['#text'] === blockGuid;
-		});
-	}
-
-	function getVTS(episodeRSS) {
-		const valueTimeSplits = episodeRSS?.['podcast:value']?.['podcast:valueTimeSplit'];
-
-		// Ensure valueTimeSplits is always treated as an array
-		const normalizedValueTimeSplits = [].concat(valueTimeSplits || []);
-
-		const processedValueTimeSplits = normalizedValueTimeSplits.map((vts) => removePrefixes(vts));
-
-		// Return undefined if the processed array is empty
-		return processedValueTimeSplits.length > 0 ? processedValueTimeSplits : undefined;
-
-		function removePrefixes(obj) {
-			if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
-
-			const newObject = {};
-			Object.keys(obj).forEach((key) => {
-				let newKey = key;
-				if (newKey.startsWith('@_')) {
-					newKey = newKey.substring(2);
-				} else if (newKey.startsWith('podcast:')) {
-					newKey = newKey.substring(8);
-				}
-
-				const value = obj[key];
-				newObject[newKey] =
-					typeof value === 'object' && value !== null ? removePrefixes(value) : value;
-			});
-			return newObject;
 		}
 	}
 </script>

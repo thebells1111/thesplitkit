@@ -55,7 +55,7 @@
 					<li><a href="/events">Events</a></li>
 				{:else}
 					<li>
-						<a href={redirectUrl}> Log In </a>
+						<a href="/login"> Log In </a>
 					</li>
 				{/if}
 			</ul>
