@@ -16,9 +16,9 @@
 	import getNextBlock from '$lib/functions/dashboard/getNextBlock.js';
 	import findCurrentChapter from '$lib/functions/dashboard/findCurrentChapter.js';
 	import getVTS from '$lib/functions/dashboard/getVTS.js';
-	import getNextVTS from '$lib/functions/dashboard/getNextVTS.js';
 	import fetchFeed from '$lib/functions/dashboard/fetchFeed.js';
 	import createChapterBroadcast from '$lib/functions/dashboard/createChapterBroadcast.js';
+	import createVTSBroadcast from '$lib/functions/dashboard/createVTSBroadcast.js';
 
 	import { page } from '$app/stores';
 	import {
@@ -36,7 +36,6 @@
 	export let showOptionsModal = false;
 	export let activeBlockGuid;
 
-	let broadcastingBlockGuid;
 	let player;
 	let broadcastTimeRemaining;
 	let broadcastIntervalTimer;
@@ -55,6 +54,9 @@
 	let isRunning = false;
 	let resetTimer;
 	let storedGuid = '';
+	let broadcastingBlockGuid;
+	let fallbackBlock;
+	let broadcastingBlock;
 
 	onMount(async () => {
 		if (!$liveBlocks?.length) {
@@ -68,14 +70,6 @@
 		console.log('--------------------------------');
 		console.log("Don't forget to delete 0 volume");
 		console.log('--------------------------------');
-	}
-
-	$: activeBlock = getActiveBlock(broadcastingBlockGuid);
-
-	function getActiveBlock(broadcastingBlockGuid) {
-		return $liveBlocks.find((v) => {
-			return v?.blockGuid === broadcastingBlockGuid;
-		});
 	}
 
 	$: if (player && !['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)) {
@@ -102,14 +96,6 @@
 			resetTimer = true;
 		}
 	}
-
-	$: if (chapterIndex > -1 && activeBlock) {
-		const nextChapter = createChapterBroadcast(chapters, chapterIndex, clone(activeBlock));
-		if (nextChapter) {
-			broadcastBlock(nextChapter);
-		}
-	}
-	$: getNextVTS(VTS, VTSIndex, clone(activeBlock), episode);
 
 	function loadSocket() {
 		$socket = null;
@@ -149,6 +135,8 @@
 	}
 
 	async function handleBroadcast(block) {
+		fallbackBlock = clone(block);
+		broadcastingBlock = clone(block);
 		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
 			episode = _episode;
 			feed = fetchFeed(episode?.feedUrl).then((_feed) => {
@@ -188,7 +176,7 @@
 					player.onended = () => {
 						handleBroadcast(nextBlock);
 					};
-					player.ontimeupdate = () => {
+					player.ontimeupdate = async () => {
 						if (block?.duration && player?.currentTime) {
 							broadcastTimeRemaining = block.duration - player.currentTime;
 							if (broadcastTimeRemaining <= 0) {
@@ -198,9 +186,31 @@
 							}
 						}
 
+						let modifiedBlock;
+
+						if (chapters && (block?.settings?.chaptersEnabled === true || true)) {
+							let currentChapterIndex = chapterIndex;
+							chapterIndex = findCurrentChapter(chapters, player.currentTime);
+							console.log(chapterIndex);
+							if (chapterIndex > -1) {
+								if (currentChapterIndex !== chapterIndex) {
+									modifiedBlock = await createChapterBroadcast(
+										chapters,
+										chapterIndex,
+										modifiedBlock || broadcastingBlock
+									);
+								}
+							} else {
+								modifiedBlock = clone(fallbackBlock);
+							}
+						} else {
+							chapterIndex = undefined;
+						}
+
 						if (VTS && (block?.settings?.VTSEnabled === true || true)) {
-							if (!VTSIndex) {
-								VTSIndex = 0;
+							let currentVTSIndex = VTSIndex;
+							if (VTSIndex === undefined) {
+								VTSIndex = -1;
 							}
 							while (player.currentTime >= VTS?.[VTSIndex + 1]?.startTime) {
 								VTSIndex++;
@@ -209,16 +219,28 @@
 							while (player.currentTime < VTS?.[VTSIndex]?.startTime) {
 								VTSIndex--;
 							}
+							if (VTSIndex > -1) {
+								if (currentVTSIndex !== VTSIndex) {
+									modifiedBlock = await createVTSBroadcast(
+										VTS[VTSIndex],
+										modifiedBlock || broadcastingBlock,
+										fallbackBlock,
+										episode
+									);
+								}
+							} else {
+								if (currentVTSIndex !== VTSIndex) {
+									modifiedBlock = modifiedBlock || clone(fallbackBlock);
+								}
+							}
 						} else {
 							VTSIndex = undefined;
 						}
 
-						if (chapters && (block?.settings?.chaptersEnabled === true || true)) {
-							chapterIndex = findCurrentChapter(chapters, player.currentTime);
-						} else {
-							chapterIndex = undefined;
+						if (modifiedBlock) {
+							console.log(modifiedBlock);
+							broadcastBlock(modifiedBlock);
 						}
-						console.log(chapterIndex);
 					};
 				}
 				broadcastBlock(block);
@@ -258,6 +280,7 @@
 	function broadcastBlock(block) {
 		let serverData;
 		if (block) {
+			broadcastingBlock = clone(block);
 			serverData = processBlock(clone(block));
 			broadcastingBlockGuid = block?.blockGuid;
 			if (timeStamp && block?.blockGuid !== $defaultBlockGuid) {

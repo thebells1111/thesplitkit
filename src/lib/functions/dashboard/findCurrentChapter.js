@@ -1,20 +1,17 @@
 export default function findCurrentChapter(chapters, currentTime) {
-	let left = 0;
-	let right = chapters.length - 1;
-
-	while (left <= right) {
-		let mid = Math.floor((left + right) / 2);
-		let start = chapters[mid].startTime;
-		let end = chapters[mid + 1] ? chapters[mid + 1].startTime : Infinity;
-
-		if (currentTime >= start && currentTime < end) {
-			return mid; // Found the current chapter
-		} else if (currentTime < start) {
-			right = mid - 1;
+	let potentialChapters = [];
+	for (let i = 0; i < chapters.length; i++) {
+		if (currentTime >= chapters[i].startTime) {
+			if (currentTime <= chapters[i].endTime) {
+				potentialChapters.push(i);
+			}
 		} else {
-			left = mid + 1;
+			break;
 		}
 	}
 
-	return -1; // Indicates no current chapter found
+	if (potentialChapters.length) {
+		return potentialChapters[potentialChapters.length - 1];
+	}
+	return -1; // Returns the index of the last chapter that matches the criteria, or -1 if not found.
 }

@@ -1,14 +1,14 @@
-export default function createChapterBroadcast(chapters, chapterIndex, chapterBlock) {
+export default function createChapterBroadcast(chapters, chapterIndex, broadcastingBlock) {
 	if (chapterIndex > -1) {
 		let activeChapter = chapters[chapterIndex];
 		if (activeChapter) {
-			chapterBlock.title = activeChapter.title;
-			chapterBlock.line = [];
-			chapterBlock.image = activeChapter.img;
-			chapterBlock.link = activeChapter.url
+			broadcastingBlock.title = activeChapter.title;
+			broadcastingBlock.line = [];
+			broadcastingBlock.image = activeChapter.img;
+			broadcastingBlock.link = activeChapter.url
 				? { text: activeChapter.url, url: activeChapter.url }
 				: undefined;
-			return chapterBlock;
+			return broadcastingBlock;
 		}
 	}
 }

@@ -1,21 +1,29 @@
 import { remoteServer } from '$/stores';
 import combineValues from './combineValues';
 
-export default async function getNextVTS(VTS, VTSIndex, activeBlock, episode) {
-	if (VTSIndex > -1) {
-		let splits = await handleSplit(VTS[VTSIndex]);
-		let destinations = combineValues({
-			defaultRemotePercent: activeBlock?.settings?.split || 95,
-			activeValue: activeBlock?.value,
-			splits
-		});
-		console.log(destinations);
-	}
+export default async function createVTSBroadcast(
+	currentVTS,
+	broadcastingBlock,
+	fallbackBlock,
+	episode
+) {
+	let splits = await handleSplit(currentVTS);
+	let destinations = combineValues({
+		defaultRemotePercent: fallbackBlock?.settings?.split || 95,
+		activeValue: fallbackBlock?.value,
+		splits
+	});
+	broadcastingBlock.value = broadcastingBlock.value || {};
+	broadcastingBlock.value.destinations = destinations;
+
+	return broadcastingBlock;
 
 	async function handleSplit(split) {
 		let podcastData = await fetch(
 			remoteServer +
-				`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${activeBlock.feedGuid}`)}`
+				`/api/queryindex?q=${encodeURIComponent(
+					`/podcasts/byguid?guid=${broadcastingBlock.feedGuid}`
+				)}`
 		);
 		let podcast = await podcastData.json();
 		const baseValueBlock = episode?.value || (podcast.status === 'true' && podcast?.feed?.value);

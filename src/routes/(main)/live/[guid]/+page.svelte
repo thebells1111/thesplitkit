@@ -72,7 +72,6 @@
 			if (block?.blockGuid && defaultBlock?.blockGuid) {
 				isDefault = block?.blockGuid === defaultBlock?.blockGuid;
 			}
-			console.log(`${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`);
 
 			code = `${$page.url.origin}/promotion/${guid}/${block?.blockGuid}`;
 			generateQRCode();
