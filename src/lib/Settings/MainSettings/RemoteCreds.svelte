@@ -24,7 +24,7 @@
 </script>
 
 <div>
-	<p>Remote Control Credentials</p>
+	<p>Remote Control Credentials:</p>
 	<input type="text" bind:value={username} placeholder="Username" />
 	<input type="password" bind:value={password} placeholder="Password" />
 	<button on:click={sendData}>Send Data</button>

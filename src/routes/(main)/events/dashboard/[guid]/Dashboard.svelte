@@ -126,7 +126,7 @@
 			if (!isRunning) {
 				startTimer();
 			}
-			block = block || getNextBlock({ blockGuid: broadcastingBlockGuid });
+			block = block || getNextBlock($liveBlocks, { blockGuid: broadcastingBlockGuid });
 			broadcastingBlockGuid = block.blockGuid;
 			console.log(block);
 
@@ -135,6 +135,8 @@
 	}
 
 	async function handleBroadcast(block) {
+		if (!block) return;
+		console.log(block);
 		fallbackBlock = clone(block);
 		broadcastingBlock = clone(block);
 		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
@@ -159,7 +161,7 @@
 				($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) &&
 			block
 		) {
-			let nextBlock = getNextBlock(block);
+			let nextBlock = getNextBlock($liveBlocks, block);
 			if ($mainSettings?.broadcastMode === 'playlist' && block.enclosureUrl) {
 				if (player) {
 					player.autoplay = true;
@@ -188,10 +190,9 @@
 
 						let modifiedBlock;
 
-						if (chapters && (block?.settings?.chaptersEnabled === true || true)) {
+						if (chapters && $mainSettings?.chaptersEnabled === true) {
 							let currentChapterIndex = chapterIndex;
 							chapterIndex = findCurrentChapter(chapters, player.currentTime);
-							console.log(chapterIndex);
 							if (chapterIndex > -1) {
 								if (currentChapterIndex !== chapterIndex) {
 									modifiedBlock = await createChapterBroadcast(
@@ -207,7 +208,7 @@
 							chapterIndex = undefined;
 						}
 
-						if (VTS && (block?.settings?.VTSEnabled === true || true)) {
+						if (VTS && $mainSettings?.VTSEnabled === true) {
 							let currentVTSIndex = VTSIndex;
 							if (VTSIndex === undefined) {
 								VTSIndex = -1;
