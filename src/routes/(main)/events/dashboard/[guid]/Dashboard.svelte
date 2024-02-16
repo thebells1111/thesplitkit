@@ -65,12 +65,12 @@
 		loadSocket();
 	});
 
-	$: if (player) {
-		player.volume = 0; //DELETE THIS WHEN DONE!!!!
-		console.log('--------------------------------');
-		console.log("Don't forget to delete 0 volume");
-		console.log('--------------------------------');
-	}
+	// $: if (player) {
+	// 	player.volume = 0; //DELETE THIS WHEN DONE!!!!
+	// 	console.log('--------------------------------');
+	// 	console.log("Don't forget to delete 0 volume");
+	// 	console.log('--------------------------------');
+	// }
 
 	$: if (player && !['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)) {
 		player.src = null;
