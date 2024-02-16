@@ -161,7 +161,11 @@
 				($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) &&
 			block
 		) {
-			let nextBlock = getNextBlock($liveBlocks, block);
+			let nextBlock = getNextBlock(
+				$liveBlocks,
+				block,
+				$mainSettings?.broadcastMode === 'playlist' && $mainSettings?.playlist?.loopEnabled
+			);
 			if ($mainSettings?.broadcastMode === 'playlist' && block.enclosureUrl) {
 				if (player) {
 					player.autoplay = true;

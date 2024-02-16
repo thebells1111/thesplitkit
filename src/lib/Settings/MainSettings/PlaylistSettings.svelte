@@ -1,38 +1,40 @@
 <script>
 	import { mainSettings } from '$/stores';
 	$: console.log($mainSettings);
-	let chaptersEnabled = $mainSettings?.chaptersEnabled || false;
-	let VTSEnabled = $mainSettings?.VTSEnabled || false;
+	let loopEnabled = $mainSettings?.playlist?.loop || false;
+	let randomEnabled = $mainSettings?.playlist?.random || false;
 
-	function handleChaptersEnable() {
-		chaptersEnabled = !chaptersEnabled;
-		if (chaptersEnabled) {
-			$mainSettings.chaptersEnabled = chaptersEnabled;
+	function handleLoopEnable() {
+		loopEnabled = !loopEnabled;
+		$mainSettings.playlist = $mainSettings.playlist || {};
+		if (loopEnabled) {
+			$mainSettings.playlist.loopEnabled = loopEnabled;
 		} else {
-			$mainSettings.chaptersEnabled = false;
+			$mainSettings.playlist.loopEnabled = false;
 		}
 	}
 
-	function handleVTSEnable() {
-		VTSEnabled = !VTSEnabled;
-		if (VTSEnabled) {
-			$mainSettings.VTSEnabled = VTSEnabled;
+	function handleRandomEnable() {
+		randomEnabled = !randomEnabled;
+		$mainSettings.playlist = $mainSettings.playlist || {};
+		if (randomEnabled) {
+			$mainSettings.playlist.randomEnabled = randomEnabled;
 		} else {
-			$mainSettings.VTSEnabled = false;
+			$mainSettings.playlist.randomEnabled = false;
 		}
 	}
 </script>
 
 <div>
-	<p>Broadcast Options:</p>
+	<p>Playback Options:</p>
 	<label>
-		<input type="checkbox" on:change={handleChaptersEnable} bind:checked={chaptersEnabled} />
-		Broadcast Chapter Changes from Active Block
+		<input type="checkbox" on:change={handleLoopEnable} bind:checked={loopEnabled} />
+		Loop Blocks
 	</label>
-	<label>
-		<input type="checkbox" on:change={handleVTSEnable} bind:checked={VTSEnabled} />
-		Broadcast Time Split Changes from Active Block
-	</label>
+	<!-- <label>
+		<input type="checkbox" on:change={handleRandomEnable} bind:checked={randomEnabled} />
+		Randomize Blocks
+	</label> -->
 </div>
 
 <style>
