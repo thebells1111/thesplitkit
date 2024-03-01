@@ -122,7 +122,7 @@
 		$socket.on('nextBlock', (message) => {
 			console.log(message);
 			console.log(broadcastingBlockGuid);
-			let block = $liveBlocks.find((v) => v.blockGuid === message);
+			let block = $liveBlocks.find((v) => v?.blockGuid === message);
 			if (!isRunning) {
 				startTimer();
 			}
@@ -398,7 +398,7 @@
 		{/if}
 		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks
 				.slice(1)
-				.every((v) => v.enclosureUrl || v.duration)}
+				.every((v) => v?.enclosureUrl || v?.duration)}
 			<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
 		{/if}
 		{#if !$liveBlocks.find((v) => v?.blockGuid === $defaultBlockGuid)?.value?.destinations?.length && $mainSettings.broadcastMode !== 'edit'}
@@ -453,7 +453,9 @@
 						/>
 					{/if}
 				{/each}
-				{#each blocks.filter((v) => v?.blockGuid !== $defaultBlockGuid) as block, index}
+				{#each blocks
+					.filter((v) => v?.blockGuid !== $defaultBlockGuid)
+					.filter((v) => v) as block, index}
 					<DashboardBlockCard
 						{block}
 						{index}
