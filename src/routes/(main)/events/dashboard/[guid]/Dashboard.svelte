@@ -156,6 +156,9 @@
 		clearInterval(broadcastTimeInterval);
 		await tick();
 
+		console.log(block);
+		console.log($mainSettings?.podcast?.autoSwitch);
+		console.log($mainSettings?.broadcastMode === 'podcast');
 		if (
 			($mainSettings?.broadcastMode === 'playlist' ||
 				($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) &&
@@ -166,6 +169,7 @@
 				block,
 				$mainSettings?.broadcastMode === 'playlist' && $mainSettings?.playlist?.loopEnabled
 			);
+			console.log(nextBlock);
 			if ($mainSettings?.broadcastMode === 'playlist' && block.enclosureUrl) {
 				if (player) {
 					player.autoplay = true;
@@ -273,7 +277,8 @@
 			broadcastTimeRemaining =
 				(broadcastIntervalTimer + block.duration * 1000 - new Date().getTime()) / 1000;
 			if (broadcastTimeRemaining <= 0) {
-				if ($mainSettings?.broadcastMode === 'podcast') {
+				if ($mainSettings?.broadcastMode === 'podcast' && !$mainSettings?.podcast?.autoSwitch) {
+					console.log('dude');
 					handleBroadcast();
 				} else {
 					handleBroadcast(nextBlock);
