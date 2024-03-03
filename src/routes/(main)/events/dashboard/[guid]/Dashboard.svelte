@@ -19,6 +19,7 @@
 	import fetchFeed from '$lib/functions/dashboard/fetchFeed.js';
 	import createChapterBroadcast from '$lib/functions/dashboard/createChapterBroadcast.js';
 	import createVTSBroadcast from '$lib/functions/dashboard/createVTSBroadcast.js';
+	import buildBlock from '$lib/functions/dashboard/buildBlock.js';
 
 	import { page } from '$app/stores';
 	import {
@@ -120,17 +121,29 @@
 		});
 
 		$socket.on('nextBlock', (message) => {
-			console.log(message);
-			console.log(broadcastingBlockGuid);
 			let block = $liveBlocks.find((v) => v?.blockGuid === message);
 			if (!isRunning) {
 				startTimer();
 			}
 			block = block || getNextBlock($liveBlocks, { blockGuid: broadcastingBlockGuid });
 			broadcastingBlockGuid = block.blockGuid;
-			console.log(block);
 
 			handleBroadcast(block);
+		});
+
+		$socket.on('buildBlock', async (message) => {
+			if (!message) return;
+
+			if (!isRunning) {
+				startTimer();
+			}
+
+			let block = await buildBlock(message, $page.params.guid);
+
+			if (block) {
+				broadcastingBlockGuid = block.blockGuid;
+				handleBroadcast(block);
+			}
 		});
 	}
 
@@ -385,6 +398,8 @@
 			console.log('fetchFeed Error: ', error);
 		}
 	}
+
+	async function testBuildBlock(message) {}
 </script>
 
 <div>
@@ -433,6 +448,7 @@
 
 		<top>
 			<transparent-spacer />
+			<button on:click={testBuildBlock}>Build</button>
 		</top>
 
 		{#if filterType === 'person'}

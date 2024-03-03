@@ -8,6 +8,7 @@
 	import PersonIcon from '$lib/icons/Person.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
+	import remoteSave from '$lib/functions/remoteSave.js';
 
 	export let showShareModal;
 	export let showMainSettingsModal;
@@ -18,13 +19,7 @@
 	import Save from '$lib/icons/Save.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
-	import {
-		remoteServer,
-		liveBlocks,
-		defaultBlockGuid,
-		changeDefault,
-		mainSettings
-	} from '$/stores';
+	import { liveBlocks, defaultBlockGuid, changeDefault, mainSettings } from '$/stores';
 
 	export let filterType;
 	export let mainUnsaved = false;
@@ -42,7 +37,7 @@
 	$: compareBlocks($liveBlocks);
 	$: if (mainUnsaved) {
 		console.log('mainUnsaved saved');
-		saveEntry($liveBlocks);
+		remoteSave($liveBlocks, $page.params.guid);
 		mainUnsaved = false;
 	}
 
@@ -84,33 +79,12 @@
 				return newBlock;
 			}
 		});
+		console.log($page);
 
-		saveEntry(newBlocks);
+		remoteSave(newBlocks, $page.params.guid);
 		mainUnsaved = false;
 		showSaved = true;
 		setTimeout(() => (showSaved = false), 500);
-	}
-
-	function saveEntry(blocks) {
-		if ($page.params.guid !== 'test') {
-			fetch(remoteServer + '/api/sk/saveblocks', {
-				method: 'POST',
-				credentials: 'include',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({ blocks, guid: $page.params.guid })
-			})
-				.then((response) => response.json())
-				.then((newData) => {
-					if (newData.status !== 'success') {
-						alert('You are no longer logged in, and your changes are not being saved.');
-					} else {
-						setTimeout(() => (showSaved = false), 500);
-					}
-				})
-				.catch((error) => console.error(error));
-		}
 	}
 </script>
 
