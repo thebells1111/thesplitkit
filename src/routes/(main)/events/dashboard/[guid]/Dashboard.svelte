@@ -132,6 +132,7 @@
 		});
 
 		$socket.on('buildBlock', async (message) => {
+			console.log(message);
 			if (!message) return;
 
 			if (!isRunning) {
@@ -398,8 +399,6 @@
 			console.log('fetchFeed Error: ', error);
 		}
 	}
-
-	async function testBuildBlock(message) {}
 </script>
 
 <div>
@@ -448,7 +447,6 @@
 
 		<top>
 			<transparent-spacer />
-			<button on:click={testBuildBlock}>Build</button>
 		</top>
 
 		{#if filterType === 'person'}

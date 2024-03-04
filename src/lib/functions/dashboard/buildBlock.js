@@ -3,6 +3,7 @@ import addFeed from '../addFeed';
 import { remoteServer } from '$/stores';
 
 export default async function buildBlock(block, activeBlockGuid, eventGuid) {
+	console.log(block);
 	let feedUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
 		`/podcasts/byguid?guid=${block.feedGuid}`
 	)}`;
