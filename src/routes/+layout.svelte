@@ -2,7 +2,7 @@
 	import './styles.css';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { remoteServer, user, albyReady, loaded } from '$/stores';
+	import { remoteServer, user, albyReady, userReady, loaded } from '$/stores';
 	import { goto } from '$app/navigation';
 
 	import Header from '$lib/MainHeader/Header.svelte';
@@ -15,12 +15,18 @@
 		if (!(await loadSKC())) {
 			loadAlby();
 		} else {
-			// loadAlby();
-			$albyReady = true;
-			$user.loggedIn = true;
-			$loaded = true;
+			console.log($page.route.id);
+			if ($page.route.id === '/(main)/live/[guid]') {
+				loadAlby();
+			} else {
+				$userReady = true;
+				$user.loggedIn = true;
+				$loaded = true;
+			}
 		}
 	});
+
+	$: console.log($albyReady);
 
 	async function loadSKC() {
 		console.log('refresh');
@@ -46,6 +52,7 @@
 				}
 			);
 			let data = await res.json();
+			console.log(data);
 			if (data.lightning_address) {
 				$user.loggedIn = true;
 				$user.name = data.lightning_address;
@@ -61,6 +68,7 @@
 					goto('/register');
 				}
 				$albyReady = true;
+				$userReady = true;
 			}
 			const urlWithoutQuery = window.location.href.split('?')[0];
 			window.history.replaceState(null, null, urlWithoutQuery);
@@ -80,7 +88,6 @@
 					credentials: 'include'
 				});
 				let userData = await userRes.json();
-				console.log(userData);
 				if (
 					!userData.hasCreds &&
 					($page.route.id === '/(main)' || $page.route.id === '/(main)/events')

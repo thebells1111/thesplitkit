@@ -61,7 +61,7 @@
 
 		liveItemSocket.on('remoteValue', function (data) {
 			// You will need to adjust this part based on the actual format of the data sent by the server
-			console.log(data);
+			// console.log(data);
 			block = data;
 			isDefault = false;
 

@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	import { user, loaded, albyReady, liveBlocks, activePageGuid } from '$/stores';
+	import { user, loaded, userReady, liveBlocks, activePageGuid } from '$/stores';
 
 	let showLoading = false;
 	let unmounted = true;
@@ -15,7 +15,7 @@
 		unmounted = false;
 	});
 
-	$: if ($loaded && $albyReady) {
+	$: if ($loaded && $userReady) {
 		setTimeout(() => (showLoading = false), 2000);
 	}
 </script>

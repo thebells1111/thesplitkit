@@ -5,6 +5,7 @@ export const remoteServer = dev ? 'http://localhost:8000' : 'https://api.thespli
 export const hostUrl = dev ? 'http://localhost:3000' : 'https://www.thesplitkit.com';
 export const albyClientId = dev ? '32dVOIuGiA' : 'GshATUDCSc';
 export const albyReady = writable(false);
+export const userReady = writable(false);
 export const events = writable([]);
 
 export const user = writable({ loggedIn: false });

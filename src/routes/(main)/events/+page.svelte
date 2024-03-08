@@ -2,14 +2,14 @@
 	import { onMount, beforeUpdate } from 'svelte';
 	import Delete from '$lib/icons/Delete.svelte';
 	import CopyIcon from '$lib/icons/Copy.svelte';
-	import { remoteServer, albyReady, events } from '$/stores';
+	import { remoteServer, events, userReady } from '$/stores';
 	import Event from '$lib/icons/Event.svelte';
 
 	let copiedEvent;
 	let loading = false;
 	let screenWidth;
 
-	$: if ($albyReady) {
+	$: if ($userReady) {
 		loadEvents();
 	}
 
