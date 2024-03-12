@@ -61,6 +61,7 @@
 					liveItems = tempItems?.map((v) => {
 						let feed = {
 							title: v.title,
+							guid: v?.guid?.['#text'] || v?.guid,
 							author: v['itunes:author'],
 							image: v?.image?.url,
 							artwork: v?.['itunes:image']?.['@_href'],

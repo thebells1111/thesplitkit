@@ -6,15 +6,13 @@
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
 	import AddFeed from '$lib/Creator/AddFeed.svelte';
-	import PodcastIcon from '$lib/icons/Podcast.svelte';
 
 	import {
 		remoteServer,
 		liveBlocks,
 		activePageGuid,
 		defaultBlockGuid,
-		mainSettings,
-		changeDefault
+		mainSettings
 	} from '$/stores';
 
 	const guid = $page.params.guid;

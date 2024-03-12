@@ -48,6 +48,7 @@ export default async function addFeed(block, type, channel, eventGuid) {
 
 	newBlock.feedGuid = channel?.podcastGuid || block?.podcastGuid;
 
+	console.log(block);
 	newBlock.itemGuid = block.guid;
 
 	newBlock.eventGuid = eventGuid;
