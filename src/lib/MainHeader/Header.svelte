@@ -19,7 +19,8 @@
 		'/(main)/events/creator',
 		'/(main)/events/import',
 		'/(main)/remotevalue/[guid]',
-		'/(main)/chapters/[guid]'
+		'/(main)/chapters/[guid]',
+		'/(main)/soundboard/[guid]'
 	].find((v) => v === route);
 
 	$: showPlayButton = ['/(main)/live/[guid]'].find((v) => v === route) && player?.src;
@@ -53,7 +54,11 @@
 			goto('/events');
 		}
 
-		if (['/(main)/remotevalue/[guid]', '/(main)/chapters/[guid]'].find((v) => v === route)) {
+		if (
+			['/(main)/remotevalue/[guid]', '/(main)/chapters/[guid]', '/(main)/soundboard/[guid]'].find(
+				(v) => v === route
+			)
+		) {
 			goto(`/events/dashboard/${guid}`);
 		}
 	}

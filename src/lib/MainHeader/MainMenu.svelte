@@ -22,6 +22,8 @@
 		`https://getalby.com/oauth?client_id=${albyClientId}&response_type=code&redirect_uri=${
 			$page.url.href.split('/?')[0].split('?')[0]
 		}` + `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
+
+	$: console.log($page);
 </script>
 
 <button
@@ -53,6 +55,9 @@
 					<li on:click={logout} on:keypress={logout}>Log Out</li>
 
 					<li><a href="/events">Events</a></li>
+					{#if $page?.params?.guid}
+						<li><a href="/soundboard/{$page.params.guid}">Sound Board</a></li>
+					{/if}
 				{:else}
 					<li>
 						<a href="/login"> Log In </a>
