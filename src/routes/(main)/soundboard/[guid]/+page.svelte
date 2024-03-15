@@ -13,7 +13,7 @@
 	let leaderBoardSocket;
 	let debounceTimeout;
 	let initialized = false;
-	let userInteractionEnabled = true;
+	let userInteractionEnabled = false;
 	let volume = 1;
 
 	onMount(async () => {
