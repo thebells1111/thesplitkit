@@ -78,7 +78,11 @@
 	{:else}
 		<spacer />
 	{/if}
+
 	<p>{$user.name || ''}</p>
+	{#if route === '/(main)/soundboard/[guid]'}
+		<a href="/soundboard/instructions">Sound Board Instructions</a>
+	{/if}
 	<MainMenu />
 </header>
 
