@@ -83,6 +83,9 @@
 	{#if route === '/(main)/soundboard/[guid]'}
 		<a href="/soundboard/instructions">Sound Board Instructions</a>
 	{/if}
+	{#if route === '/(main)/triggerboard/[guid]'}
+		<a href="/triggerboard/instructions">Trigger Board Instructions</a>
+	{/if}
 	<MainMenu />
 </header>
 

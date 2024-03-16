@@ -58,6 +58,9 @@
 					{#if $page?.params?.guid}
 						<li><a href="/soundboard/{$page.params.guid}">Sound Board</a></li>
 					{/if}
+					{#if $page?.params?.guid}
+						<li><a href="/triggerboard/{$page.params.guid}">Trigger Board</a></li>
+					{/if}
 				{:else}
 					<li>
 						<a href="/login"> Log In </a>

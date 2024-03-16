@@ -54,6 +54,7 @@
 	}
 
 	onMount(async () => {
+		console.log(remoteServer);
 		const url = remoteServer + '/event?event_id=' + $page.params.guid;
 		const liveItemSocket = io.connect(url);
 		fetchConversionRate();
