@@ -64,30 +64,32 @@
 	}
 </script>
 
-<header>
-	{#if showBackButton}
-		<button class="icon" on:click={handleBackButton}><BackArrow size="40" /></button>
-	{:else if showPlayButton}
-		<button class="play" on:click={handleAudio}
-			>{#if isStopped}
-				<PlayIcon size="40" />
-			{:else}
-				<StopIcon size="40" />
-			{/if}</button
-		>
-	{:else}
-		<spacer />
-	{/if}
+{#if route !== '/(main)/boostboard/[guid]'}}
+	<header>
+		{#if showBackButton}
+			<button class="icon" on:click={handleBackButton}><BackArrow size="40" /></button>
+		{:else if showPlayButton}
+			<button class="play" on:click={handleAudio}
+				>{#if isStopped}
+					<PlayIcon size="40" />
+				{:else}
+					<StopIcon size="40" />
+				{/if}</button
+			>
+		{:else}
+			<spacer />
+		{/if}
 
-	<p>{$user.name || ''}</p>
-	{#if route === '/(main)/soundboard/[guid]'}
-		<a href="/soundboard/instructions">Sound Board Instructions</a>
-	{/if}
-	{#if route === '/(main)/triggerboard/[guid]'}
-		<a href="/triggerboard/instructions">Trigger Board Instructions</a>
-	{/if}
-	<MainMenu />
-</header>
+		<p>{$user.name || ''}</p>
+		{#if route === '/(main)/soundboard/[guid]'}
+			<a href="/soundboard/instructions">Sound Board Instructions</a>
+		{/if}
+		{#if route === '/(main)/triggerboard/[guid]'}
+			<a href="/triggerboard/instructions">Trigger Board Instructions</a>
+		{/if}
+		<MainMenu />
+	</header>
+{/if}
 
 <style>
 	header {
