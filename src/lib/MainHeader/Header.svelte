@@ -64,7 +64,7 @@
 	}
 </script>
 
-{#if route !== '/(main)/boostboard/[guid]'}}
+{#if route !== '/(main)/boostboard/[guid]'}
 	<header>
 		{#if showBackButton}
 			<button class="icon" on:click={handleBackButton}><BackArrow size="40" /></button>
