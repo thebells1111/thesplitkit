@@ -2,11 +2,10 @@ import clone from 'just-clone';
 import { defaultBlockGuid, mainSettings, liveBlocks } from '$/stores';
 import { get } from 'svelte/store';
 
-const $defaultBlockGuid = get(defaultBlockGuid);
-const $mainSettings = get(mainSettings);
-const $liveBlocks = get(liveBlocks);
-
 export default function processBlock(block) {
+	const $defaultBlockGuid = get(defaultBlockGuid);
+	const $mainSettings = get(mainSettings);
+	const $liveBlocks = get(liveBlocks);
 	let defaultBlock =
 		block?.blockGuid === $defaultBlockGuid
 			? undefined
@@ -23,6 +22,7 @@ export default function processBlock(block) {
 			newDestinations = newDestinations.concat(
 				updateSplits(defaultBlock?.value?.destinations, 100 - splitDeduct)
 			);
+
 			newDestinations = newDestinations.concat(addFees(block?.value?.destinations));
 			newDestinations = newDestinations.concat(updateSplits(block?.value?.destinations, split));
 		} else {
@@ -52,10 +52,52 @@ export default function processBlock(block) {
 	}
 
 	if (block?.value?.destinations) {
-		block.value.destinations = newDestinations;
+		block.value.destinations = consolidateItems(newDestinations).map((v) => {
+			v.split = v.split.toString();
+			return v;
+		});
 	}
 
+	console.log(block.value.destinations);
+
 	return block;
+}
+
+function consolidateItems(items) {
+	const uniqueItems = [];
+	const found = {};
+
+	items.forEach((item) => {
+		const key = `${item.address}-${item.customKey || ''}-${item.customValue || ''}-${
+			item.fee || false
+		}`;
+		if (found[key]) {
+			if (item.fee && item.fee !== 'false') {
+				// If the current item has a fee and a higher split, update the item in found
+				if (Number(item.split) > Number(found[key].split)) {
+					found[key].split = Number(item.split);
+					found[key].name = item.name; // Update name in case the highest split comes from a different named item
+				}
+			} else {
+				// If the current item does not have a fee, just add its split to the total
+				found[key].split += Number(item.split);
+			}
+		} else {
+			found[key] = { ...item };
+			found[key].split = Number(found[key].split);
+			uniqueItems.push(found[key]);
+		}
+	});
+
+	return uniqueItems.filter(
+		(item) =>
+			!item.fee ||
+			(item.fee &&
+				item.split ===
+					found[
+						`${item.address}-${item.customKey || ''}-${item.customValue || ''}-${item.fee || false}`
+					].split)
+	);
 }
 
 function addFees(destinations, isDefault) {
