@@ -173,11 +173,7 @@
 		console.log(block);
 		console.log($mainSettings?.podcast?.autoSwitch);
 		console.log($mainSettings?.broadcastMode === 'podcast');
-		if (
-			($mainSettings?.broadcastMode === 'playlist' ||
-				($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) &&
-			block
-		) {
+		if ($mainSettings?.broadcastMode === 'playlist') {
 			let nextBlock = getNextBlock(
 				$liveBlocks,
 				block,
@@ -275,13 +271,17 @@
 					broadcastIntervalTimer = new Date().getTime();
 					broadcastTimeInterval = setInterval(nextInterval.bind(this, nextBlock), 250);
 					broadcastBlock(block);
-				} else if ($mainSettings?.broadcastMode === 'podcast') {
-					broadcastTimeRemaining = 0;
-
-					broadcastBlock(block);
 				} else {
 					handleBroadcast(nextBlock);
 				}
+			}
+		} else if ($mainSettings?.broadcastMode === 'podcast' && $mainSettings.podcast.autoSwitch) {
+			if (block.duration) {
+				broadcastIntervalTimer = new Date().getTime();
+				broadcastTimeInterval = setInterval(nextInterval.bind(this, block), 250);
+				broadcastBlock(block);
+			} else {
+				broadcastBlock(block);
 			}
 		} else {
 			broadcastBlock(block);
@@ -291,9 +291,11 @@
 			broadcastTimeRemaining =
 				(broadcastIntervalTimer + block.duration * 1000 - new Date().getTime()) / 1000;
 			if (broadcastTimeRemaining <= 0) {
-				if ($mainSettings?.broadcastMode === 'podcast' && !$mainSettings?.podcast?.autoSwitch) {
+				if ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch) {
 					console.log('dude');
-					handleBroadcast();
+					broadcastIntervalTimer = null;
+					clearInterval(broadcastTimeInterval);
+					handleBroadcast($liveBlocks[0]);
 				} else {
 					handleBroadcast(nextBlock);
 				}
