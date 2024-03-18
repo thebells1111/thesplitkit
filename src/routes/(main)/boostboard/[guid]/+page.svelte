@@ -6,19 +6,19 @@
 	import { remoteServer } from '$/stores';
 	import BoostCard from './BoostCard.svelte';
 
-	let leaderBoardSocket;
+	let boostBoardSocket;
 	let scrollContainer;
 	let boosts = [];
 
 	onMount(async () => {
-		const url = remoteServer + '/leaderboard?event_id=' + $page.params.guid;
-		leaderBoardSocket = io.connect(url, { withCredentials: true });
+		const url = remoteServer + '/boostboard?feed_guid=' + $page.params.guid;
+		boostBoardSocket = io.connect(url, { withCredentials: true });
 
-		leaderBoardSocket.on('testResponse', function (data) {
+		boostBoardSocket.on('testResponse', function (data) {
 			console.log(data);
 			boosts = boosts.concat(data);
 		});
-		leaderBoardSocket.on('tlv', function (data) {
+		boostBoardSocket.on('tlv', function (data) {
 			console.log(data);
 			boosts = boosts.concat(data);
 		});
