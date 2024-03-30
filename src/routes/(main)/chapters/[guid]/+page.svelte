@@ -77,7 +77,9 @@
 			badStartBlocks = chaps.filter((v) => v && !v.startTime);
 
 			if (!badStartBlocks?.length || reload) {
+				console.log(chaps);
 				chaps
+					.filter((v) => v)
 					.sort((a, b) => a.startTime - b.startTime)
 					.forEach((v, i, a) => {
 						if (v.startTime) {

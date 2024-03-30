@@ -328,6 +328,7 @@
 			serverData = {};
 		}
 
+		console.log(serverData);
 		$socket.emit('valueBlock', { valueGuid: guid, serverData });
 	}
 
