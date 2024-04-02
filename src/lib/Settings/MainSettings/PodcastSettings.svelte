@@ -68,7 +68,7 @@
 						album: block?.line?.[0] || '',
 						comment: {
 							description: 'SplitKitMeta',
-							text: `SplitKitMeta: {eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}, feedGuid: ${block.feedGuid}, itemGuid: ${block.itemGuid}}`
+							text: `SplitKitMeta: {eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}, feedGuid:${block.feedGuid}, itemGuid:${block.itemGuid}}`
 						},
 						internalId: {
 							description: 'mAirList',
@@ -78,7 +78,7 @@
 								block.blockGuid
 							}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${
 								block.blockGuid
-							}, feedGuid: ${block.feedGuid}, itemGuid: ${
+							}, feedGuid:${block.feedGuid}, itemGuid:${
 								block.itemGuid
 							}}</ExternalID></PlaylistItem>`
 						}

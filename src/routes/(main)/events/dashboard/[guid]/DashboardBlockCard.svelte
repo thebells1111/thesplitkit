@@ -152,7 +152,7 @@
 					block.blockGuid
 				}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${
 					block.blockGuid
-				}, feedGuid: ${block.feedGuid}, itemGuid: ${block.itemGuid}}</ExternalID></PlaylistItem>`
+				}, feedGuid:${block.feedGuid}, itemGuid:${block.itemGuid}}</ExternalID></PlaylistItem>`
 			}
 		};
 
