@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { feedShowNotes } from '$/stores';
 	import AddingPrompt from './AddingPrompt.svelte';
+	import OverwritePublisher from './OverwritePublisher.svelte';
 	import PodcastInfo from './PodcastInfo.svelte';
 	import PodcastValue from './PodcastValue.svelte';
 	import EpisodeInfo from './EpisodeInfo.svelte';
@@ -9,7 +10,7 @@
 	import ShowNotes from './ShowNotes.svelte';
 	import ChaptersTranscripts from './ChaptersTranscripts.svelte';
 	import DownloadFeed from './DownloadFeed.svelte';
-	let screens = [
+	let podcastScreens = [
 		AddingPrompt,
 		PodcastInfo,
 		PodcastValue,
@@ -19,7 +20,10 @@
 		ChaptersTranscripts,
 		DownloadFeed
 	];
+	let publisherScreens = [OverwritePublisher, PodcastInfo, PodcastValue, DownloadFeed];
+
 	export let showFeedModal;
+	export let publisherFeedType;
 	let screenIndex = 0;
 	let feed = {
 		image: { url: '' },
@@ -92,10 +96,21 @@
 	});
 </script>
 
-<svelte:component
-	this={screens[screenIndex]}
-	bind:screenIndex
-	bind:feed
-	bind:item
-	bind:showFeedModal
-/>
+{#if publisherFeedType === 'podcast'}
+	<svelte:component
+		this={podcastScreens[screenIndex]}
+		bind:screenIndex
+		bind:feed
+		bind:item
+		bind:showFeedModal
+	/>
+{:else if publisherFeedType === 'publisher'}
+	<svelte:component
+		this={publisherScreens[screenIndex]}
+		bind:screenIndex
+		bind:feed
+		bind:item
+		bind:showFeedModal
+		bind:publisherFeedType
+	/>
+{/if}

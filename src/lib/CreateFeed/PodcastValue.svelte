@@ -4,6 +4,7 @@
 	export let feed;
 	export let item;
 	export let showFeedModal;
+	export let publisherFeedType;
 	console.log(item);
 </script>
 
@@ -21,8 +22,13 @@
 	<button
 		on:click={() => {
 			screenIndex++;
-		}}>Episode Info</button
-	>
+		}}
+		>{#if publisherFeedType === 'podcast'}
+			Episode Info
+		{:else if publisherFeedType === 'publisher'}
+			Download Feed
+		{/if}
+	</button>
 </button-container>
 
 <style>

@@ -9,6 +9,7 @@
 	export let item;
 	export let showFeedModal;
 	export let screenIndex;
+	export let publisherFeedType;
 	import clone from 'just-clone';
 
 	let rssErrors = [];
@@ -78,34 +79,36 @@
 		if (!feed?.['itunes:explicit']) {
 			rssErrors.push('Click Yes or No on Podcast Explicit Content');
 		}
-
-		rssErrors.push(checkValue(feed, 'podcast'));
-		if (!item.title) {
-			rssErrors.push('Your episode needs a title.');
+		if (['podcast'].includes(publisherFeedType)) {
+			rssErrors.push(checkValue(feed, 'podcast'));
+			if (!item.title) {
+				rssErrors.push('Your episode needs a title.');
+			}
+			if (!item?.enclosure?.['@_url']) {
+				rssErrors.push('Your episode needs an audio file.');
+			}
+			if (!item?.duration) {
+				rssErrors.push('Click Get Audio Duration for your Episode.');
+			}
+			if (
+				item?.['podcast:chapters']?.['@_url'] &&
+				!isValidURL(item?.['podcast:chapters']?.['@_url'])
+			) {
+				rssErrors.push('Invalid Chapters URL');
+			}
+			if (
+				item?.['podcast:transcript']?.['@_url'] &&
+				!isValidURL(item?.['podcast:transcript']?.['@_url'])
+			) {
+				rssErrors.push('Invalid Transcript URL');
+			}
+			rssErrors.push(checkValue(item, 'episode'));
+			rssErrors = rssErrors.filter((v) => v);
+			createVTS();
+		} else if (['publisher'].includes(publisherFeedType)) {
+			console.log('publisher check');
 		}
-		if (!item?.enclosure?.['@_url']) {
-			rssErrors.push('Your episode needs an audio file.');
-		}
-		if (!item?.duration) {
-			rssErrors.push('Click Get Audio Duration for your Episode.');
-		}
-		if (
-			item?.['podcast:chapters']?.['@_url'] &&
-			!isValidURL(item?.['podcast:chapters']?.['@_url'])
-		) {
-			rssErrors.push('Invalid Chapters URL');
-		}
-		if (
-			item?.['podcast:transcript']?.['@_url'] &&
-			!isValidURL(item?.['podcast:transcript']?.['@_url'])
-		) {
-			rssErrors.push('Invalid Transcript URL');
-		}
-		rssErrors.push(checkValue(item, 'episode'));
-		rssErrors = rssErrors.filter((v) => v);
-		createVTS();
 	}
-
 	async function createFeed() {
 		let rss = {
 			'@_version': '2.0',

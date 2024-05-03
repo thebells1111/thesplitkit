@@ -4,11 +4,12 @@
 	export let item;
 	export let showFeedModal;
 	export let screenIndex;
-
-	console.log(item);
-	console.log(feed);
+	export let publisherFeedType;
 
 	feed['itunes:author'] = feed['itunes:author'] || feed.author;
+	$: if (publisherFeedType === 'publisher') {
+		feed['podcast:medium'] = 'publisher';
+	}
 </script>
 
 <container>

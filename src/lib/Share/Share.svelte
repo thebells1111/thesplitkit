@@ -17,6 +17,7 @@
 	import DownloadChapters from '$routes/(main)/chapters/[guid]/+page.svelte';
 	import ShowNotes from './ShowNotes.svelte';
 	import CreateFeed from '$lib/CreateFeed/CreateFeed.svelte';
+	import PublisherPrompt from '$lib/CreateFeed/PublisherPrompt.svelte';
 
 	export let liveGuid;
 	export let eventGuid;
@@ -33,6 +34,7 @@
 	let showImportModal = false;
 	let showFeedModal = false;
 	let showDownloadFeed = false;
+	let publisherFeedType = false;
 
 	if (liveGuid) {
 		guid = liveGuid;
@@ -290,10 +292,13 @@
 		isFeedDownload={true}
 		onClose={() => {
 			showDownloadFeed = false;
+			publisherFeedType = false;
 		}}
 	>
-		{#if showDownloadFeed}
-			<CreateFeed bind:showFeedModal />
+		{#if !publisherFeedType}
+			<PublisherPrompt bind:publisherFeedType />
+		{:else if showDownloadFeed || publisherFeedType}
+			<CreateFeed bind:showFeedModal bind:publisherFeedType />
 		{:else}
 			<RemoteValue bind:showDownloadFeed isFeedDownload={true} />
 		{/if}
