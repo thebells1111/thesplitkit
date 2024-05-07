@@ -4,15 +4,39 @@
 
 <h2>What type of feed are you building?</h2>
 
-<div>
+<button-row>
 	<button
+		class="podcast"
 		on:click={() => {
 			publisherFeedType = 'podcast';
-		}}>Podcast</button
+		}}
 	>
+		Podcast
+	</button>
 	<button
+		class="publisher"
 		on:click={() => {
 			publisherFeedType = 'publisher';
-		}}>Publisher</button
+		}}
 	>
-</div>
+		Publisher
+	</button>
+</button-row>
+
+<style>
+
+
+button {
+	width: 80px;
+	margin: 0 8px;
+}
+
+.podcast {
+	background-color: var(--color-theme-blue);
+}
+
+.publisher {
+	background-color: var(--color-theme-purple);
+}
+
+</style>

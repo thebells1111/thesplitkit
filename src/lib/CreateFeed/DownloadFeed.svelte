@@ -148,10 +148,13 @@
 			_feed.item = [_item, ..._feed.item];
 		} else {
 			delete _feed.item;
-		}
 
-		if (!_feed?.['podcast:value']?.['podcast:valueRecipient']?.['@_address']) {
-			delete _feed['podcast:value'];
+			if (
+				_feed?.['podcast:value']?.['podcast:valueRecipient']?.filter((v) => v?.['@_address'])
+					.length < 1
+			) {
+				delete _feed['podcast:value'];
+			}
 		}
 
 		rss.channel = _feed;
@@ -231,7 +234,7 @@
 			.replace(',', '')
 			.replace(/:/g, '.')}`;
 
-		saveFeed(fileName, xmlFile);
+		// saveFeed(fileName, xmlFile);
 	}
 
 	function createVTS() {
@@ -342,8 +345,13 @@
 	<button
 		on:click={() => {
 			screenIndex--;
-		}}>Chapters/Transcript</button
-	>
+		}}
+		>{#if publisherFeedType === 'publisher'}
+			Podcast Value
+		{:else}
+			Chapters/Transcript
+		{/if}
+	</button>
 </button-container>
 
 <style>
