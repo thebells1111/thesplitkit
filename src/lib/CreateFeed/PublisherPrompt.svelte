@@ -24,8 +24,7 @@
 </button-row>
 
 <style>
-
-
+	
 button {
 	width: 80px;
 	margin: 0 8px;

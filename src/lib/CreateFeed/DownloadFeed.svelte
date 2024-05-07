@@ -234,7 +234,7 @@
 			.replace(',', '')
 			.replace(/:/g, '.')}`;
 
-		// saveFeed(fileName, xmlFile);
+			 saveFeed(fileName, xmlFile);
 	}
 
 	function createVTS() {
