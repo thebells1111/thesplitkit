@@ -52,6 +52,36 @@
 		'itunes:keywords': '',
 		'itunes:explicit': 'no'
 	};
+
+	feed = {
+		image: { url: 'test' },
+		description: 'test',
+		'itunes:author': 'test',
+		title: 'test',
+		link: 'test',
+		item: [],
+		'podcast:value': {
+			'podcast:valueRecipient': [
+				{
+					'@_name': '',
+					'@_address': '',
+					'@_type': 'node',
+					'@_customKey': '',
+					'@_customValue': '',
+					'@_split': ''
+				}
+			],
+			'@_type': 'lightning',
+			'@_method': 'keysend',
+			'@_suggested': '0.00000005000'
+		},
+		'podcast:medium': 'podcast',
+		'podcast:guid': '',
+		generator: 'The Split Kit',
+		'itunes:category': { '@_text': 'Music' },
+		'itunes:keywords': 'test',
+		'itunes:explicit': 'no'
+	};
 	let item = {
 		title: '',
 		'itunes:image': { '@_href': '' },

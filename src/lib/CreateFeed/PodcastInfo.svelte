@@ -10,6 +10,8 @@
 	$: if (publisherFeedType === 'publisher') {
 		feed['podcast:medium'] = 'publisher';
 	}
+
+	$: console.log(feed);
 </script>
 
 <container>

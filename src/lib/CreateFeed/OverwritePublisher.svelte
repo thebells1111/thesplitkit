@@ -146,11 +146,6 @@
 				}}>No</button
 			>
 		</button-row>
-		<p>
-			This tool is designed to easily add a new episode to your podcast. <br />If you require more
-			advanced features or need to edit an episode,<br />please consider using
-			<a href="https://sovereignfeeds.com/" target="_blank">Sovereign Feeds.</a>
-		</p>
 	</container>
 {/if}
 

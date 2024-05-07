@@ -13,8 +13,6 @@ export default async function addFeed(block, type, channel, eventGuid) {
 	}
 	block.value = block?.value || channel?.value;
 
-	// showAdded = true;
-	// setTimeout(() => (showAdded = false), 500);
 	let newBlock = {};
 	newBlock.image = block?.artwork || block?.image || channel?.artwork || channel?.image;
 	if (channel) {

@@ -16,7 +16,6 @@
 	import EditOptions from '$lib/Creator/EditOptions.svelte';
 	import PromoEditor from '$lib/PromoEditor/PromoEditor.svelte';
 	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
-	import AddFeed from '$lib/Creator/AddFeed.svelte';
 	import {
 		remoteServer,
 		liveBlocks,
@@ -25,8 +24,6 @@
 		activePageGuid,
 		changeDefault
 	} from '$/stores';
-
-	$: console.log($mainSettings);
 
 	let showShareModal = false;
 	let showMainSettingsModal = false;
@@ -242,6 +239,10 @@
 			}
 
 			newBlock.feedGuid = channel?.podcastGuid || block?.podcastGuid;
+			console.log(channel);
+			console.log(block);
+			newBlock.feedUrl = channel?.url || block?.url;
+			newBlock.medium = channel?.medium || block?.medium;
 
 			newBlock.itemGuid = block.guid;
 

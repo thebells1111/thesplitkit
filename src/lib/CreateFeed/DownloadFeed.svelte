@@ -79,8 +79,8 @@
 		if (!feed?.['itunes:explicit']) {
 			rssErrors.push('Click Yes or No on Podcast Explicit Content');
 		}
+		rssErrors.push(checkValue(feed, 'podcast'));
 		if (['podcast'].includes(publisherFeedType)) {
-			rssErrors.push(checkValue(feed, 'podcast'));
 			if (!item.title) {
 				rssErrors.push('Your episode needs a title.');
 			}
@@ -106,8 +106,9 @@
 			rssErrors = rssErrors.filter((v) => v);
 			createVTS();
 		} else if (['publisher'].includes(publisherFeedType)) {
-			console.log('publisher check');
+			createPublisherFeed();
 		}
+		rssErrors = rssErrors.filter((v) => v);
 	}
 	async function createFeed() {
 		let rss = {
@@ -117,9 +118,9 @@
 			'@_xmlns:podcast':
 				'https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md'
 		};
-
 		feed['podcast:guid'] = feed['podcast:guid'] || uuidv4();
 
+		let _feed = clone(feed);
 		let _item = clone(item);
 
 		_item.pubDate = new Date().toUTCString().split(' GMT')[0] + ' +0000';
@@ -142,15 +143,23 @@
 		if (!_item?.['podcast:transcript']?.['@_url']) {
 			delete _item['podcast:transcript'];
 		}
-		feed.item = [_item, ...feed.item];
 
-		rss.channel = feed;
+		if (!['publisher'].includes(publisherFeedType)) {
+			_feed.item = [_item, ..._feed.item];
+		} else {
+			delete _feed.item;
+		}
+
+		if (!_feed?.['podcast:value']?.['podcast:valueRecipient']?.['@_address']) {
+			delete _feed['podcast:value'];
+		}
+
+		rss.channel = _feed;
 
 		let xmlJson = { rss: rss };
 
 		const builder = new XMLBuilder(buildOptions);
 		xmlFile = builder.build(xmlJson);
-		console.log(xmlJson.rss.channel);
 		return xmlFile;
 	}
 
@@ -208,17 +217,21 @@
 				warning += type.charAt(0).toUpperCase() + type.slice(1) + " splits don't add up to 100%.\n";
 			}
 		}
-
 		return warning;
 	}
 
 	async function downloadFeed() {
 		console.log(feed);
-		console.log(item);
 		let xmlFile = await createFeed();
 		let date = new Date();
 		let d = date.toLocaleString('en-US', { hour12: false });
-		saveFeed(`sk-feed - ${d.replace(/\//g, '-').replace(',', '').replace(/:/g, '.')}`, xmlFile);
+
+		let fileName = `sk-${publisherFeedType === 'publisher' ? 'publisher-' : ''}feed - ${d
+			.replace(/\//g, '-')
+			.replace(',', '')
+			.replace(/:/g, '.')}`;
+
+		saveFeed(fileName, xmlFile);
 	}
 
 	function createVTS() {
@@ -284,13 +297,30 @@
 		item['podcast:value']['podcast:valueTimeSplit'] = vts;
 	}
 
+	function createPublisherFeed() {
+		feed.medium = 'publisher';
+		let remoteItem = $liveBlocks
+			.map((v) => {
+				if (v && v?.feedGuid && v?.feedUrl && !v?.itemGuid) {
+					return {
+						'@_medium': v.medium || 'podcast',
+						'@_feedGuid': v.feedGuid,
+						'@_feedUrl': v.feedUrl
+					};
+				}
+			})
+			.filter((v) => v);
+		feed['podcast:remoteItem'] = remoteItem;
+		delete feed['itunes:category'];
+	}
+
 	async function saveFeed(title, xmlFile) {
 		var blob = new Blob([xmlFile], { type: 'text/xml;charset=utf-8' });
 
-		saveAs(blob, `${title.toLowerCase()}.xml`);
 		alert(
 			`If updating your feed, remember to keep your file name the same as your old file.\n\nThen replace your old file with the new file.`
 		);
+		saveAs(blob, `${title.toLowerCase()}.xml`);
 		showFeedModal = false;
 	}
 </script>
