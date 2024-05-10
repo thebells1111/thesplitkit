@@ -16,7 +16,8 @@
 			loadAlby();
 		} else {
 			console.log($page.route.id);
-			if ($page.route.id === '/(main)/live/[guid]') {
+			if ($page.route.id === '/(main)/live/[guid]' || $page.route.id === '/(main)/roster/[guid]') {
+				console.log('loadAlby');
 				loadAlby();
 			} else {
 				$userReady = true;
