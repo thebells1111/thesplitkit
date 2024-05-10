@@ -7,9 +7,6 @@
 	export let publisherFeedType;
 
 	feed['itunes:author'] = feed['itunes:author'] || feed.author;
-	$: if (publisherFeedType === 'publisher') {
-		feed['podcast:medium'] = 'publisher';
-	}
 
 	$: console.log(feed);
 </script>

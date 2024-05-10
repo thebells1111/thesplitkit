@@ -53,35 +53,35 @@
 		'itunes:explicit': 'no'
 	};
 
-	// feed = {
-	// 	image: { url: 'test' },
-	// 	description: 'test',
-	// 	'itunes:author': 'test',
-	// 	title: 'test',
-	// 	link: 'test',
-	// 	item: [],
-	// 	'podcast:value': {
-	// 		'podcast:valueRecipient': [
-	// 			{
-	// 				'@_name': 'a',
-	// 				'@_address': 'a',
-	// 				'@_type': 'node',
-	// 				'@_customKey': 'a',
-	// 				'@_customValue': 'a',
-	// 				'@_split': '100'
-	// 			}
-	// 		],
-	// 		'@_type': 'lightning',
-	// 		'@_method': 'keysend',
-	// 		'@_suggested': '0.00000005000'
-	// 	},
-	// 	'podcast:medium': 'podcast',
-	// 	'podcast:guid': '',
-	// 	generator: 'The Split Kit',
-	// 	'itunes:category': { '@_text': 'Music' },
-	// 	'itunes:keywords': 'test',
-	// 	'itunes:explicit': 'no'
-	// };
+	feed = {
+		image: { url: 'test' },
+		description: 'test',
+		'itunes:author': 'test',
+		title: 'test',
+		link: 'test',
+		item: [],
+		'podcast:value': {
+			'podcast:valueRecipient': [
+				{
+					'@_name': 'a',
+					'@_address': 'a',
+					'@_type': 'node',
+					'@_customKey': 'a',
+					'@_customValue': 'a',
+					'@_split': '100'
+				}
+			],
+			'@_type': 'lightning',
+			'@_method': 'keysend',
+			'@_suggested': '0.00000005000'
+		},
+		'podcast:medium': 'podcast',
+		'podcast:guid': '',
+		generator: 'The Split Kit',
+		'itunes:category': { '@_text': 'Music' },
+		'itunes:keywords': 'test',
+		'itunes:explicit': 'no'
+	};
 	let item = {
 		title: '',
 		'itunes:image': { '@_href': '' },

@@ -234,7 +234,7 @@
 			.replace(',', '')
 			.replace(/:/g, '.')}`;
 
-			 saveFeed(fileName, xmlFile);
+		saveFeed(fileName, xmlFile);
 	}
 
 	function createVTS() {
@@ -301,14 +301,17 @@
 	}
 
 	function createPublisherFeed() {
-		feed.medium = 'publisher';
+		feed['podcast:medium'] = 'publisher';
 		let remoteItem = $liveBlocks
 			.map((v) => {
 				if (v && v?.feedGuid && v?.feedUrl && !v?.itemGuid) {
+					console.log(v);
 					return {
 						'@_medium': v.medium || 'podcast',
 						'@_feedGuid': v.feedGuid,
-						'@_feedUrl': v.feedUrl
+						'@_feedUrl': v.feedUrl,
+						'@_title': v.title,
+						'@_img': v.image
 					};
 				}
 			})
