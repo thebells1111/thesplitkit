@@ -92,9 +92,13 @@
 	}
 </script>
 
-{#each $liveBlocks as block}
-	<Card {block} bind:showModal bind:activeBlock />
-{/each}
+<div class="grid-container">
+	{#each $liveBlocks as block}
+		{#if block}
+			<Card {block} bind:showModal bind:activeBlock />
+		{/if}
+	{/each}
+</div>
 
 {#if showModal}
 	<Modal bind:showModal>
@@ -139,20 +143,11 @@
 {/if}
 
 <style>
-	container {
-		max-width: 450px;
-		min-width: 300px;
-		margin: 0 auto;
+	.grid-container {
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		height: 100%;
-	}
-	h1 {
-		text-align: center;
-		margin: 4px 0 0 0;
-		min-height: 1.6em;
+		justify-content: center;
 		width: 100%;
+		flex-wrap: wrap;
 	}
 
 	h2 {
@@ -170,20 +165,6 @@
 
 	p {
 		text-align: center;
-	}
-
-	spacer {
-		display: block;
-		height: 8px;
-		width: 100%;
-	}
-	a,
-	spacer {
-		flex: 1;
-	}
-
-	img {
-		width: 300px;
 	}
 
 	boost-container {

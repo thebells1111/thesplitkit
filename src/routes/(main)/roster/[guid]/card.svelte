@@ -15,18 +15,38 @@
 	redirectUrl += `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 </script>
 
-<div>
-	{block.title || ''}
-
-	<button
-		class="boost"
-		on:click={() => {
-			if ($user.loggedIn) {
-				showModal = true;
-				activeBlock = clone(block);
-			} else {
-				goto(redirectUrl);
-			}
-		}}>Boost 🚀</button
-	>
+<div
+	on:click={() => {
+		if ($user.loggedIn) {
+			showModal = true;
+			activeBlock = clone(block);
+		} else {
+			goto(redirectUrl);
+		}
+	}}
+>
+	<img src={block.image} alt={block.title} />
+	<p>{block.title || ''}</p>
 </div>
+
+<style>
+	div {
+		display: inline-flex;
+		flex-direction: column;
+		margin: 8px;
+		align-items: center;
+		width: 100px;
+		height: 180px;
+		overflow: hidden;
+	}
+	p {
+		margin: 4px 0;
+		text-align: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	img {
+		width: 100px;
+		border-radius: 50%;
+	}
+</style>
