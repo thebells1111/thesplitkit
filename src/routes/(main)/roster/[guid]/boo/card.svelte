@@ -46,6 +46,7 @@
 		width: 200px;
 		height: 220px;
 		overflow: hidden;
+		cursor: pointer;
 	}
 
 	album {

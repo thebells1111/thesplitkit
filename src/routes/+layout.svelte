@@ -16,7 +16,11 @@
 			loadAlby();
 		} else {
 			console.log($page.route.id);
-			if ($page.route.id === '/(main)/live/[guid]' || $page.route.id === '/(main)/roster/[guid]') {
+			if (
+				$page.route.id === '/(main)/live/[guid]' ||
+				$page.route.id === '/(main)/roster/[guid]' ||
+				$page.route.id === '/(main)/roster/[guid]/boo'
+			) {
 				console.log('loadAlby');
 				loadAlby();
 			} else {
