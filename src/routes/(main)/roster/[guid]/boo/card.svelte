@@ -9,7 +9,6 @@
 	export let block = {};
 	export let showModal;
 	export let activeBlock;
-	export let banner = false;
 
 	let redirectUrl = `https://getalby.com/oauth?client_id=${albyClientId}`;
 	redirectUrl += `&response_type=code&redirect_uri=${$page.url.href}`;
@@ -18,7 +17,6 @@
 
 <div
 	class="card"
-	class:banner
 	on:click={() => {
 		if ($user.loggedIn) {
 			showModal = true;
@@ -41,10 +39,7 @@
 	.card {
 		display: inline-flex;
 		flex-direction: column;
-		margin: 8px;
 		align-items: center;
-		width: 200px;
-		height: 220px;
 		overflow: hidden;
 		cursor: pointer;
 	}
@@ -52,42 +47,28 @@
 	album {
 		display: inline-block;
 		position: relative;
+		width: clamp(120px, 200px, calc(0.2 * 100vw));
+		height: clamp(120px, 200px, calc(0.2 * 100vw));
+		margin: 8px;
 	}
 	.border {
-		width: 200px;
+		width: 100%;
 	}
 
 	.artwork {
-		width: 184px;
-		height: 184px;
+		width: calc(0.93 * 100%);
+		height: calc(0.93 * 100%);
 		overflow: hidden;
 		position: absolute;
-		top: 13px;
-		left: 8px;
+		top: calc(6.5%);
+		left: calc(4%);
 		z-index: 1;
+		border-radius: 5px;
 	}
 
 	.artwork > img {
 		object-fit: cover;
 		height: 100%;
 		width: 100%;
-	}
-
-	.banner {
-		width: 100%;
-	}
-
-	.banner .border {
-		display: none;
-	}
-
-	.banner .artwork {
-		width: initial;
-		height: initial;
-	}
-
-	.banner .artwork > img {
-		height: 200px;
-		width: initial;
 	}
 </style>

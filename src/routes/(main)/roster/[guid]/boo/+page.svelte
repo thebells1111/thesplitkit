@@ -1,5 +1,6 @@
 <script>
-	import Card from './card.svelte';
+	import Card from './Card.svelte';
+	import Banner from './Banner.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
@@ -93,17 +94,18 @@
 </script>
 
 <img class="background" alt="boo-background" src="/boo-background.jpg" />
-<div class="grid-container">
-	{#each $liveBlocks.slice(1) as block}
-		{#if block}
-			<Card {block} bind:showModal bind:activeBlock />
-		{/if}
-	{/each}
+<div class="container">
+	{#if $liveBlocks[0]}
+		<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />
+	{/if}
+	<div class="grid-container">
+		{#each $liveBlocks.slice(1) as block}
+			{#if block}
+				<Card {block} bind:showModal bind:activeBlock />
+			{/if}
+		{/each}
+	</div>
 </div>
-
-{#if $liveBlocks[0]}
-	<Card block={$liveBlocks[0]} bind:showModal bind:activeBlock banner={true} />
-{/if}
 
 {#if showModal}
 	<Modal bind:showModal>
@@ -156,10 +158,23 @@
 		object-fit: cover;
 		z-index: -1;
 	}
+	.container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		flex-wrap: wrap;
+	}
+
+	.container > div {
+		width: 100%;
+	}
+
 	.grid-container {
 		display: flex;
 		justify-content: center;
 		width: 100%;
+		max-width: 1020px;
 		flex-wrap: wrap;
 	}
 
@@ -306,79 +321,6 @@
 		margin: 8px 0 16px 0;
 	}
 
-	image-container {
-		display: block;
-		position: relative;
-	}
-	white-background {
-		display: block;
-		position: absolute;
-		background-color: white;
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		z-index: -1;
-	}
-	image-container button.info {
-		position: absolute;
-		bottom: -4px;
-		right: 4px;
-		width: initial;
-		height: 34px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0;
-		background-color: transparent;
-		color: hsl(283, 99%, 49%);
-		box-shadow: none;
-		filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.5));
-	}
-
-	blurred-background {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		background: transparent;
-		top: 0;
-		right: 0;
-		z-index: 99;
-		backdrop-filter: blur(5px);
-	}
-	info-modal {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		position: relative;
-		width: 100%;
-		height: 100%;
-		overflow-y: auto;
-		overflow-x: hidden;
-		border-radius: 8px;
-		background-color: white;
-		box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 0.4);
-	}
-
-	info-modal textarea {
-		width: calc(100% - 32px);
-		height: calc(100% - 32px);
-		resize: none;
-		margin: 8px 0;
-		padding: 4px;
-		border: none;
-		outline: none;
-	}
-
-	info-modal h2 {
-		margin: 16px 0 8px 0;
-		height: initial;
-		min-height: initial;
-	}
-
 	textarea {
 		width: calc(100% - 32px);
 		height: calc(100% - 32px);
@@ -388,20 +330,11 @@
 		border: 1px solid black;
 	}
 
-	button.close {
-		position: absolute;
-		top: -4px;
-		right: -4px;
-		background-color: transparent;
-		padding: 8px;
-		color: rgba(0, 0, 0, 0.75);
-		z-index: 33;
-		border: 1px solid transparent;
-		width: initial;
-		margin: 0;
-		height: initial;
+	@media screen and (max-height: 692px) {
+		.container {
+			flex-direction: column-reverse;
+		}
 	}
-
 	@media screen and (max-width: 992px) {
 	}
 </style>

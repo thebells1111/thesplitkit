@@ -131,8 +131,9 @@
 <svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
 
 <div class="app">
-	<Header />
-
+	{#if !['/(main)/roster/[guid]/boo'].find((v) => v === $page.route.id)}
+		<Header />
+	{/if}
 	<main>
 		<slot />
 	</main>
