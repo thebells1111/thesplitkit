@@ -5,7 +5,7 @@
 
 <style>
 	div {
-		width: 100%;
+		flex-grow: 1;
 		height: 100%;
 		border: 1px solid white;
 	}
