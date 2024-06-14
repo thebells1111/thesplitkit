@@ -33,13 +33,16 @@
 		width: 100%;
 	}
 	top {
-		flex-grow: 1;
 		display: flex;
+		flex-grow: 1;
 		margin: 16px;
+		overflow: hidden;
 	}
 	bottom {
-		max-height: 160px;
+		min-height: 180px;
 		overflow-y: hidden;
 		margin: 0 8px 8px 8px;
+		display: flex;
+		justify-content: center;
 	}
 </style>

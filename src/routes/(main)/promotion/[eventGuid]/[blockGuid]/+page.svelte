@@ -23,7 +23,7 @@
 	export let data = {};
 	export let block = data;
 
-	console.log(data);
+	$: console.log(data);
 
 	onMount(() => {
 		fetchConversionRate();

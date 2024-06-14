@@ -9,6 +9,7 @@
 
 <style>
 	div {
+		min-width: 300px;
 		width: 300px;
 		display: flex;
 		flex-direction: column;
