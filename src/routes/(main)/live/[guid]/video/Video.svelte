@@ -43,7 +43,7 @@
 </script>
 
 <div class="player">
-	<video disableRemotePlayback playsinline preload="metadata" bind:this={player} />
+	<video disableRemotePlayback playsinline controls preload="metadata" bind:this={player} />
 </div>
 
 <style>
