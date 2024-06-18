@@ -52,9 +52,11 @@
 		justify-content: center;
 		align-items: center;
 		width: 100%;
+		overflow: hidden;
 	}
 
 	video {
+		max-width: 100%;
 		max-height: 100%;
 		width: auto;
 		height: auto;

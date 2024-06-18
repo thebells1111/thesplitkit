@@ -9,8 +9,7 @@
 
 <style>
 	div {
-		min-width: 300px;
-		width: 300px;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
