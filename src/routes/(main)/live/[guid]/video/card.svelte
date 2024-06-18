@@ -54,14 +54,14 @@
 	}
 
 	.artwork {
-		width: calc(0.93 * 100%);
-		height: calc(0.93 * 100%);
+		width: 97.5%;
+		height: 90%;
 		overflow: hidden;
 		position: absolute;
-		top: calc(6.5%);
-		left: calc(3%);
+		top: 6.5%;
+		left: 1.25%;
 		z-index: 1;
-		border-radius: 5px;
+		border-radius: 0 0 3px 3px;
 	}
 
 	.artwork > img {

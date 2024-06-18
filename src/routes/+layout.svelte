@@ -19,7 +19,8 @@
 			if (
 				$page.route.id === '/(main)/live/[guid]' ||
 				$page.route.id === '/(main)/roster/[guid]' ||
-				$page.route.id === '/(main)/roster/[guid]/boo'
+				$page.route.id === '/(main)/roster/[guid]/boo' ||
+				$page.route.id === '/(main)/live/[guid]/video'
 			) {
 				console.log('loadAlby');
 				loadAlby();
@@ -131,7 +132,7 @@
 <svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
 
 <div class="app">
-	{#if !['/(main)/roster/[guid]/boo'].find((v) => v === $page.route.id)}
+	{#if !['/(main)/roster/[guid]/boo', '/(main)/live/[guid]/video'].find((v) => v === $page.route.id)}
 		<Header />
 	{/if}
 	<main>
