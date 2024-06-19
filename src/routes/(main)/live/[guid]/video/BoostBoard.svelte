@@ -1,5 +1,9 @@
+<script>
+	import { mainSettings } from '$/stores';
+</script>
+
 <div class="iframe-container">
-	<iframe width="600" src="https://boostboard.vercel.app/terminal" />
+	<iframe width="600" src={$mainSettings?.boostBoard || ''} />
 </div>
 
 <style>

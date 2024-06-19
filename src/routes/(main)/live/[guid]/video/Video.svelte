@@ -1,12 +1,15 @@
 <script>
 	import Hls from 'hls.js';
 	let player;
-	let sourceVideo = 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8';
+	import { mainSettings } from '$/stores';
+	$: sourceVideo = $mainSettings?.liveEnclosure || '';
+	// sourceVideo = 'https://listen.noagendastream.com/noagenda';
 
 	$: setSource(sourceVideo, player);
 
 	function setSource(src, player) {
 		console.log(player);
+		console.log(src);
 		if (player && src) {
 			// src =
 			// 	'https://noagendatube.com/static/streaming-playlists/hls/54ebb881-8581-4b16-b3ba-04dcac230fd4/master.m3u8';

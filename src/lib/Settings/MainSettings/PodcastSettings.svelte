@@ -2,22 +2,25 @@
 	import JSZip from 'jszip';
 	import { ID3Writer } from 'browser-id3-writer';
 	import { mainSettings, remoteServer, liveBlocks } from '$/stores';
-	console.log($mainSettings);
+	$: console.log($mainSettings);
 
 	let enclosureUrl;
 	export let mainUnsaved;
 	let downloadInfo = '';
 
-	function handleInput(e) {
-		$mainSettings.liveEnclosure = e.target.value;
-		mainUnsaved = true;
-	}
-
 	$: enclosureUrl = $mainSettings?.liveEnclosure || '';
+	$: liveStreamType = $mainSettings?.liveStreamType || 'audio';
+	$: chatUrl = $mainSettings?.liveChatEnclosure || '';
+	$: boostBoardUrl = $mainSettings?.boostBoard || '';
 
 	function handleAutoSwitch(e) {
 		$mainSettings.podcast = $mainSettings.podcast || {};
 		$mainSettings.podcast.autoSwitch = e.target.checked;
+		mainUnsaved = true;
+	}
+
+	function handleInput(e, setting) {
+		$mainSettings[setting] = e.target.value;
 		mainUnsaved = true;
 	}
 
@@ -113,10 +116,66 @@
 </script>
 
 <div>
+	<div class="live-stream-type">
+		<p>Link to Live Steam:</p>
+
+		<label>
+			<input
+				type="radio"
+				name="media"
+				value="video"
+				bind:group={liveStreamType}
+				on:change={(e) => {
+					handleInput(e, 'liveStreamType');
+				}}
+				checked={liveStreamType === 'video'}
+			/>
+			Video
+		</label>
+		<label>
+			<input
+				type="radio"
+				name="media"
+				value="audio"
+				bind:group={liveStreamType}
+				on:change={(e) => {
+					handleInput(e, 'liveStreamType');
+				}}
+				checked={liveStreamType === 'audio'}
+			/>
+			Audio
+		</label>
+		<input
+			type="url"
+			value={enclosureUrl}
+			on:input={(e) => {
+				handleInput(e, 'liveEnclosure');
+			}}
+		/>
+	</div>
+
 	<label>
-		<p>Link to Live Audio:</p>
-		<input type="url" value={enclosureUrl} on:input={handleInput} />
+		<p>Link to Live Chatroom:</p>
+		<input
+			type="url"
+			value={chatUrl}
+			on:input={(e) => {
+				handleInput(e, 'liveChatEnclosure');
+			}}
+		/>
 	</label>
+
+	<label>
+		<p>Link to Boost Board:</p>
+		<input
+			type="url"
+			value={boostBoardUrl}
+			on:input={(e) => {
+				handleInput(e, 'boostBoard');
+			}}
+		/>
+	</label>
+
 	<label class="checkbox">
 		<input
 			type="checkbox"
@@ -165,6 +224,7 @@
 	label input {
 		width: calc(100% - 18px);
 		padding: 6px;
+		margin-bottom: 6px;
 	}
 
 	label.checkbox {
@@ -176,6 +236,35 @@
 
 	label.checkbox input {
 		width: initial;
+	}
+
+	.live-stream-type {
+		width: initial;
+		margin: initial;
+		margin-bottom: 8px;
+	}
+
+	.live-stream-type > p {
+		margin: 0 0 2px 0;
+		padding: 0;
+		font-weight: bold;
+		color: var(--color-theme-blue);
+		display: inline;
+	}
+
+	.live-stream-type > label {
+		margin: initial;
+		color: initial;
+	}
+
+	.live-stream-type > label > input {
+		width: initial;
+		padding: 6px;
+	}
+
+	.live-stream-type > input {
+		width: calc(100% - 18px);
+		padding: 6px;
 	}
 
 	warning {

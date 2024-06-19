@@ -1,9 +1,10 @@
 <script>
+	import { mainSettings } from '$/stores';
 </script>
 
 <div>
 	<img src="/chat-top.png" />
-	<iframe src="https://kiwiirc.com/nextclient/irc.zeronode.net/?nick=webtroll?#Podcasting20" />
+	<iframe src={$mainSettings?.liveChatEnclosure || ''} />
 	<img class="bottom" src="/chat-bottom.png" />
 </div>
 

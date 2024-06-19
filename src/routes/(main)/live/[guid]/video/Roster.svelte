@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
-	import { remoteServer, liveBlocks, activePageGuid, user } from '$/stores';
+	import { remoteServer, liveBlocks, activePageGuid, user, mainSettings } from '$/stores';
 
 	import sendBoost from '$lib/functions/sendBoost';
 	import throwConfetti from '$lib/functions/throwConfetti';
@@ -32,6 +32,8 @@
 			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
 			const data = await res.json();
 			$liveBlocks = data.blocks;
+			$mainSettings = data.settings;
+			console.log(data);
 			console.log($liveBlocks);
 		}
 	}
