@@ -12,6 +12,7 @@
 	let showSaved = false;
 
 	onMount(async () => {
+		console.log('main mount');
 		if (!(await loadSKC())) {
 			loadAlby();
 		} else {
