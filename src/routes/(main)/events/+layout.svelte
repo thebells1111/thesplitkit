@@ -7,6 +7,9 @@
 	let showLoading = false;
 	let unmounted = true;
 
+	$: console.log(unmounted);
+	$: console.log(showLoading);
+
 	const guid = $page.params.guid;
 	onMount(() => {
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
@@ -15,7 +18,7 @@
 		unmounted = false;
 	});
 
-	$: if ($loaded && $userReady) {
+	$: if ($loaded) {
 		setTimeout(() => (showLoading = false), 2000);
 	}
 </script>

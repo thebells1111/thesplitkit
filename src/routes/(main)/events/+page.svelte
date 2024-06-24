@@ -9,6 +9,8 @@
 	let loading = false;
 	let screenWidth;
 
+	$: console.log($userReady);
+
 	$: if ($userReady) {
 		loadEvents();
 	}

@@ -41,6 +41,7 @@
 	let addDefaultType;
 	let saveMainSettings;
 	let showOffsetStartTimes = false;
+	let verifiedOwner = 'loading';
 
 	const guid = $page.params.guid;
 
@@ -61,6 +62,8 @@
 	}
 
 	onMount(async () => {
+		verifiedOwner = await verifyOwner();
+		console.log(verifiedOwner);
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
 			$defaultBlockGuid = null;
 			await loadBlocks();
@@ -70,6 +73,18 @@
 		}
 		console.log($liveBlocks);
 	});
+
+	async function verifyOwner() {
+		const res = await fetch(remoteServer + '/api/sk/verifyowner', {
+			method: 'POST',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ guid })
+		});
+		return res.status === 200;
+	}
 
 	async function loadBlocks() {
 		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
@@ -281,28 +296,35 @@
 	}
 </script>
 
-<EventsHeader
-	bind:showShareModal
-	bind:showMainSettingsModal
-	bind:showFilterModal
-	blocks={$liveBlocks}
-	bind:mainUnsaved
-	bind:showSelectBlock
-	{filterType}
-/>
-{#if $activePageGuid === guid}
-	<broadcast-blocks>
-		<Dashboard
-			bind:blocks={filteredBlocks}
-			{filterType}
-			bind:showShareModal
-			bind:showOptionsModal
-			bind:unsaved
-			bind:showEditor
-			bind:activeBlockGuid
-			bind:addDefaultType
-		/>
-	</broadcast-blocks>
+{#if verifiedOwner === false}
+	<div class="unverified">
+		<p>You're not verified to edit this event.</p>
+		<p><a href="/events">Click here to return to your events.</a></p>
+	</div>
+{:else if verifiedOwner === true}
+	<EventsHeader
+		bind:showShareModal
+		bind:showMainSettingsModal
+		bind:showFilterModal
+		blocks={$liveBlocks}
+		bind:mainUnsaved
+		bind:showSelectBlock
+		{filterType}
+	/>
+	{#if $activePageGuid === guid}
+		<broadcast-blocks>
+			<Dashboard
+				bind:blocks={filteredBlocks}
+				{filterType}
+				bind:showShareModal
+				bind:showOptionsModal
+				bind:unsaved
+				bind:showEditor
+				bind:activeBlockGuid
+				bind:addDefaultType
+			/>
+		</broadcast-blocks>
+	{/if}
 {/if}
 
 {#if showShareModal}
@@ -371,5 +393,10 @@
 		display: block;
 		flex: 1;
 		height: calc(100% - 8px);
+	}
+
+	.unverified {
+		text-align: center;
+		margin-top: 100px;
 	}
 </style>
