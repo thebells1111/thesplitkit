@@ -3,7 +3,7 @@
 </script>
 
 <div class="iframe-container">
-	<iframe width="600" src={$mainSettings?.boostBoard || ''} />
+	<iframe src={$mainSettings?.boostBoard || ''} />
 </div>
 
 <style>
@@ -16,8 +16,6 @@
 
 	.iframe-container iframe {
 		border: none;
-		transform: scale(0.5);
-		transform-origin: 0 0;
-		height: 200%;
+		height: 100%;
 	}
 </style>
