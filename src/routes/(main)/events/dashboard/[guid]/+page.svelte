@@ -41,7 +41,7 @@
 	let addDefaultType;
 	let saveMainSettings;
 	let showOffsetStartTimes = false;
-	let verifiedOwner = 'loading';
+	let verifiedOwner = true;
 
 	const guid = $page.params.guid;
 
@@ -62,7 +62,7 @@
 	}
 
 	onMount(async () => {
-		verifiedOwner = await verifyOwner();
+		// verifiedOwner = await verifyOwner();
 		console.log(verifiedOwner);
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
 			$defaultBlockGuid = null;

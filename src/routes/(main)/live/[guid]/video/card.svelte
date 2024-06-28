@@ -43,6 +43,9 @@
 		overflow: hidden;
 		cursor: pointer;
 		margin: 0 8px;
+		align-items: center;
+		justify-content: center;
+		max-width: 160px;
 	}
 
 	album {
