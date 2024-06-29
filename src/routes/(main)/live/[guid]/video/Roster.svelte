@@ -63,6 +63,8 @@
 		throwConfetti();
 		console.log('Boost button pressed');
 		localStorage.setItem('senderName', senderName);
+		boostagram = '';
+		showModal = false;
 		$user.balance -= amount;
 	}
 
