@@ -12,6 +12,9 @@
 		height: 100%; /* Mobile height */
 		overflow: hidden;
 		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.iframe-container iframe {
