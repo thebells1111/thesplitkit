@@ -51,6 +51,7 @@
 	let pauseTime = 0;
 	let timeStamp = 0;
 	let totalPausedTime = 0;
+	let nextBroadcastTime = Infinity;
 	let interval;
 	let isRunning = false;
 	let resetTimer;
@@ -290,7 +291,14 @@
 		function nextInterval(nextBlock) {
 			broadcastTimeRemaining =
 				(broadcastIntervalTimer + block.duration * 1000 - new Date().getTime()) / 1000;
+
+			if (broadcastTimeRemaining < nextBroadcastTime) {
+				nextBroadcastTime = broadcastTimeRemaining - 1;
+
+				broadcastTimer();
+			}
 			if (broadcastTimeRemaining <= 0) {
+				nextBroadcastTime = Infinity;
 				if ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch) {
 					console.log('dude');
 					broadcastIntervalTimer = null;
@@ -301,6 +309,16 @@
 				}
 			}
 		}
+	}
+
+	function broadcastTimer() {
+		let serverData = processBlock(clone(broadcastingBlock));
+		if (nextBroadcastTime < Infinity) {
+			serverData.timeRemaining = broadcastTimeRemaining;
+		}
+		console.log(serverData);
+		// 	$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		// }
 	}
 
 	function broadcastBlock(block) {
