@@ -8,6 +8,7 @@
 	import Info from '$lib/icons/Info.svelte';
 	import Close from '$lib/icons/Close.svelte';
 	import DOMPurify from 'dompurify';
+	import formatTime from '$lib/functions/formatTime.js';
 
 	import sendBoost from '$lib/functions/sendBoost';
 	import throwConfetti from '$lib/functions/throwConfetti';
@@ -62,7 +63,9 @@
 
 		liveItemSocket.on('remoteValue', function (data) {
 			// You will need to adjust this part based on the actual format of the data sent by the server
-			console.log(data);
+			if (!data?.timeRemaining) {
+				console.log(data);
+			}
 			block = data;
 			isDefault = false;
 
@@ -221,6 +224,9 @@
 			>
 		{:else}
 			<spacer />
+		{/if}
+		{#if block?.timeRemaining}
+			<p>Time Remaining: {formatTime(Math.round(block.timeRemaining), true)}</p>
 		{/if}
 
 		{#if isQR}

@@ -316,9 +316,7 @@
 		if (nextBroadcastTime < Infinity) {
 			serverData.timeRemaining = broadcastTimeRemaining;
 		}
-		console.log(serverData);
-		// 	$socket.emit('valueBlock', { valueGuid: guid, serverData });
-		// }
+		$socket.emit('valueBlock', { valueGuid: guid, serverData });
 	}
 
 	function broadcastBlock(block) {

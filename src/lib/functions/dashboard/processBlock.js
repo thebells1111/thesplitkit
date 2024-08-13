@@ -58,8 +58,6 @@ export default function processBlock(block) {
 		});
 	}
 
-	console.log(block.value.destinations);
-
 	return block;
 }
 
