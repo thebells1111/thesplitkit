@@ -1,6 +1,5 @@
 <script>
-	import Card from './card.svelte';
-	import { onMount } from 'svelte';
+	import Card from './Card.svelte';
 	import { page } from '$app/stores';
 
 	import { remoteServer, liveBlocks, activePageGuid, user } from '$/stores';

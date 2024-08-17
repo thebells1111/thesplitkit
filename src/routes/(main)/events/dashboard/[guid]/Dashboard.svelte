@@ -89,8 +89,10 @@
 	}
 
 	$: if (!$mainSettings?.timeRemainingEnabled) {
-		let serverData = processBlock(clone(broadcastingBlock));
-		$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		if (broadcastingBlock) {
+			let serverData = processBlock(clone(broadcastingBlock));
+			$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		}
 	}
 
 	$: if ($mainSettings?.broadcastMode === 'manual' && interval) {
@@ -320,6 +322,7 @@
 	}
 
 	function broadcastBlock(block) {
+		console.log(block);
 		let serverData;
 		if (block) {
 			broadcastingBlock = clone(block);
