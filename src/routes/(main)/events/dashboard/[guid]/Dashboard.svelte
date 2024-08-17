@@ -88,6 +88,11 @@
 		loadSocket();
 	}
 
+	$: if (!$mainSettings?.timeRemainingEnabled) {
+		let serverData = processBlock(clone(broadcastingBlock));
+		$socket.emit('valueBlock', { valueGuid: guid, serverData });
+	}
+
 	$: if ($mainSettings?.broadcastMode === 'manual' && interval) {
 		let confirmation = confirm('Do you want to reset your timer?');
 		if (confirmation) {
@@ -151,7 +156,6 @@
 
 	async function handleBroadcast(block) {
 		if (!block) return;
-		console.log(block);
 		fallbackBlock = clone(block);
 		broadcastingBlock = clone(block);
 		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
@@ -171,9 +175,6 @@
 		clearInterval(broadcastTimeInterval);
 		await tick();
 
-		console.log(block);
-		console.log($mainSettings?.podcast?.autoSwitch);
-		console.log($mainSettings?.broadcastMode === 'podcast');
 		if ($mainSettings?.broadcastMode === 'playlist') {
 			let nextBlock = getNextBlock(
 				$liveBlocks,
@@ -258,7 +259,6 @@
 						}
 
 						if (modifiedBlock) {
-							console.log(modifiedBlock);
 							broadcastBlock(modifiedBlock);
 						}
 					};
@@ -313,7 +313,7 @@
 
 	function broadcastTimer() {
 		let serverData = processBlock(clone(broadcastingBlock));
-		if (nextBroadcastTime < Infinity) {
+		if ($mainSettings?.timeRemainingEnabled && nextBroadcastTime < Infinity) {
 			serverData.timeRemaining = broadcastTimeRemaining;
 		}
 		$socket.emit('valueBlock', { valueGuid: guid, serverData });

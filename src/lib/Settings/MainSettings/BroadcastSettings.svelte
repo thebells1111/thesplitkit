@@ -3,6 +3,7 @@
 	$: console.log($mainSettings);
 	let chaptersEnabled = $mainSettings?.chaptersEnabled || false;
 	let VTSEnabled = $mainSettings?.VTSEnabled || false;
+	let timeRemainingEnabled = $mainSettings?.timeRemainingEnabled || false;
 
 	function handleChaptersEnable() {
 		chaptersEnabled = !chaptersEnabled;
@@ -21,6 +22,15 @@
 			$mainSettings.VTSEnabled = false;
 		}
 	}
+
+	function handleTimeRemainingEnable() {
+		timeRemainingEnabled = !timeRemainingEnabled;
+		if (timeRemainingEnabled) {
+			$mainSettings.timeRemainingEnabled = timeRemainingEnabled;
+		} else {
+			$mainSettings.timeRemainingEnabled = false;
+		}
+	}
 </script>
 
 <div>
@@ -32,6 +42,14 @@
 	<label>
 		<input type="checkbox" on:change={handleVTSEnable} bind:checked={VTSEnabled} />
 		Broadcast Time Split Changes from Active Block
+	</label>
+	<label>
+		<input
+			type="checkbox"
+			on:change={handleTimeRemainingEnable}
+			bind:checked={timeRemainingEnabled}
+		/>
+		Broadcast Time Remaining from Active Block
 	</label>
 </div>
 
