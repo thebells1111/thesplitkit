@@ -43,80 +43,56 @@
 	}
 </script>
 
-<pane class:collapse={!expandTop && !expandMiddle && !expandBottom}>
-	<top class:expand={expandTop}>
-		<spacer />
+<top-pane>
+	<screen-1>
+		<Video bind:src={data.video1} />
+	</screen-1>
+	<screen-2>
+		<Video bind:src={data.video2} />
+	</screen-2>
+</top-pane>
+
+<bottom-pane>
+	<screen>
 		<stuff>
-			<Video bind:src={data.video1} />
+			<h1>Boost Board</h1>
 		</stuff>
-		<button on:click={() => (expandTop = !expandTop)}> {expandTop ? '-' : '+'} </button>
-	</top>
-	<middle class:expand={expandMiddle}>
+	</screen>
+	<screen>
 		<stuff>
-			<Video bind:src={data.video2} />
+			<h1>Poll</h1>
 		</stuff>
-		<button on:click={() => (expandMiddle = !expandMiddle)}> {expandMiddle ? '-' : '+'} </button>
-	</middle>
-	<bottom class:expand={expandBottom}>
-		<stuff />
-		<button on:click={() => (expandBottom = !expandBottom)}> {expandBottom ? '-' : '+'} </button>
-	</bottom>
-</pane>
+	</screen>
+	<screen>
+		<stuff>
+			<h1>Chat</h1>
+		</stuff>
+	</screen>
+</bottom-pane>
 
 <style>
-	pane {
+	top-pane,
+	bottom-pane {
 		display: flex;
-		flex-direction: column;
 		width: calc(100%);
+		height: 50%;
+		max-height: 50%;
+	}
+
+	screen-1,
+	screen-2 {
 		height: 100%;
-	}
-	pane.collapse {
-		height: 96px;
-	}
-
-	top,
-	middle,
-	bottom {
-		display: block;
-		height: 32px;
 		width: 100%;
-		border: 1px solid black;
-		flex-grow: 1;
-		overflow: hidden;
-		position: relative;
-		min-height: 32px;
 	}
 
-	stuff {
-		display: block;
+	bottom-pane screen {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 100%;
 		height: 100%;
 		margin-top: 16px;
 		background-color: gray;
-
 		border: 1px solid black;
-	}
-
-	top > stuff {
-		border-color: red;
-	}
-
-	middle > stuff {
-		border-color: purple;
-		overflow: hidden;
-	}
-
-	bottom > stuff {
-		border-color: blue;
-	}
-
-	.expand {
-		height: 100%;
-	}
-
-	button {
-		position: absolute;
-		top: 4px;
-		right: 8px;
 	}
 </style>
