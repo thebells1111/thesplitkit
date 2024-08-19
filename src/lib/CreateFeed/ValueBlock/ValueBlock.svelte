@@ -84,9 +84,7 @@
 		data['podcast:value'] = clone(feed['podcast:value']);
 		const newPerson = {
 			'@_name': 'The Split Kit',
-			'@_customKey': '696969',
-			'@_customValue': 'boPNspwDdt7axih5DfKs',
-			'@_address': '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
+			'@_address': '035ad2c954e264004986da2d9499e1732e5175e1dcef2453c921c6cdcc3536e9d8',
 			'@_type': 'node',
 			'@_split': String(splitKitSplit),
 			'@_fee': true
@@ -106,9 +104,7 @@
 		if (value && splitKitIndex === -1) {
 			const newPerson = {
 				'@_name': 'The Split Kit',
-				'@_customKey': '696969',
-				'@_customValue': 'boPNspwDdt7axih5DfKs',
-				'@_address': '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
+				'@_address': '035ad2c954e264004986da2d9499e1732e5175e1dcef2453c921c6cdcc3536e9d8',
 				'@_type': 'node',
 				'@_split': String(splitKitSplit),
 				'@_fee': true

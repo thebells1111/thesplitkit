@@ -9,9 +9,7 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 
 	let splitKitObject = {
 		name: 'The Split Kit',
-		customKey: '696969',
-		customValue: 'boPNspwDdt7axih5DfKs',
-		address: '030a58b8653d32b99200a2334cfe913e51dc7d155aa0116c176657a4f1722677a3',
+		address: '035ad2c954e264004986da2d9499e1732e5175e1dcef2453c921c6cdcc3536e9d8',
 		type: 'node',
 		split: '5',
 		fee: true
