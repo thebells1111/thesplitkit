@@ -55,17 +55,17 @@
 <bottom-pane>
 	<screen>
 		<stuff>
-			<h1>Boost Board</h1>
+			<h1>{data.boostBoard || 'Boost Board'}</h1>
 		</stuff>
 	</screen>
 	<screen>
 		<stuff>
-			<h1>Poll</h1>
+			<h1>{data.poll || 'Poll'}</h1>
 		</stuff>
 	</screen>
 	<screen>
 		<stuff>
-			<h1>Chat</h1>
+			<h1>{data.chat || 'Chat'}</h1>
 		</stuff>
 	</screen>
 </bottom-pane>
