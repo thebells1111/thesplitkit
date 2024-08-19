@@ -8,9 +8,7 @@
 	import { goto } from '$app/navigation';
 	$: guid = $page.params.guid;
 	$: route = $page.route.id;
-	console.log(route);
 
-	console.log($page);
 	let player;
 	let isStopped = true;
 

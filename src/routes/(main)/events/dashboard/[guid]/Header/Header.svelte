@@ -79,7 +79,6 @@
 				return newBlock;
 			}
 		});
-		console.log($page);
 
 		remoteSave(newBlocks, $page.params.guid);
 		mainUnsaved = false;

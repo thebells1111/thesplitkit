@@ -16,7 +16,6 @@
 		if (!(await loadSKC())) {
 			loadAlby();
 		} else {
-			console.log($page.route.id);
 			if (
 				$page.route.id === '/(main)/live/[guid]' ||
 				$page.route.id === '/(main)/roster/[guid]' ||

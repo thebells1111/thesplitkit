@@ -22,8 +22,6 @@
 		`https://getalby.com/oauth?client_id=${albyClientId}&response_type=code&redirect_uri=${
 			$page.url.href.split('/?')[0].split('?')[0]
 		}` + `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
-
-	$: console.log($page);
 </script>
 
 <button

@@ -28,7 +28,6 @@
 	}
 
 	let redirect_uri = $page.url.origin + '/events';
-	console.log($page);
 
 	const redirectUrl =
 		`https://getalby.com/oauth?client_id=${albyClientId}&response_type=code&redirect_uri=` +

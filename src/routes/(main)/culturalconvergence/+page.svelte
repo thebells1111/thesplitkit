@@ -1,17 +1,60 @@
 <script>
+	import { onMount } from 'svelte';
+	import { remoteServer, socket } from '$/stores';
+	import io from 'socket.io-client';
+	import Video from './Video.svelte';
+
+	let data = {
+		video1: '',
+		video2: '',
+		poll: '',
+		boostBoard: '',
+		chat: ''
+	};
+
 	let expandTop = true;
 	let expandMiddle = true;
 	let expandBottom = true;
+
+	onMount(async () => {
+		socketConnect();
+	});
+
+	async function socketConnect() {
+		const liveItemSocket = io(remoteServer + '/event?event_id=culturalconvergence', {
+			withCredentials: true
+		});
+
+		liveItemSocket.on('connect', () => {
+			liveItemSocket.emit('connected', 'culturalconvergence');
+			console.log('socket connect');
+		});
+
+		liveItemSocket.on('remoteValue', function (_data) {
+			console.log(_data);
+			data = _data;
+		});
+
+		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=culturalconvergence');
+		const resData = await res.json();
+		console.log(resData);
+		data = resData.blocks;
+		console.log(data);
+	}
 </script>
 
 <pane class:collapse={!expandTop && !expandMiddle && !expandBottom}>
 	<top class:expand={expandTop}>
 		<spacer />
-		<stuff />
+		<stuff>
+			<Video bind:src={data.video1} />
+		</stuff>
 		<button on:click={() => (expandTop = !expandTop)}> {expandTop ? '-' : '+'} </button>
 	</top>
 	<middle class:expand={expandMiddle}>
-		<stuff />
+		<stuff>
+			<Video bind:src={data.video2} />
+		</stuff>
 		<button on:click={() => (expandMiddle = !expandMiddle)}> {expandMiddle ? '-' : '+'} </button>
 	</middle>
 	<bottom class:expand={expandBottom}>
