@@ -51,30 +51,23 @@
 </script>
 
 <div>
-	<label>
-		<h4>Video 1</h4>
-		<input placeholder="url to video feed" bind:value={data.video1} />
-	</label>
+	<h4>Video 1</h4>
+	<a href="./video1" target="_blank">open Video 1 page</a>
+	<input placeholder="url to video feed" bind:value={data.video1} />
 
-	<label>
-		<h4>Video 2</h4>
-		<input placeholder="url to video feed" bind:value={data.video2} />
-	</label>
+	<h4>Video 2</h4>
+	<a href="./video2" target="_blank">open Video 2 page</a>
+	<input placeholder="url to video feed" bind:value={data.video2} />
 
-	<label>
-		<h4>Poll Guid</h4>
-		<input placeholder="event guid from The Split Kit" bind:value={data.poll} />
-	</label>
+	<h4>Poll Guid</h4>
+	<input placeholder="event guid from The Split Kit" bind:value={data.poll} />
 
-	<label>
-		<h4>Boost Board</h4>
-		<input placeholder="url to boost board" bind:value={data.boostBoard} />
-	</label>
+	<h4>Boost Board</h4>
+	<input placeholder="url to boost board" bind:value={data.boostBoard} />
 
-	<label>
-		<h4>Chat</h4>
-		<input placeholder="url to chat" bind:value={data.chat} />
-	</label>
+	<h4>Chat</h4>
+	<a href="./chat" target="_blank">open Chat page</a>
+	<input placeholder="url to chat" bind:value={data.chat} />
 
 	<button on:click={updateEvent}>Update</button>
 </div>
@@ -85,7 +78,8 @@
 		width: 100%;
 	}
 	h4 {
-		margin: 0;
+		margin: 0 32px 4px 0;
+		display: inline-block;
 	}
 
 	input {

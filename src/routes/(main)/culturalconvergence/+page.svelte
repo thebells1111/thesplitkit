@@ -1,8 +1,7 @@
 <script>
-	import { onMount } from 'svelte';
-	import { remoteServer, socket } from '$/stores';
-	import io from 'socket.io-client';
+	import SocketLoader from './SocketLoader.svelte';
 	import Video from './Video.svelte';
+	import Chat from './Chat.svelte';
 
 	let data = {
 		video1: '',
@@ -11,37 +10,9 @@
 		boostBoard: '',
 		chat: ''
 	};
-
-	let expandTop = true;
-	let expandMiddle = true;
-	let expandBottom = true;
-
-	onMount(async () => {
-		socketConnect();
-	});
-
-	async function socketConnect() {
-		const liveItemSocket = io(remoteServer + '/event?event_id=culturalconvergence', {
-			withCredentials: true
-		});
-
-		liveItemSocket.on('connect', () => {
-			liveItemSocket.emit('connected', 'culturalconvergence');
-			console.log('socket connect');
-		});
-
-		liveItemSocket.on('remoteValue', function (_data) {
-			console.log(_data);
-			data = _data;
-		});
-
-		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=culturalconvergence');
-		const resData = await res.json();
-		console.log(resData);
-		data = resData.blocks;
-		console.log(data);
-	}
 </script>
+
+<SocketLoader bind:data />
 
 <top-pane>
 	<screen-1>
@@ -65,7 +36,7 @@
 	</screen>
 	<screen>
 		<stuff>
-			<h1>{data.chat || 'Chat'}</h1>
+			<Chat bind:data />
 		</stuff>
 	</screen>
 </bottom-pane>
@@ -94,5 +65,11 @@
 		margin-top: 16px;
 		background-color: gray;
 		border: 1px solid black;
+	}
+
+	stuff {
+		display: block;
+		width: 100%;
+		height: 100%;
 	}
 </style>

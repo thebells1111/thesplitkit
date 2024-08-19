@@ -41,6 +41,7 @@
 				player.src = src;
 				player.play();
 			}
+			player.volume = 0;
 		}
 	}
 </script>
