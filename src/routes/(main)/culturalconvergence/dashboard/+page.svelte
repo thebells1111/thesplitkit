@@ -11,8 +11,6 @@
 		chat: ''
 	};
 
-	let storedGuid;
-
 	onMount(async () => {
 		socketConnect();
 		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=culturalconvergence');

@@ -2,13 +2,7 @@
 	import SocketLoader from '../SocketLoader.svelte';
 	import Video from '../Video.svelte';
 
-	export let data = {
-		video1: '',
-		video2: '',
-		poll: '',
-		boostBoard: '',
-		chat: ''
-	};
+	export let data;
 </script>
 
 <SocketLoader bind:data />

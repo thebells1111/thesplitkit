@@ -16,10 +16,10 @@
 
 <top-pane>
 	<screen-1>
-		<Video bind:src={data.video1} />
+		<Video src={data.video1} />
 	</screen-1>
 	<screen-2>
-		<Video bind:src={data.video2} />
+		<Video src={data.video2} />
 	</screen-2>
 </top-pane>
 
@@ -36,7 +36,7 @@
 	</screen>
 	<screen>
 		<stuff>
-			<Chat bind:data />
+			<Chat src={data.chat} />
 		</stuff>
 	</screen>
 </bottom-pane>
