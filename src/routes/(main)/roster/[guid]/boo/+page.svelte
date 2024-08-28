@@ -93,7 +93,7 @@
 	}
 </script>
 
-<img class="background" alt="boo-background" src="/boo-background.jpg" />
+<img class="background" alt="boo-background" src="/culturalconvergence.webp" />
 <div class="container">
 	{#if $liveBlocks[0]}
 		<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />

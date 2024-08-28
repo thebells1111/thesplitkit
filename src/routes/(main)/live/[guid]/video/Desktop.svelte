@@ -5,7 +5,7 @@
 	import BoostBoard from './BoostBoard.svelte';
 </script>
 
-<img class="background" alt="boo-background" src="/boo-background.jpg" />
+<img class="background" alt="boo-background" src="/culturalconvergence.webp" />
 
 <container>
 	<top>

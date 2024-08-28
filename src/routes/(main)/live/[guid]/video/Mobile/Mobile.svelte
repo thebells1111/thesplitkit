@@ -10,7 +10,7 @@
 	}
 </script>
 
-<img class="background" alt="boo-background" src="/boo-background.jpg" />
+<img class="background" alt="boo-background" src="/culturalconvergence.webp" />
 <nav>
 	<button on:click={changeScreen.bind(this, 'boostBoard')}>Boost<br /> Board</button>
 	<button on:click={changeScreen.bind(this, 'video')}>Video</button>
