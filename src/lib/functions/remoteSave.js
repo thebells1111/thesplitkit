@@ -15,6 +15,7 @@ export default function remoteSave(blocks, guid) {
 		})
 			.then((response) => response.json())
 			.then((newData) => {
+				console.log('Kevin, what does this say:', newData);
 				if (newData.status !== 'success') {
 					alert('You are no longer logged in, and your changes are not being saved.');
 				}

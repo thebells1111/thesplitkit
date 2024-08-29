@@ -27,8 +27,10 @@
 				const info = await res.json();
 				if (info.status === 'OK') {
 					updatevalue(index, 'address', info.pubkey);
-					updatevalue(index, 'customValue', info.customData[0].customValue);
-					updatevalue(index, 'customKey', info.customData[0].customKey);
+					if (info.customData[0]) {
+						updatevalue(index, 'customValue', info.customData[0].customValue);
+						updatevalue(index, 'customKey', info.customData[0].customKey);
+					}
 					userFound = `${name}@${provider.toLowerCase()}${
 						provider === 'Fountain' ? '.fm' : '.com'
 					}`;

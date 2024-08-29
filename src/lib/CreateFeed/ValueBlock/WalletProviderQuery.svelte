@@ -35,8 +35,10 @@
 				console.log(info);
 				if (info.status === 'OK') {
 					updatevalue(index, '@_address', info.pubkey);
-					updatevalue(index, '@_customValue', info.customData[0].customValue);
-					updatevalue(index, '@_customKey', info.customData[0].customKey);
+					if (info.customData[0]) {
+						updatevalue(index, '@_customValue', info.customData[0].customValue);
+						updatevalue(index, '@_customKey', info.customData[0].customKey);
+					}
 					userFound = `${splitName(name)}@${provider.toLowerCase()}${
 						provider === 'Fountain' ? '.fm' : '.com'
 					}`;
