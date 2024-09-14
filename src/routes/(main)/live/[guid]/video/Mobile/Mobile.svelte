@@ -4,13 +4,20 @@
 	import BoostBoard from '../BoostBoard.svelte';
 	import Chat from '../Chat.svelte';
 	let currentScreen = 'roster';
+	import { mainSettings } from '$/stores';
 
 	function changeScreen(screenName) {
 		currentScreen = screenName;
 	}
 </script>
 
-<img class="background" alt="boo-background" src="/culturalconvergence.webp" />
+<img
+	class="background"
+	alt="boo-background"
+	src={$mainSettings?.liveBackgroundUrl
+		? $mainSettings?.liveBackgroundUrl
+		: '/culturalconvergence.webp'}
+/>
 <nav>
 	<button on:click={changeScreen.bind(this, 'boostBoard')}>Boost<br /> Board</button>
 	<button on:click={changeScreen.bind(this, 'video')}>Video</button>

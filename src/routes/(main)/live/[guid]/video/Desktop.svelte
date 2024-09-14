@@ -3,9 +3,16 @@
 	import Video from './Video.svelte';
 	import Chat from './Chat.svelte';
 	import BoostBoard from './BoostBoard.svelte';
+	import { mainSettings } from '$/stores';
 </script>
 
-<img class="background" alt="boo-background" src="/culturalconvergence.webp" />
+<img
+	class="background"
+	alt="boo-background"
+	src={$mainSettings?.liveBackgroundUrl
+		? $mainSettings?.liveBackgroundUrl
+		: '/culturalconvergence.webp'}
+/>
 
 <container>
 	<top>

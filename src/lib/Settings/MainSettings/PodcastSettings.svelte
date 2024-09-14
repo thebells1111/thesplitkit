@@ -12,6 +12,7 @@
 	$: liveStreamType = $mainSettings?.liveStreamType || 'audio';
 	$: chatUrl = $mainSettings?.liveChatEnclosure || '';
 	$: boostBoardUrl = $mainSettings?.boostBoard || '';
+	$: liveBackgroundUrl = $mainSettings?.liveBackgroundUrl || '';
 
 	function handleAutoSwitch(e) {
 		$mainSettings.podcast = $mainSettings.podcast || {};
@@ -172,6 +173,17 @@
 			value={boostBoardUrl}
 			on:input={(e) => {
 				handleInput(e, 'boostBoard');
+			}}
+		/>
+	</label>
+
+	<label>
+		<p>Link to Live Background Image:</p>
+		<input
+			type="url"
+			value={liveBackgroundUrl}
+			on:input={(e) => {
+				handleInput(e, 'liveBackgroundUrl');
 			}}
 		/>
 	</label>
