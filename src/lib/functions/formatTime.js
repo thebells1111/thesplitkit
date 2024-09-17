@@ -27,5 +27,6 @@ export default function formatTime(timeInSeconds, timer) {
 		// Include milliseconds as a three-digit decimal
 		formattedTime += `.${milliseconds.toString().padStart(3, '0')}`;
 	}
+
 	return formattedTime;
 }

@@ -158,6 +158,7 @@
 
 	async function handleBroadcast(block) {
 		if (!block) return;
+		nextBroadcastTime = Infinity;
 		fallbackBlock = clone(block);
 		broadcastingBlock = clone(block);
 		fetchEpisode(block.feedGuid, block.itemGuid).then((_episode) => {
@@ -295,14 +296,13 @@
 				(broadcastIntervalTimer + block.duration * 1000 - new Date().getTime()) / 1000;
 
 			if (broadcastTimeRemaining < nextBroadcastTime) {
-				nextBroadcastTime = broadcastTimeRemaining - 1;
+				nextBroadcastTime = broadcastTimeRemaining - 5;
 
 				broadcastTimer();
 			}
 			if (broadcastTimeRemaining <= 0) {
 				nextBroadcastTime = Infinity;
 				if ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch) {
-					console.log('dude');
 					broadcastIntervalTimer = null;
 					clearInterval(broadcastTimeInterval);
 					handleBroadcast($liveBlocks[0]);

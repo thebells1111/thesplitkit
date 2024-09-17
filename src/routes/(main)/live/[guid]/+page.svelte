@@ -36,6 +36,8 @@
 	let loaded = false;
 	const guid = $page.params.guid;
 	let defaultBlock;
+	let timeRemaining = null;
+	let countdownInterval = null;
 
 	let qrCodeCanvas;
 	let code = '';
@@ -63,8 +65,12 @@
 
 		liveItemSocket.on('remoteValue', function (data) {
 			// You will need to adjust this part based on the actual format of the data sent by the server
-			if (!data?.timeRemaining) {
-				console.log(data);
+
+			console.log(data);
+			if (data.timeRemaining) {
+				syncTimeRemaining(data.timeRemaining); // Sync with WebSocket time
+			} else {
+				timeRemaining = 0;
 			}
 			block = data;
 			isDefault = false;
@@ -183,6 +189,27 @@
 	function getHeaderTitle(block) {
 		return block?.title || block?.feedTitle || 'The Split Kit';
 	}
+
+	function syncTimeRemaining(newTime) {
+		// Sync timeRemaining with the WebSocket time
+		timeRemaining = newTime;
+
+		// Clear any existing countdown
+		if (countdownInterval) {
+			clearInterval(countdownInterval);
+		}
+
+		// Start a new countdown if timeRemaining is greater than 0
+		if (timeRemaining > 0) {
+			countdownInterval = setInterval(() => {
+				timeRemaining -= 1;
+				if (timeRemaining <= 0) {
+					timeRemaining = 0;
+					clearInterval(countdownInterval); // Stop the countdown
+				}
+			}, 1000); // Decrement every second
+		}
+	}
 </script>
 
 <svelte:head>
@@ -225,8 +252,8 @@
 		{:else}
 			<spacer />
 		{/if}
-		{#if block?.timeRemaining}
-			<p>Time Remaining: {formatTime(Math.round(block.timeRemaining), true)}</p>
+		{#if timeRemaining}
+			<p>Time Remaining: {formatTime(Math.round(timeRemaining), true)}</p>
 		{/if}
 
 		{#if isQR}
