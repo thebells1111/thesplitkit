@@ -44,6 +44,9 @@
 
 	<p>-or-</p>
 	<h2>Log in with <a href={redirectUrl}> Alby </a></h2>
+
+	<p>-or-</p>
+	<h2><a href="/register"> Register your email </a></h2>
 </div>
 
 <style>

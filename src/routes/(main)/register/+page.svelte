@@ -4,6 +4,7 @@
 	let email = '';
 	let password = '';
 	let registerError = '';
+	let registerSuccess = false;
 
 	const saveCredentials = async () => {
 		const payload = { email, password };
@@ -20,6 +21,10 @@
 		if (data?.status === 'error') {
 			registerError = data.message;
 		}
+
+		if (data?.status === 'success') {
+			registerSuccess = true;
+		}
 	};
 </script>
 
@@ -33,6 +38,9 @@
 	<button on:click={saveCredentials}>Register</button>
 	{#if registerError}
 		<h3>{registerError}</h3>
+	{/if}
+	{#if registerSuccess}
+		<h3>You're registered. <a href="/login">Click here to log in.</a></h3>
 	{/if}
 </div>
 
