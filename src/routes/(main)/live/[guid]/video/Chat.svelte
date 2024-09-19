@@ -3,7 +3,7 @@
 </script>
 
 <div>
-	<img src="/chat-top.png" />
+	<img src="/chat-top2.png" />
 	<iframe src={$mainSettings?.liveChatEnclosure || ''} />
 	<img class="bottom" src="/chat-bottom.png" />
 </div>

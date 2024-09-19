@@ -31,7 +31,7 @@
 			<img src={block.image} alt={block.title} />
 		</div>
 
-		<img class="border" src="/boo-card.png" alt="cover art border" />
+		<img class="border" src="/boo-card2.png" alt="cover art border" />
 	</album>
 </div>
 
