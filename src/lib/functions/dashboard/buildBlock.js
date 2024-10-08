@@ -8,7 +8,7 @@ export default async function buildBlock(block, activeBlockGuid, eventGuid) {
 		`/podcasts/byguid?guid=${block.feedGuid}`
 	)}`;
 	let episodeUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
-		`episodes/byguid?guid=${block.itemGuid}&podcastguid=${block.feedGuid}`
+		`episodes/byguid?guid=${block.itemGuid}&podcastguid=${block.feedGuid}&max=1000`
 	)}`;
 
 	let [feedRes, episodeRes] = await Promise.all([fetch(feedUrl), fetch(episodeUrl)]);

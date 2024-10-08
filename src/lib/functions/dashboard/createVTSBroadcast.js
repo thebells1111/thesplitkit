@@ -35,7 +35,9 @@ export default async function createVTSBroadcast(
 				`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${feedGuid}`)}`;
 			const itemsUrl =
 				remoteServer +
-				`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${feedGuid}`)}`;
+				`/api/queryindex?q=${encodeURIComponent(
+					`/episodes/bypodcastguid?guid=${feedGuid}&max=1000`
+				)}`;
 
 			let splitInfo = {};
 			let valueBlock = { feed: null, item: null };

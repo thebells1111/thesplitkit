@@ -1,6 +1,7 @@
 <script>
 	import { remoteServer } from '$/stores';
 	import { onMount } from 'svelte';
+	import VirtualList from 'svelte-tiny-virtual-list';
 	import clone from 'just-clone';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import SongSelect from './SongSelect.svelte';
@@ -86,19 +87,25 @@
 
 	async function searchPI() {
 		console.log(searchQuery);
-		if (searchQuery) {
-			const res = await fetch(
-				remoteServer +
-					`/api/queryindex?q=/search/music/byterm` +
-					encodeURIComponent(`?q=${searchQuery}`)
-			);
-			let data = await res.json();
-			if (data.status) {
-				return data.feeds;
-			}
-			return;
-		}
-		return podcastIndexSearchResults;
+		// if (searchQuery) {
+		// 	const res = await fetch(
+		// 		remoteServer +
+		// 			`/api/queryindex?q=/search/music/byterm` +
+		// 			encodeURIComponent(`?q=${searchQuery}`)
+		// 	);
+		// 	let data = await res.json();
+		// 	if (data.status) {
+		// 		return data.feeds;
+		// 	}
+		// 	return;
+		// }
+		// return podcastIndexSearchResults;
+
+		return podcastIndexSearchResults.filter(
+			(v) =>
+				v.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				v.author.toLowerCase().includes(searchQuery.toLowerCase())
+		);
 	}
 
 	$: filterSearch(searchQuery);
@@ -118,13 +125,14 @@
 			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
 		let episodesUrl =
 			remoteServer +
-			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}`)}`;
+			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}&max=1000`)}`;
 
 		// let feedUrl =
 		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byfeedid?id=${feed.id}`)}`;
 		// let episodesUrl =
 		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/episodes/byfeedid?id=${feed.id}`)}`;
-
+		console.log(feedUrl);
+		console.log(episodesUrl);
 		let res = await fetch(feedUrl);
 		let data = await res.json();
 		console.log(data);
@@ -148,6 +156,16 @@
 				console.error('Error fetching episodes:', err);
 			});
 	}
+
+	let listHeight = 500;
+	let headerHeight = 80;
+	let sectionHeight;
+	let sectionWidth;
+	let virtualList;
+	let scrollToIndex = 0;
+	$: if (sectionHeight && headerHeight) {
+		listHeight = sectionHeight - headerHeight;
+	}
 </script>
 
 <albums>
@@ -155,42 +173,62 @@
 		<input bind:value={searchQuery} placeholder="filter albums" />
 		<fade-top />
 	</albums-top>
-	<ul>
-		<!-- <li class="albums">
-			<card
-				on:click={() => {
-					showLatest = true;
-				}}
-			>
-				<img src="/splitkit64.png" width="40" height="40" />
-				<h3>Latest Releases</h3>
-				<div style={'width: 40px;'} />
-			</card>
-		</li> -->
+	<section bind:clientHeight={sectionHeight} bind:clientWidth={sectionWidth}>
 		{#if podcastIndexSearchResults.length}
-			{#each filteredResults as feed, index}
-				<li class="albums">
-					<card on:click={fetchEpisodes.bind(this, feed?.podcastGuid, index, feed)}>
-						<img src={feed?.artwork || feed?.image} alt={feed?.title} width="60" height="60" />
-						<div>
-							<h3>{feed?.title}</h3>
-							<p>{feed?.author}</p>
+			{#if filteredResults.length}
+				<VirtualList
+					bind:this={virtualList}
+					bind:height={listHeight}
+					width="100%"
+					{scrollToIndex}
+					itemCount={filteredResults.length}
+					itemSize={filteredResults.map((v) => {
+						let charPerRow = Math.floor((sectionWidth - 86) / 14);
+						let rows = Math.ceil((v?.title.length || 0) / charPerRow) + 1;
+						let titleHeight = 25 * rows;
+						return titleHeight + 32;
+					})}
+					overscanCount={5}
+				>
+					<div slot="item" let:index let:style {style} class="row">
+						<div class="albums">
+							<card
+								on:click={fetchEpisodes.bind(
+									this,
+									filteredResults[index]?.podcastGuid,
+									index,
+									filteredResults[index]
+								)}
+							>
+								<img
+									src={filteredResults[index]?.artwork || filteredResults[index]?.image}
+									alt={filteredResults[index]?.title}
+									width="60"
+									height="60"
+								/>
+								<div>
+									<h3>{filteredResults[index]?.title}</h3>
+									<p>{filteredResults[index]?.author}</p>
 
-							<p>
-								{feed?.newestItemPubdate
-									? 'Latest release: ' +
-									  new Date(feed?.newestItemPubdate * 1000).toLocaleDateString()
-									: ''}
-							</p>
+									<p>
+										{filteredResults[index]?.newestItemPubdate
+											? 'Latest release: ' +
+											  new Date(
+													filteredResults[index]?.newestItemPubdate * 1000
+											  ).toLocaleDateString()
+											: ''}
+									</p>
+								</div>
+								<div style={'width: 40px;'} />
+							</card>
 						</div>
-						<div style={'width: 40px;'} />
-					</card>
-				</li>
-			{/each}
+					</div>
+				</VirtualList>
+			{/if}
 		{:else}
 			<h2>Loading Songs</h2>
 		{/if}
-	</ul>
+	</section>
 </albums>
 
 <Modal bind:showModal={showSongs}>
@@ -208,6 +246,7 @@
 		height: calc(100%);
 		overflow: hidden;
 		width: calc(100% - 16px);
+		height: 100%;
 	}
 
 	albums-top {
@@ -215,6 +254,7 @@
 		width: calc(100% - 16px);
 		position: relative;
 		margin: 0 8px;
+		height: 48px;
 	}
 
 	input {
@@ -226,6 +266,14 @@
 		font-size: 1.1em;
 	}
 
+	section {
+		padding: 20px 0;
+		margin: 0 8px;
+		width: calc(100% - 16px);
+		height: calc(100% - 48px);
+		overflow: auto;
+	}
+
 	fade-top {
 		display: block;
 		height: 20px;
@@ -233,12 +281,6 @@
 		background: linear-gradient(to top, transparent, white);
 		position: absolute;
 		bottom: -20px;
-	}
-	ul {
-		padding: 20px 0;
-		margin: 0 8px;
-		width: calc(100% - 16px);
-		overflow: auto;
 	}
 
 	li {

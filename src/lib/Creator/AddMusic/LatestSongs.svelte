@@ -36,12 +36,12 @@
 	});
 
 	async function fetchEpisode(episode) {
-		let feedUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
-			`/podcasts/byguid?guid=${episode.podcastGuid}`
-		)}`;
-		let episodesUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
-			`/episodes/bypodcastguid?guid=${episode.podcastGuid}`
-		)}`;
+		let feedUrl =
+			remoteServer +
+			`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${episode.podcastGuid}`)}`;
+		let episodesUrl =
+			remoteServer +
+			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}&max=1000`)}`;
 
 		let [feedRes, episodesRes] = await Promise.all([fetch(feedUrl), fetch(episodesUrl)]);
 

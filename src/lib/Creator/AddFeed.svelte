@@ -35,7 +35,7 @@
 			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
 		let episodesUrl =
 			remoteServer +
-			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}`)}`;
+			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}&max=1000`)}`;
 
 		Promise.all([fetch(feedUrl), fetch(episodesUrl)])
 			.then(async ([feedRes, episodesRes]) => {

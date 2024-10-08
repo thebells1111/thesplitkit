@@ -96,11 +96,11 @@
 
 	async function fetchEpisodes(podcastGuid, itemGuid) {
 		try {
-			const feedUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
-				`/podcasts/byguid?guid=${podcastGuid}`
-			)}`;
-			const episodesUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
-				`/episodes/bypodcastguid?guid=${podcastGuid}`
+			const feedUrl =
+				remoteServer +
+				`/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${podcastGuid}`)}`;
+			let episodesUrl = `/api/queryindex?q=${encodeURIComponent(
+				`/episodes/bypodcastguid?guid=${guid}&max=1000`
 			)}`;
 
 			const [feedRes, episodesRes] = await Promise.all([fetch(feedUrl), fetch(episodesUrl)]);
