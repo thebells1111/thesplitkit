@@ -279,7 +279,7 @@
 					handleBroadcast(nextBlock);
 				}
 			}
-		} else if ($mainSettings?.broadcastMode === 'podcast' && $mainSettings.podcast.autoSwitch) {
+		} else if ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch) {
 			if (block.duration) {
 				broadcastIntervalTimer = new Date().getTime();
 				broadcastTimeInterval = setInterval(nextInterval.bind(this, block), 250);

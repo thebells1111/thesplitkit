@@ -12,7 +12,6 @@
 	let showSaved = false;
 
 	onMount(async () => {
-		console.log('main mount');
 		if (!(await loadSKC())) {
 			loadAlby();
 		} else {
@@ -132,7 +131,7 @@
 <svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
 
 <div class="app">
-	{#if !['/(main)/roster/[guid]/boo', '/(main)/live/[guid]/video'].find((v) => v === $page.route.id)}
+	{#if !['/(main)/roster/[guid]/boo', '/(main)/live/[guid]/video'].find((v) => v === $page?.route?.id)}
 		<Header />
 	{/if}
 	<main>
