@@ -17,7 +17,6 @@
 		console.log(player);
 		console.log(src);
 		if (player && src) {
-			player.volume = 0;
 			// src =
 			// 	'https://noagendatube.com/static/streaming-playlists/hls/54ebb881-8581-4b16-b3ba-04dcac230fd4/master.m3u8';
 
