@@ -1,6 +1,6 @@
 <script>
 	import { XMLParser } from 'fast-xml-parser';
-	import { remoteServer } from '$/stores';
+	import { remoteServer, mainSettings } from '$/stores';
 	import AddBlocksIcon from '$lib/icons/AddBlocks.svelte';
 	export let addFeed = () => {};
 	let selectedFeed = {};
@@ -151,7 +151,9 @@
 		{#each podcastIndexSearchResults as feed}
 			<li class="pi-result" on:click={fetchEpisodes.bind(this, feed?.podcastGuid)}>
 				<card>
-					<img src={feed?.artwork || feed?.image} alt={feed?.title} width="40" height="40" />
+					{#if !$mainSettings?.lowBandwidth}
+						<img src={feed?.artwork || feed?.image} alt={feed?.title} width="40" height="40" />
+					{/if}
 					{feed?.title}
 				</card>
 			</li>
@@ -165,12 +167,14 @@
 	</feed-header>
 	<selected-feed>
 		<feed-info>
-			<img
-				src={selectedFeed?.artwork || selectedFeed?.image}
-				alt={selectedFeed?.title}
-				width="40"
-				height="40"
-			/>
+			{#if !$mainSettings?.lowBandwidth}
+				<img
+					src={selectedFeed?.artwork || selectedFeed?.image}
+					alt={selectedFeed?.title}
+					width="40"
+					height="40"
+				/>
+			{/if}
 			<p>{selectedFeed.title}</p>
 			<button on:click={addFeed.bind(this, selectedFeed, 'podcast')} class="add-icon">
 				<AddBlocksIcon size="24" />
@@ -185,12 +189,17 @@
 		{#each episodeResults as episode}
 			<li class="pi-result">
 				<card>
-					<img
-						src={episode?.artwork || episode?.image || selectedFeed?.artwork || selectedFeed?.image}
-						alt={episode?.title}
-						width="40"
-						height="40"
-					/>
+					{#if !$mainSettings?.lowBandwidth}
+						<img
+							src={episode?.artwork ||
+								episode?.image ||
+								selectedFeed?.artwork ||
+								selectedFeed?.image}
+							alt={episode?.title}
+							width="40"
+							height="40"
+						/>
+					{/if}
 					<p>{episode?.title}</p>
 					<button on:click={addFeed.bind(this, episode, 'podcast', selectedFeed)} class="add-icon">
 						<AddBlocksIcon size="24" />

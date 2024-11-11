@@ -5,6 +5,7 @@
 	export let showFeedModal;
 	export let screenIndex;
 	export let publisherFeedType;
+	import { mainSettings } from '$/stores';
 
 	feed['itunes:author'] = feed['itunes:author'] || feed.author;
 
@@ -24,7 +25,9 @@
 			<label>
 				Link to Podcast Artwork <input bind:value={feed.image.url} placeholder="(required)" />
 			</label>
-			<img src={feed?.image?.url} style="width:50px; height:50px" />
+			{#if !$mainSettings?.lowBandwidth}
+				<img src={feed?.image?.url} style="width:50px; height:50px" />
+			{/if}
 		</image-container>
 		<label>
 			Link to Podcast Website <input bind:value={feed.link} placeholder="(required)" />

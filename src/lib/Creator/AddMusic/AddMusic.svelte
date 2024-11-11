@@ -1,5 +1,5 @@
 <script>
-	import { remoteServer } from '$/stores';
+	import { remoteServer, mainSettings } from '$/stores';
 	import { onMount } from 'svelte';
 	import VirtualList from 'svelte-tiny-virtual-list';
 	import clone from 'just-clone';
@@ -200,12 +200,14 @@
 									filteredResults[index]
 								)}
 							>
-								<img
-									src={filteredResults[index]?.artwork || filteredResults[index]?.image}
-									alt={filteredResults[index]?.title}
-									width="60"
-									height="60"
-								/>
+								{#if !$mainSettings?.lowBandwidth}
+									<img
+										src={filteredResults[index]?.artwork || filteredResults[index]?.image}
+										alt={filteredResults[index]?.title}
+										width="60"
+										height="60"
+									/>
+								{/if}
 								<div>
 									<h3>{filteredResults[index]?.title}</h3>
 									<p>{filteredResults[index]?.author}</p>

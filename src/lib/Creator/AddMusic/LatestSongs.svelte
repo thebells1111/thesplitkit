@@ -103,7 +103,9 @@
 								{/if}
 							</button>
 							<song-info>
-								<img src={episode?.albumArt} alt={episode?.title} width="40" height="40" />
+								{#if !$mainSettings?.lowBandwidth}
+									<img src={episode?.albumArt} alt={episode?.title} width="40" height="40" />
+								{/if}
 								<p>
 									{`${episode?.title}${episode.artist ? ` - ${episode.artist}` : ''}`}
 									{#if episode.artist}

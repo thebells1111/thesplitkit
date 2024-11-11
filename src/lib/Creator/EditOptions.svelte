@@ -14,7 +14,7 @@
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import clone from 'just-clone';
 
-	import { defaultBlockGuid, liveBlocks, copiedBlock, changeDefault } from '$/stores';
+	import { defaultBlockGuid, liveBlocks, copiedBlock, changeDefault, mainSettings } from '$/stores';
 
 	export let showOptionsModal = false;
 	export let block;
@@ -133,7 +133,12 @@
 			</div>
 			<p>{block.blockGuid}</p>
 		</block-id>
-		<img src={block?.image || '/splitkit300.png'} alt="the artwork for this block" />
+
+		{#if !$mainSettings?.lowBandwidth}
+			<img src={block?.image || '/splitkit300.png'} alt="the artwork for this block" />
+		{:else}
+			<img src={'/splitkit300.png'} alt="the artwork for this block" />
+		{/if}
 		<card-text>
 			<h3>
 				{block?.title || ''}

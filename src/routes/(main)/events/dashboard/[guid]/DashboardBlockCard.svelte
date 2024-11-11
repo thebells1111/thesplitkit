@@ -205,7 +205,12 @@
 		{/if}
 
 		<card-info>
-			<img src={block.image || '/splitkit300.png'} alt="the artwork for this block" />
+			{#if !$mainSettings?.lowBandwidth}
+				<img src={block.image || '/splitkit300.png'} alt="the artwork for this block" />
+			{:else}
+				<img src={'/splitkit300.png'} alt="the artwork for this block" />
+			{/if}
+
 			<card-text>
 				<top>
 					<h3>{block.title === 'Title - click to edit' ? '' : block.title || ''}</h3>

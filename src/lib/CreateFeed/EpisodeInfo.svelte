@@ -1,5 +1,5 @@
 <script>
-	import { remoteServer } from '$/stores';
+	import { remoteServer, mainSettings } from '$/stores';
 	import Spinner from '$lib/loaders/Spinner.svelte';
 
 	export let screenIndex;
@@ -96,7 +96,9 @@
 				Link to Episode Artwork
 				<input bind:value={item['itunes:image']['@_href']} placeholder="(optional)" />
 			</label>
-			<img src={item?.image?.url} style="width:50px; height:50px" />
+			{#if !$mainSettings?.lowBandwidth}
+				<img src={item?.image?.url} style="width:50px; height:50px" />
+			{/if}
 		</image-container>
 		<explicit>
 			<h4>Explicit Content</h4>

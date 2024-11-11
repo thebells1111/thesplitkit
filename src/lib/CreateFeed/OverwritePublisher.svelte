@@ -7,7 +7,7 @@
 	import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 
 	import { decode } from 'html-entities';
-	import { remoteServer } from '$/stores';
+	import { remoteServer, mainSettings } from '$/stores';
 	let showInput = false;
 	let indexQuery = '';
 	let indexResults = [];
@@ -124,8 +124,10 @@
 	<ul>
 		{#each indexResults as feed}
 			<li class="pi-result" on:click={fetchFeed.bind(this, feed)}>
-				<img src={feed?.artwork || feed?.image} alt={feed?.title} width="40" height="40" />
-				{feed?.title}
+				{#if !$mainSettings?.lowBandwidth}
+					<img src={feed?.artwork || feed?.image} alt={feed?.title} width="40" height="40" />
+					{feed?.title}
+				{/if}
 			</li>
 		{/each}
 	</ul>

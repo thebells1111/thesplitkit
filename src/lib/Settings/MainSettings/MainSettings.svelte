@@ -12,6 +12,7 @@
 	import EditTimes from './EditTimes.svelte';
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import BroadcastSettings from './BroadcastSettings.svelte';
+	import LowBandwidth from './LowBandwidth.svelte';
 
 	let mainUnsaved = false;
 	let initialized = false;
@@ -96,6 +97,7 @@
 <DefaultSplits bind:mainUnsaved bind:updateAllSplits />
 <EditTimes bind:showOffsetStartTimes />
 <RemoteCreds />
+<LowBandwidth bind:mainUnsaved />
 <BroadcastSettings />
 
 {#if $mainSettings?.broadcastMode === 'playlist'}

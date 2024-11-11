@@ -9,6 +9,8 @@
 	export let feed = {};
 	let rippleAlbum = false;
 
+	import { mainSettings } from '$/stores';
+
 	async function shimmerCard(index) {
 		episodes[index].shimmer = true;
 		setTimeout(() => {
@@ -36,7 +38,9 @@
 		</button-ripple>
 
 		{#if feed.title !== 'New Releases' && feed.author !== 'The Split Kit'}
-			<img src={feed?.artwork || feed?.image} alt={feed?.title} />
+			{#if !$mainSettings?.lowBandwidth}
+				<img src={feed?.artwork || feed?.image} alt={feed?.title} />
+			{/if}
 			<h2>{feed?.title}</h2>
 			<h3>{feed?.author}</h3>
 
@@ -95,16 +99,18 @@
 						</button>
 
 						<song-info>
-							<img
-								src={episode?.artwork ||
-									episode?.image ||
-									episode?.albumArt ||
-									feed?.artwork ||
-									feed?.image}
-								alt={episode?.title}
-								width="40"
-								height="40"
-							/>
+							{#if !$mainSettings?.lowBandwidth}
+								<img
+									src={episode?.artwork ||
+										episode?.image ||
+										episode?.albumArt ||
+										feed?.artwork ||
+										feed?.image}
+									alt={episode?.title}
+									width="40"
+									height="40"
+								/>
+							{/if}
 							<p>
 								{`${episode?.title}${episode.artist ? ` - ${episode.artist}` : ''}`}
 								{#if episode.artist}
