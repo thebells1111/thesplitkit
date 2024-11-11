@@ -10,6 +10,7 @@ export const events = writable([]);
 
 export const user = writable({ loggedIn: false });
 export const catalog = writable([]);
+export const cachedAlbums = writable();
 
 export const liveBlocks = writable([]);
 export const mainSettings = writable({ splits: 95, broadcastMode: 'edit', editEnclosure: '' });

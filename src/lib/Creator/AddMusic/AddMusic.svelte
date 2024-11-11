@@ -1,5 +1,5 @@
 <script>
-	import { remoteServer, mainSettings } from '$/stores';
+	import { remoteServer, mainSettings, cachedAlbums } from '$/stores';
 	import { onMount } from 'svelte';
 	import VirtualList from 'svelte-tiny-virtual-list';
 	import clone from 'just-clone';
@@ -20,34 +20,42 @@
 	onMount(fetchAlbums);
 
 	async function fetchAlbums() {
-		const res = await fetch(
-			remoteServer +
-				`/api/queryindex?q=${encodeURIComponent(
-					'podcasts/bymedium?medium=music&val=lightning&max=10000'
-				)}`
-		);
-		let data = await res.json();
-		console.log(data);
+		console.log($cachedAlbums);
+		if (!$cachedAlbums) {
+			const res = await fetch(
+				remoteServer +
+					`/api/queryindex?q=${encodeURIComponent(
+						'podcasts/bymedium?medium=music&val=lightning&max=10000'
+					)}`
+			);
+			let data = await res.json();
+			console.log(data);
 
-		// let data = { feeds: archivedFeeds };
+			// let data = { feeds: archivedFeeds };
 
-		try {
+			try {
+				episodes = [];
+
+				podcastIndexSearchResults = sortByPubDate(data.feeds).filter((v) => {
+					let addFeed = true;
+					if (
+						//this removes 100% Retro Live Feed
+						[5718023].find((w) => v.id === w) ||
+						v.author === 'Gabe Barrett' ||
+						[6612768].find((w) => v.id === w)
+					) {
+						addFeed = false;
+					}
+					return addFeed;
+				});
+				filteredResults = podcastIndexSearchResults;
+				$cachedAlbums = podcastIndexSearchResults;
+			} catch (error) {}
+		} else {
 			episodes = [];
-
-			podcastIndexSearchResults = sortByPubDate(data.feeds).filter((v) => {
-				let addFeed = true;
-				if (
-					//this removes 100% Retro Live Feed
-					[5718023].find((w) => v.id === w) ||
-					v.author === 'Gabe Barrett' ||
-					[6612768].find((w) => v.id === w)
-				) {
-					addFeed = false;
-				}
-				return addFeed;
-			});
+			podcastIndexSearchResults = $cachedAlbums;
 			filteredResults = podcastIndexSearchResults;
-		} catch (error) {}
+		}
 	}
 
 	function sortArrayAlphabetically(arr) {
@@ -120,41 +128,48 @@
 
 	async function fetchEpisodes(guid, index, feed) {
 		console.log(feed);
-		showSongs = true;
-		let feedUrl =
-			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
-		let episodesUrl =
-			remoteServer +
-			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}&max=1000`)}`;
+		if (!feed.episodes) {
+			console.log(feed);
+			showSongs = true;
+			let feedUrl =
+				remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
+			let episodesUrl =
+				remoteServer +
+				`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}&max=1000`)}`;
 
-		// let feedUrl =
-		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byfeedid?id=${feed.id}`)}`;
-		// let episodesUrl =
-		// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/episodes/byfeedid?id=${feed.id}`)}`;
-		console.log(feedUrl);
-		console.log(episodesUrl);
-		let res = await fetch(feedUrl);
-		let data = await res.json();
-		console.log(data);
-		Promise.all([fetch(feedUrl), fetch(episodesUrl)])
-			.then(async ([feedRes, episodesRes]) => {
-				let data = await feedRes.json();
-				console.log(data);
-				let feed = data.feed;
+			// let feedUrl =
+			// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byfeedid?id=${feed.id}`)}`;
+			// let episodesUrl =
+			// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/episodes/byfeedid?id=${feed.id}`)}`;
 
-				let episodesData = await episodesRes.json();
-				let episodesResults = [].concat(episodesData.items);
+			let res = await fetch(feedUrl);
+			let data = await res.json();
+			Promise.all([fetch(feedUrl), fetch(episodesUrl)])
+				.then(async ([feedRes, episodesRes]) => {
+					let data = await feedRes.json();
+					console.log(data);
+					let feed = data.feed;
 
-				feed.episodes = episodesResults;
+					let episodesData = await episodesRes.json();
+					let episodesResults = [].concat(episodesData.items);
 
-				episodes = feed.episodes || [];
-				selectedFeed = feed;
+					feed.episodes = episodesResults;
 
-				console.log(episodes);
-			})
-			.catch((err) => {
-				console.error('Error fetching episodes:', err);
-			});
+					episodes = feed.episodes || [];
+					selectedFeed = feed;
+
+					$cachedAlbums.find((v) => v.podcastGuid === feed.podcastGuid).episodes = episodes;
+					// $cachedAlbums.find((v) => v.podcastGuid === feed.podcastGuid).episodes = episodes;
+				})
+				.catch((err) => {
+					console.error('Error fetching episodes:', err);
+				});
+		} else {
+			showSongs = true;
+			selectedFeed = $cachedAlbums.find((v) => v.podcastGuid === feed.podcastGuid);
+			episodes = selectedFeed.episodes;
+			console.log(episodes);
+		}
 	}
 
 	let listHeight = 500;
