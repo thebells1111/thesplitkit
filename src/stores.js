@@ -13,7 +13,12 @@ export const catalog = writable([]);
 export const cachedAlbums = writable();
 
 export const liveBlocks = writable([]);
-export const mainSettings = writable({ splits: 95, broadcastMode: 'edit', editEnclosure: '' });
+export const mainSettings = writable({
+	splits: 95,
+	broadcastMode: 'edit',
+	editEnclosure: '',
+	broadcastDelay: 0
+});
 export const defaultBlockGuid = writable();
 export const activePageGuid = writable();
 export const activeBroadcastGuid = writable();

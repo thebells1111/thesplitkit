@@ -31,6 +31,13 @@
 			$mainSettings.timeRemainingEnabled = false;
 		}
 	}
+
+	function preventCertainInput(event) {
+		// Prevent 'e', '.' and '-' from being inputted
+		if (event.key === 'e' || event.key === '-') {
+			event.preventDefault();
+		}
+	}
 </script>
 
 <div>
@@ -51,6 +58,14 @@
 		/>
 		Broadcast Time Remaining from Active Block
 	</label>
+	<broadcast-delay>
+		<input
+			type="number"
+			bind:value={$mainSettings.broadcastDelay}
+			min="0"
+			on:keydown={preventCertainInput}
+		/>second delay before broadcasting Active Block
+	</broadcast-delay>
 </div>
 
 <style>
@@ -72,5 +87,14 @@
 	label {
 		display: block;
 		margin: 8px;
+	}
+
+	broadcast-delay {
+		display: block;
+		margin: 8px;
+	}
+
+	broadcast-delay > input {
+		width: 40px;
 	}
 </style>

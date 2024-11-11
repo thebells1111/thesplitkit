@@ -91,7 +91,12 @@
 	$: if (!$mainSettings?.timeRemainingEnabled) {
 		if (broadcastingBlock) {
 			let serverData = processBlock(clone(broadcastingBlock));
-			$socket.emit('valueBlock', { valueGuid: guid, serverData });
+
+			setTimeout(handleEmit, ($mainSettings.broadcastDelay || 0) * 1000);
+
+			function handleEmit() {
+				$socket.emit('valueBlock', { valueGuid: guid, serverData });
+			}
 		}
 	}
 
@@ -318,12 +323,17 @@
 		if ($mainSettings?.timeRemainingEnabled && nextBroadcastTime < Infinity) {
 			serverData.timeRemaining = broadcastTimeRemaining;
 		}
-		$socket.emit('valueBlock', { valueGuid: guid, serverData });
+
+		setTimeout(handleEmit, ($mainSettings.broadcastDelay || 0) * 1000);
+
+		function handleEmit() {
+			$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		}
 	}
 
 	function broadcastBlock(block) {
-		console.log(block);
 		let serverData;
+
 		if (block) {
 			broadcastingBlock = clone(block);
 			serverData = processBlock(clone(block));
@@ -347,8 +357,12 @@
 			serverData = {};
 		}
 
-		console.log(serverData);
-		$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		setTimeout(handleEmit, ($mainSettings.broadcastDelay || 0) * 1000);
+
+		function handleEmit() {
+			console.log(serverData);
+			$socket.emit('valueBlock', { valueGuid: guid, serverData });
+		}
 	}
 
 	function handleTimer() {
@@ -412,7 +426,6 @@
 
 				const res = await fetch(url);
 				let data = await res.json();
-				console.log(data);
 				if (data.status === 'true') {
 					return data.episode;
 				}
