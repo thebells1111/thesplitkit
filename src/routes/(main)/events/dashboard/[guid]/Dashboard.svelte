@@ -127,6 +127,7 @@
 				console.log('guid is not defined');
 			}
 		});
+		z;
 
 		$socket.on('nextBlock', (message) => {
 			let block = $liveBlocks.find((v) => v?.blockGuid === message);

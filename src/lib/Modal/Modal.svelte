@@ -34,7 +34,6 @@
 			<modal-content>
 				<slot />
 			</modal-content>
-			<fade-bottom />
 		</modal>
 	</blurred-background>
 {/if}

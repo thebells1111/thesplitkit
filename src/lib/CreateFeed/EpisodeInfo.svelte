@@ -96,7 +96,7 @@
 				Link to Episode Artwork
 				<input bind:value={item['itunes:image']['@_href']} placeholder="(optional)" />
 			</label>
-			{#if !$mainSettings?.lowBandwidth}
+			{#if !$mainSettings?.lowBandwidth?.images}
 				<img src={item?.image?.url} style="width:50px; height:50px" />
 			{/if}
 		</image-container>

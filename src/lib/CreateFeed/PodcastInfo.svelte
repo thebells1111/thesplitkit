@@ -25,7 +25,7 @@
 			<label>
 				Link to Podcast Artwork <input bind:value={feed.image.url} placeholder="(required)" />
 			</label>
-			{#if !$mainSettings?.lowBandwidth}
+			{#if !$mainSettings?.lowBandwidth?.images}
 				<img src={feed?.image?.url} style="width:50px; height:50px" />
 			{/if}
 		</image-container>

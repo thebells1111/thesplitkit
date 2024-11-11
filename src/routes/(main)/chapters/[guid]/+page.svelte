@@ -236,7 +236,9 @@
 
 			if (block.enclosureUrl) {
 				newBlock.enclosureUrl = block.enclosureUrl;
-				newBlock.duration = await getMediaDuration(block.enclosureUrl);
+				if (!$mainSettings?.lowBandwidth?.audio) {
+					newBlock.duration = await getMediaDuration(block.enclosureUrl);
+				}
 			}
 
 			let blockGuid;

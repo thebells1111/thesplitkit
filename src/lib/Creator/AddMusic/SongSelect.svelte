@@ -33,18 +33,20 @@
 
 <song-select>
 	<album-card>
-		<button-ripple>
-			<expanding-circle class:ripple={rippleAlbum} />
-		</button-ripple>
-
 		{#if feed.title !== 'New Releases' && feed.author !== 'The Split Kit'}
-			{#if !$mainSettings?.lowBandwidth}
+			{#if !$mainSettings?.lowBandwidth?.images}
 				<img src={feed?.artwork || feed?.image} alt={feed?.title} />
+			{:else}
+				<img src={'/splitkit300.png'} alt={feed?.title} />
 			{/if}
 			<h2>{feed?.title}</h2>
 			<h3>{feed?.author}</h3>
-
-			<audio controls bind:this={player} autoplay />
+			<audio
+				controls
+				bind:this={player}
+				autoplay
+				style={$mainSettings?.lowBandwidth?.audio ? 'display:none' : ''}
+			/>
 
 			<button
 				on:click|stopPropagation={() => {
@@ -74,32 +76,33 @@
 						class={`songs ${episode.shimmer ? 'shimmer' : ''}`}
 						class:active={player?.src === episode.enclosureUrl}
 					>
-						<button
-							on:click={() => {
-								if (player.src === episode.enclosureUrl) {
-									if (isPaused) {
-										player.play();
+						{#if !$mainSettings?.lowBandwidth?.audio}
+							<button
+								on:click={() => {
+									if (player.src === episode.enclosureUrl) {
+										if (isPaused) {
+											player.play();
+										} else {
+											player.pause();
+										}
 									} else {
-										player.pause();
+										player.src = episode.enclosureUrl;
 									}
-								} else {
-									player.src = episode.enclosureUrl;
-								}
-							}}
-						>
-							{#if player?.src === episode?.enclosureUrl}
-								{#if isPaused}
-									<PlayIcon size="27" />
+								}}
+							>
+								{#if player?.src === episode?.enclosureUrl}
+									{#if isPaused}
+										<PlayIcon size="27" />
+									{:else}
+										<PauseIcon size="27" />
+									{/if}
 								{:else}
-									<PauseIcon size="27" />
+									<PlayIcon size="27" />
 								{/if}
-							{:else}
-								<PlayIcon size="27" />
-							{/if}
-						</button>
-
+							</button>
+						{/if}
 						<song-info>
-							{#if !$mainSettings?.lowBandwidth}
+							{#if !$mainSettings?.lowBandwidth?.images}
 								<img
 									src={episode?.artwork ||
 										episode?.image ||
@@ -228,10 +231,6 @@
 		padding: 0;
 	}
 
-	button.download {
-		background-color: var(--color-theme-purple);
-		color: var(--color-text-purple);
-	}
 	album-card {
 		display: flex;
 		flex-direction: column;
@@ -268,35 +267,6 @@
 		position: relative;
 		overflow: hidden;
 		background: linear-gradient(to right, hsl(38, 100%, 93%), hsl(38, 75%, 61%));
-	}
-
-	button-ripple {
-		width: 150px;
-		height: 150px;
-		display: block;
-		position: absolute;
-		left: calc(50% - 78px);
-		overflow: hidden;
-	}
-
-	expanding-circle {
-		position: absolute;
-		width: 20px;
-		height: 20px;
-		border-radius: 50%;
-		left: 126px;
-		top: 125px;
-	}
-
-	expanding-circle.ripple {
-		position: absolute;
-		width: 520px;
-		height: 520px;
-		border-radius: 50%;
-		left: -110px;
-		top: -110px;
-		transition: 0.3s;
-		background: radial-gradient(circle, rgba(255, 242, 219, 0) 38%, rgba(255, 255, 255, 1) 94%);
 	}
 
 	.active {

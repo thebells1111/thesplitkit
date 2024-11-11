@@ -123,7 +123,7 @@
 	<ul>
 		{#each indexResults as feed}
 			<li class="pi-result" on:click={fetchFeed.bind(this, feed)}>
-				{#if !$mainSettings?.lowBandwidth}
+				{#if !$mainSettings?.lowBandwidth?.images}
 					<img src={feed?.artwork || feed?.image} alt={feed?.title} width="40" height="40" />
 				{/if}
 				{feed?.title}

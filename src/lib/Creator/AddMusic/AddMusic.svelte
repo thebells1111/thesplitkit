@@ -2,18 +2,13 @@
 	import { remoteServer, mainSettings, cachedAlbums } from '$/stores';
 	import { onMount } from 'svelte';
 	import VirtualList from 'svelte-tiny-virtual-list';
-	import clone from 'just-clone';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import SongSelect from './SongSelect.svelte';
-	import LatestSongs from './LatestSongs.svelte';
 	export let addFeed = () => {};
 	let selectedFeed = {};
 	let podcastIndexSearchResults = [];
 	let episodes = [];
 	let showSongs = false;
-	let showLatest = false;
-	// import archivedFeeds from './archivedFeeds.json';
-
 	let searchQuery = '';
 	let filteredResults = [];
 
@@ -95,19 +90,6 @@
 
 	async function searchPI() {
 		console.log(searchQuery);
-		// if (searchQuery) {
-		// 	const res = await fetch(
-		// 		remoteServer +
-		// 			`/api/queryindex?q=/search/music/byterm` +
-		// 			encodeURIComponent(`?q=${searchQuery}`)
-		// 	);
-		// 	let data = await res.json();
-		// 	if (data.status) {
-		// 		return data.feeds;
-		// 	}
-		// 	return;
-		// }
-		// return podcastIndexSearchResults;
 
 		return podcastIndexSearchResults.filter(
 			(v) =>
@@ -136,11 +118,6 @@
 			let episodesUrl =
 				remoteServer +
 				`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}&max=1000`)}`;
-
-			// let feedUrl =
-			// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byfeedid?id=${feed.id}`)}`;
-			// let episodesUrl =
-			// 	remoteServer + `/api/queryindex?q=${encodeURIComponent(`/episodes/byfeedid?id=${feed.id}`)}`;
 
 			let res = await fetch(feedUrl);
 			let data = await res.json();
@@ -215,7 +192,7 @@
 									filteredResults[index]
 								)}
 							>
-								{#if !$mainSettings?.lowBandwidth}
+								{#if !$mainSettings?.lowBandwidth?.images}
 									<img
 										src={filteredResults[index]?.artwork || filteredResults[index]?.image}
 										alt={filteredResults[index]?.title}
@@ -250,10 +227,6 @@
 
 <Modal bind:showModal={showSongs}>
 	<SongSelect {addFeed} {episodes} feed={selectedFeed} />
-</Modal>
-
-<Modal bind:showModal={showLatest}>
-	<LatestSongs {addFeed} />
 </Modal>
 
 <style>

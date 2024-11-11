@@ -90,10 +90,14 @@
 	}
 
 	async function saveBlock(block) {
-		if (block.enclosureUrl && !block.duration) {
-			try {
-				block.duration = await getMediaDuration(block.enclosureUrl);
-			} catch (error) {
+		if (block.enclosureUrl && !$mainSettings?.lowBandwidth?.audio) {
+			if (!block.duration) {
+				try {
+					block.duration = await getMediaDuration(block.enclosureUrl);
+				} catch (error) {
+					block.duration = 0;
+				}
+			} else {
 				block.duration = 0;
 			}
 		}
@@ -230,21 +234,19 @@
 			<time-container>
 				{#if ['playlist', 'edit'].find((v) => v === $mainSettings.broadcastMode) || $mainSettings?.broadcastMode === 'podcast'}
 					{#if block?.blockGuid !== $defaultBlockGuid}
-						{#if $mainSettings?.podcast?.autoSwitch || $mainSettings?.broadcastMode === 'playlist'}
-							<duration>
-								<strong>Duration:</strong>
-
-								{#if ($mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) && !block.duration}
-									<warning>This block has no duration.</warning>
-								{:else}
-									<span>{block.duration ? formatTime(block.duration) : ''}</span>
-								{/if}
-							</duration>
-						{/if}
 						<start-time>
 							<strong>Start:</strong>
 							<span>{block.startTime ? formatTime(block.startTime) : ''}</span>
 						</start-time>
+						<duration>
+							<strong>Duration:</strong>
+
+							{#if ($mainSettings?.broadcastMode === 'playlist' || ($mainSettings?.broadcastMode === 'podcast' && $mainSettings?.podcast?.autoSwitch)) && !block.duration}
+								<warning>This block has no duration.</warning>
+							{:else}
+								<span>{block.duration ? formatTime(block.duration) : ''}</span>
+							{/if}
+						</duration>
 
 						{#if broadcastingBlockGuid === block?.blockGuid}
 							<time-remaing>

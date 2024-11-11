@@ -134,7 +134,7 @@
 			<p>{block.blockGuid}</p>
 		</block-id>
 
-		{#if !$mainSettings?.lowBandwidth}
+		{#if !$mainSettings?.lowBandwidth?.images}
 			<img src={block?.image || '/splitkit300.png'} alt="the artwork for this block" />
 		{:else}
 			<img src={'/splitkit300.png'} alt="the artwork for this block" />

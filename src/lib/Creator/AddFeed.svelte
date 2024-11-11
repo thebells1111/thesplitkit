@@ -151,7 +151,7 @@
 		{#each podcastIndexSearchResults as feed}
 			<li class="pi-result" on:click={fetchEpisodes.bind(this, feed?.podcastGuid)}>
 				<card>
-					{#if !$mainSettings?.lowBandwidth}
+					{#if !$mainSettings?.lowBandwidth?.images}
 						<img src={feed?.artwork || feed?.image} alt={feed?.title} width="40" height="40" />
 					{/if}
 					{feed?.title}
@@ -167,7 +167,7 @@
 	</feed-header>
 	<selected-feed>
 		<feed-info>
-			{#if !$mainSettings?.lowBandwidth}
+			{#if !$mainSettings?.lowBandwidth?.images}
 				<img
 					src={selectedFeed?.artwork || selectedFeed?.image}
 					alt={selectedFeed?.title}
@@ -189,7 +189,7 @@
 		{#each episodeResults as episode}
 			<li class="pi-result">
 				<card>
-					{#if !$mainSettings?.lowBandwidth}
+					{#if !$mainSettings?.lowBandwidth?.images}
 						<img
 							src={episode?.artwork ||
 								episode?.image ||

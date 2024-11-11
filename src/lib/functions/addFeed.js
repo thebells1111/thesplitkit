@@ -54,7 +54,9 @@ export default async function addFeed(block, type, channel, eventGuid) {
 
 	if (block.enclosureUrl) {
 		newBlock.enclosureUrl = block.enclosureUrl;
-		newBlock.duration = await getMediaDuration(block.enclosureUrl);
+		if (!$mainSettings?.lowBandwidth?.audio) {
+			newBlock.duration = await getMediaDuration(block.enclosureUrl);
+		}
 	}
 
 	let blockGuid;

@@ -3,17 +3,30 @@
 
 	export let mainUnsaved;
 
-	function handleLowBandwidth(e) {
-		$mainSettings.lowBandwidth = e.target.checked;
+	function handleLowBandwidth(e, setting) {
+		$mainSettings.lowBandwidth = $mainSettings?.lowBandwidth || {};
+		$mainSettings.lowBandwidth[setting] = e.target.checked;
 		mainUnsaved = true;
 	}
 </script>
 
 <low-bandwidth>
+	<h3>Low Bandwidth:</h3>
 	<label class="checkbox">
-		<h3>Low Bandwidth:</h3>
-		<input type="checkbox" on:input={handleLowBandwidth} checked={$mainSettings?.lowBandwidth} />
+		<input
+			type="checkbox"
+			on:input={(e) => handleLowBandwidth(e, 'images')}
+			checked={$mainSettings?.lowBandwidth?.images}
+		/>
 		Disable images
+	</label>
+	<label class="checkbox">
+		<input
+			type="checkbox"
+			on:input={(e) => handleLowBandwidth(e, 'audio')}
+			checked={$mainSettings?.lowBandwidth?.audio}
+		/>
+		Disable mp3 download
 	</label>
 </low-bandwidth>
 
@@ -27,7 +40,7 @@
 		display: flex;
 		align-items: center;
 	}
-	label > h3 {
+	h3 {
 		padding: 0 6px;
 		color: var(--color-theme-blue);
 		margin: 0;
