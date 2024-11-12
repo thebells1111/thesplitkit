@@ -11,12 +11,13 @@
 	let showSongs = false;
 	let searchQuery = '';
 	let filteredResults = [];
+	let cacheText = '-Results are cached. Click here to fetch latest albums.-';
 
 	onMount(fetchAlbums);
 
-	async function fetchAlbums() {
-		console.log($cachedAlbums);
-		if (!$cachedAlbums) {
+	async function fetchAlbums(refresh) {
+		if (!$cachedAlbums || refresh) {
+			cacheText = '-Fetching Albums-';
 			const res = await fetch(
 				remoteServer +
 					`/api/queryindex?q=${encodeURIComponent(
@@ -45,6 +46,7 @@
 				});
 				filteredResults = podcastIndexSearchResults;
 				$cachedAlbums = podcastIndexSearchResults;
+				cacheText = '-Results are cached. Click here to fetch latest albums.-';
 			} catch (error) {}
 		} else {
 			episodes = [];
@@ -150,7 +152,7 @@
 	}
 
 	let listHeight = 500;
-	let headerHeight = 80;
+	let headerHeight = 16;
 	let sectionHeight;
 	let sectionWidth;
 	let virtualList;
@@ -163,7 +165,11 @@
 <albums>
 	<albums-top>
 		<input bind:value={searchQuery} placeholder="filter albums" />
-		<fade-top />
+		{#if $cachedAlbums}
+			<p on:click={fetchAlbums.bind(this, true)}>
+				{cacheText}
+			</p>
+		{/if}
 	</albums-top>
 	<section bind:clientHeight={sectionHeight} bind:clientWidth={sectionWidth}>
 		{#if podcastIndexSearchResults.length}
@@ -244,7 +250,7 @@
 		width: calc(100% - 16px);
 		position: relative;
 		margin: 0 8px;
-		height: 48px;
+		height: 72px;
 	}
 
 	input {
@@ -256,28 +262,20 @@
 		font-size: 1.1em;
 	}
 
+	albums-top > p {
+		text-align: center;
+		cursor: pointer;
+	}
+
 	section {
-		padding: 20px 0;
+		padding: 0;
 		margin: 0 8px;
 		width: calc(100% - 16px);
-		height: calc(100% - 48px);
+		height: calc(100%);
 		overflow: auto;
+		position: relative;
 	}
 
-	fade-top {
-		display: block;
-		height: 20px;
-		width: 100%;
-		background: linear-gradient(to top, transparent, white);
-		position: absolute;
-		bottom: -20px;
-	}
-
-	li {
-		list-style: none;
-		padding: 0;
-		width: 100%;
-	}
 	h2 {
 		text-align: center;
 	}
