@@ -51,7 +51,6 @@
 	let pauseTime = 0;
 	let timeStamp = 0;
 	let totalPausedTime = 0;
-	let eventTimestamp = 0;
 	let nextBroadcastTime = Infinity;
 	let interval;
 	let isRunning = false;
@@ -336,22 +335,16 @@
 		let serverData;
 
 		if (block) {
-			let ts = timeStamp || 0;
 			broadcastingBlock = clone(block);
 			serverData = processBlock(clone(block));
-			serverData.broadcastTimestamp = new Date().getTime();
-			serverData.startTime = ts;
-			serverData.eventTimestamp = eventTimestamp;
 			broadcastingBlockGuid = block?.blockGuid;
 			if (timeStamp && block?.blockGuid !== $defaultBlockGuid) {
 				let foundBlock = $liveBlocks.find((v) => v?.blockGuid === block?.blockGuid);
-				foundBlock.startTime = ts;
-				foundBlock.eventTimestamp = eventTimestamp;
+				foundBlock.startTime = timeStamp;
 				$liveBlocks = $liveBlocks;
 			} else {
 				let foundBlock = $liveBlocks.find((v) => v?.blockGuid === block?.blockGuid);
 				foundBlock.startTime = 0;
-				foundBlock.eventTimestamp = eventTimestamp;
 				$liveBlocks = $liveBlocks;
 			}
 		} else {
@@ -383,9 +376,6 @@
 	}
 
 	function startTimer() {
-		if (!timeStamp) {
-			eventTimestamp = new Date().getTime();
-		}
 		isRunning = true;
 
 		startTime = startTime && startTime > 0 ? startTime : performance.now();
