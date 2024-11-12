@@ -2,14 +2,6 @@
 	import { onMount, tick } from 'svelte';
 	import io from 'socket.io-client';
 	import clone from 'just-clone';
-	import DashboardBlockCard from './DashboardBlockCard.svelte';
-	import Person from './Person.svelte';
-	import formatTime from '$lib/functions/formatTime.js';
-	import ResetIcon from '$lib/icons/Refresh.svelte';
-	import TimerIcon from '$lib/icons/Timer.svelte';
-	import PlayIcon from '$lib/icons/PlayArrow.svelte';
-	import PauseIcon from '$lib/icons/Pause.svelte';
-	import NoDefault from './NoDefault/NoDefault.svelte';
 	import fetchChapters from '$lib/functions/dashboard/fetchChapters.js';
 	import getEpisode from '$lib/functions/dashboard/getEpisode.js';
 	import processBlock from '$lib/functions/dashboard/processBlock.js';
@@ -20,6 +12,8 @@
 	import createChapterBroadcast from '$lib/functions/dashboard/createChapterBroadcast.js';
 	import createVTSBroadcast from '$lib/functions/dashboard/createVTSBroadcast.js';
 	import buildBlock from '$lib/functions/dashboard/buildBlock.js';
+
+	import Dashboard from './View/Desktop/Dashboard.svelte';
 
 	import { page } from '$app/stores';
 	import {
@@ -448,92 +442,22 @@
 	}
 </script>
 
-<div>
-	{#if !$defaultBlockGuid && $mainSettings.broadcastMode !== 'edit'}
-		<NoDefault />
-	{:else}
-		{#if !$socket}
-			<button class="primary socket-connect" on:click={socketConnect}
-				>Connect to Live Value Server</button
-			>
-		{/if}
-		{#if $mainSettings?.broadcastMode === 'playlist' && !$liveBlocks
-				.slice(1)
-				.every((v) => v?.enclosureUrl || v?.duration)}
-			<warning>Playlist Mode Error - Fix blocks with no enclosure url or duration</warning>
-		{/if}
-		{#if !$liveBlocks.find((v) => v?.blockGuid === $defaultBlockGuid)?.value?.destinations?.length && $mainSettings.broadcastMode !== 'edit'}
-			<warning>Error - Your default block needs a value block</warning>
-		{/if}
-
-		{#if ['playlist', 'edit'].find((v) => v === $mainSettings?.broadcastMode)}
-			<audio autoplay controls bind:this={player} class:hidden={player?.src} />
-		{/if}
-
-		{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
-			<time-stamp>
-				<button class="timer-button" on:click={handleTimer}>
-					<TimerIcon size="36" />
-
-					{#if isRunning}
-						<pause>
-							<PauseIcon size="20" />
-						</pause>
-					{:else}
-						<play>
-							<PlayIcon size="20" />
-						</play>
-					{/if}
-				</button>
-				<timer>{formatTime(timeStamp, true)}</timer>
-				<button class="reset-button" on:click={handleResetTimer}>
-					<ResetIcon size="32" />
-				</button>
-			</time-stamp>
-		{/if}
-
-		<top>
-			<transparent-spacer />
-		</top>
-
-		{#if filterType === 'person'}
-			<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
-		{:else if blocks?.[0] || blocks?.[1]}
-			<blocks bind:this={$blocksList}>
-				{#each blocks.filter((v) => v?.blockGuid === $defaultBlockGuid) as block, index}
-					{#if block}
-						<DashboardBlockCard
-							{block}
-							{index}
-							bind:broadcastingBlockGuid
-							bind:activeBlockGuid
-							bind:showOptionsModal
-							{broadcastTimeRemaining}
-							{handleBroadcast}
-							{updateStartTime}
-						/>
-					{/if}
-				{/each}
-				{#each blocks
-					.filter((v) => v?.blockGuid !== $defaultBlockGuid)
-					.filter((v) => v) as block, index}
-					<DashboardBlockCard
-						{block}
-						{index}
-						bind:broadcastingBlockGuid
-						bind:activeBlockGuid
-						bind:showOptionsModal
-						{broadcastTimeRemaining}
-						{handleBroadcast}
-						{updateStartTime}
-					/>
-				{/each}
-			</blocks>
-		{:else}
-			<p>Click the blue add button to add your first block.</p>
-		{/if}
-	{/if}
-</div>
+<Dashboard
+	bind:blocks
+	bind:filterType
+	bind:showOptionsModal
+	bind:activeBlockGuid
+	bind:player
+	bind:broadcastTimeRemaining
+	bind:timeStamp
+	bind:isRunning
+	bind:broadcastingBlockGuid
+	{socketConnect}
+	{handleTimer}
+	{handleResetTimer}
+	{handleBroadcast}
+	{updateStartTime}
+/>
 
 <style>
 	div {
