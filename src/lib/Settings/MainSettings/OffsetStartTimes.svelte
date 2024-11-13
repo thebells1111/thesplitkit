@@ -1,7 +1,7 @@
 <script>
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	import { liveBlocks } from '$/stores';
-	import TimeInputs from '../BlockSettings/TimeInputs.svelte';
+	import TimeInputs from '$lib/TimeInputs/TimeInputs.svelte';
 	let offsetTime = 0;
 	let selectedOption = 'subtract';
 	let showSaveModal = false;

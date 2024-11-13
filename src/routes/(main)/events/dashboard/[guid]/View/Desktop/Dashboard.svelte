@@ -81,11 +81,10 @@
 				{#each blocks.filter((v) => v?.blockGuid === $defaultBlockGuid) as block, index}
 					{#if block}
 						<DashboardBlockCard
-							{block}
+							bind:block
 							{index}
 							bind:broadcastingBlockGuid
 							bind:activeBlockGuid
-							bind:showOptionsModal
 							{broadcastTimeRemaining}
 							{handleBroadcast}
 							{updateStartTime}
@@ -96,11 +95,10 @@
 					.filter((v) => v?.blockGuid !== $defaultBlockGuid)
 					.filter((v) => v) as block, index}
 					<DashboardBlockCard
-						{block}
+						bind:block
 						{index}
 						bind:broadcastingBlockGuid
 						bind:activeBlockGuid
-						bind:showOptionsModal
 						{broadcastTimeRemaining}
 						{handleBroadcast}
 						{updateStartTime}

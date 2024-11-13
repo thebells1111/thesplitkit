@@ -1,28 +1,26 @@
 <script>
 	import { saveAs } from 'file-saver';
 	import { ID3Writer } from 'browser-id3-writer';
-	import BlockSettings from '$lib/Settings/BlockSettings/BlockSettings.svelte';
-	import Modal from '$lib/Modal/Modal.svelte';
-	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
 
-	import EditIcon from '$lib/icons/Edit.svelte';
-	import TunerIcon from '$lib/icons/Tuner.svelte';
+	import BlockEditor from './BlockSettings/BlockEditor.svelte';
+
+	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
 	import MusicIcon from '$lib/icons/Music.svelte';
 	import PersonIcon from '$lib/icons/Person.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
 	import TimerIcon from '$lib/icons/Timer.svelte';
 	import DownloadIcon from '$lib/icons/Download.svelte';
+
 	import { remoteServer, defaultBlockGuid, mainSettings, liveBlocks } from '$/stores';
 
 	import getMediaDuration from '$lib/functions/getMediaDuration.js';
 
+	export let showEditing = false;
 	export let block = {};
 	export let index;
 	export let broadcastingBlockGuid;
-	export let showSettingsModal = false;
 	export let activeBlockGuid;
-	export let showOptionsModal = true;
 	export let broadcastTimeRemaining;
 	export let handleBroadcast = () => {};
 	export let updateStartTime = () => {};
@@ -218,7 +216,10 @@
 			<card-text>
 				<top>
 					<h3>{block.title === 'Title - click to edit' ? '' : block.title || ''}</h3>
-					<p class="block-type"><icon><svelte:component this={Icons[typeText]} /></icon></p>
+					<block-value
+						>{block?.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}%</block-value
+					>
+
 					<button on:click={downloadMP3.bind(this, block)} class="download">
 						<DownloadIcon size="27" />
 					</button>
@@ -259,20 +260,6 @@
 			</time-container>
 
 			<button-container>
-				<button
-					class="edit"
-					on:click={() => {
-						showOptionsModal = true;
-						activeBlockGuid = block?.blockGuid;
-					}}
-				>
-					<EditIcon size="27" /></button
-				>
-				{#if block?.blockGuid !== $defaultBlockGuid}
-					<button class="tuner" on:click={() => (showSettingsModal = true)}>
-						<TunerIcon size="27" />
-					</button>
-				{/if}
 				{#if ['edit'].find((v) => v === $mainSettings?.broadcastMode)}
 					<button class="broadcast" on:click={updateStartTime.bind(this, block, index)}
 						><TimerIcon size="32" /></button
@@ -289,18 +276,28 @@
 		</middle-container>
 		<bottom-container>
 			<button
-				class="navigator up"
-				class:default={$defaultBlockGuid === block?.blockGuid || index === 0}
-				on:click={moveElement.bind(this, index + 1, -1)}>▲</button
-			><block-value
-				>{block?.blockGuid === $defaultBlockGuid ? 100 : block.settings.split}% value to this block
-				when active</block-value
+				class="editor-toggle"
+				on:click={() => {
+					showEditing = !showEditing;
+				}}
 			>
-			<button
-				class="navigator down"
-				class:default={$defaultBlockGuid === block?.blockGuid || index === $liveBlocks?.length - 2}
-				on:click={moveElement.bind(this, index + 1, 1)}>▼</button
-			>
+				{showEditing ? 'close editor' : 'open editor'}
+			</button>
+
+			<sort>
+				<button
+					class="navigator up"
+					class:default={$defaultBlockGuid === block?.blockGuid || index === 0}
+					on:click={moveElement.bind(this, index + 1, -1)}>▲</button
+				>
+
+				<button
+					class="navigator down"
+					class:default={$defaultBlockGuid === block?.blockGuid ||
+						index === $liveBlocks?.length - 2}
+					on:click={moveElement.bind(this, index + 1, 1)}>▼</button
+				>
+			</sort>
 		</bottom-container>
 
 		{#if $mainSettings?.broadcastMode === 'playlist' && !block.enclosureUrl && block?.blockGuid !== $defaultBlockGuid}
@@ -309,13 +306,10 @@
 		{#if !block?.value?.destinations?.length && !($mainSettings?.broadcastMode === 'edit' && block?.blockGuid === $defaultBlockGuid)}
 			<warning>This item has no value blocks</warning>
 		{/if}
+		{#if showEditing}
+			<BlockEditor bind:block {activeBlockGuid} />
+		{/if}
 	</div>
-{/if}
-
-{#if showSettingsModal}
-	<Modal bind:showModal={showSettingsModal} onClose={saveBlock.bind(this, block)}>
-		<BlockSettings bind:block {activeBlockGuid} />
-	</Modal>
 {/if}
 
 <style>
@@ -442,13 +436,11 @@
 		padding: 0;
 	}
 
-	button.edit {
+	button.editor-toggle {
 		color: var(--color-text-0);
 		background-color: hsl(38, 100%, 61%);
-	}
-	button.tuner {
-		color: hsl(278, 100%, 92%);
-		background-color: hsl(277, 100%, 44%);
+		width: 150px;
+		height: initial;
 	}
 
 	button.broadcast {
@@ -458,7 +450,6 @@
 
 	block-value {
 		display: block;
-		width: 100%;
 		text-align: center;
 	}
 
@@ -467,6 +458,12 @@
 		color: red;
 		width: 100%;
 		text-align: center;
+	}
+
+	sort {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.navigator {

@@ -3,7 +3,7 @@
 
 	import { liveBlocks, mainSettings, defaultBlockGuid } from '$/stores';
 
-	import TimeInputs from './TimeInputs.svelte';
+	import TimeInputs from '$lib/TimeInputs/TimeInputs.svelte';
 	import Enclosure from './Enclosure.svelte';
 	import Chapters from './Chapters.svelte';
 	import Clips from './Clips.svelte';
