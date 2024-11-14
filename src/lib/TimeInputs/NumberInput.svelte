@@ -1,4 +1,5 @@
 <script>
+	export let small = false;
 	export let value = 0;
 	export let max = Infinity;
 	export let min = -Infinity;
@@ -71,6 +72,7 @@
 </script>
 
 <input
+	class:small
 	bind:value
 	on:input={changeInput}
 	on:blur={blur}
@@ -83,11 +85,12 @@
 <style>
 	input {
 		background: white;
-		width: 50px;
-		height: 40px;
-		margin: 4px;
+		width: 41px;
+		height: 24px;
+		border-width: 1px;
+		border-radius: 2px;
+		margin: 2px 4px;
 		text-align: center;
-		border-radius: 3px;
 		cursor: pointer;
 	}
 </style>

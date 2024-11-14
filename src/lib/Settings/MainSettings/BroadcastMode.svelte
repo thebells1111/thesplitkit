@@ -1,13 +1,11 @@
 <script>
 	import { mainSettings } from '$/stores';
-	export let mainUnsaved;
 	let selectedOption = $mainSettings?.broadcastMode || 'manual'; // Default selected option
 
 	// Function to handle the option change
 	function handleChange(event) {
 		selectedOption = event.target.value;
 		$mainSettings.broadcastMode = selectedOption;
-		mainUnsaved = true;
 	}
 </script>
 

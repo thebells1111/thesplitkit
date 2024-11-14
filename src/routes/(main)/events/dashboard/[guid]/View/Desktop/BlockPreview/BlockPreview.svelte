@@ -2,65 +2,13 @@
 	import Share from '$lib/Share/Share.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
-	import Edit from '$lib/icons/Edit.svelte';
-	import Delete from '$lib/icons/Delete.svelte';
-	import ShareIcon from '$lib/icons/Share.svelte';
-	import MusicIcon from '$lib/icons/Music.svelte';
-	import PersonIcon from '$lib/icons/Person.svelte';
-	import ChapterIcon from '$lib/icons/Chapter.svelte';
-	import PodcastIcon from '$lib/icons/Podcast.svelte';
-	import CopyIcon from '$lib/icons/Copy.svelte';
-	import clone from 'just-clone';
 
-	import { defaultBlockGuid, liveBlocks, copiedBlock, changeDefault, mainSettings } from '$/stores';
+	import { defaultBlockGuid, changeDefault, mainSettings } from '$/stores';
 
 	export let block;
-	export let showEditor;
 	let showCopied = false;
 
 	let showShareModal = false;
-
-	function handleDelete() {
-		let confirmation = confirm(
-			'Are you sure you want to delete ' + (block?.line?.[0] || 'this block?')
-		);
-		if (confirmation) {
-			$liveBlocks = $liveBlocks.filter((v) => v?.blockGuid !== block?.blockGuid);
-			if (block?.blockGuid === $defaultBlockGuid) {
-				$defaultBlockGuid = null;
-				$liveBlocks.unshift(null);
-			}
-
-			showOptionsModal = false;
-		}
-	}
-
-	function handleCopy() {
-		showCopied = true;
-		$copiedBlock = clone(block);
-		setTimeout(() => (showCopied = false), 333);
-	}
-
-	function handleEdit() {
-		showEditor = true;
-		closeOptionsModal();
-	}
-
-	const Icons = {
-		Music: MusicIcon,
-		Person: PersonIcon,
-		Chapter: ChapterIcon,
-		Podcast: PodcastIcon
-	};
-
-	let typeText = block?.type?.charAt(0)?.toUpperCase() + block?.type?.slice(1) || 'Chapter';
-
-	function handleChangeType(type) {
-		block.type = type;
-		typeText = type.charAt(0).toUpperCase() + type.slice(1);
-		showSelectBlock = false;
-		$liveBlocks = $liveBlocks;
-	}
 </script>
 
 <top>
@@ -104,19 +52,6 @@
 		<h3 class="warning">Value Blocks are missing addresses.</h3>
 	{/if}
 {/if}
-<button-container>
-	<button class="delete" on:click={handleDelete}>
-		<Delete size="27" />
-	</button>
-
-	<button class="edit" on:click={handleEdit}>
-		<Edit size="32" />
-	</button>
-
-	<button class="copy" on:click={handleCopy}>
-		<CopyIcon size="27" />
-	</button>
-</button-container>
 
 {#if showShareModal}
 	<Modal bind:showModal={showShareModal}>
@@ -198,41 +133,6 @@
 	p {
 		padding: 0;
 		margin: 0;
-	}
-
-	button-container {
-		width: calc(100% - 16px);
-		display: flex;
-		margin: 4px 8px;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	button {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin: 4px;
-		min-height: 40px;
-		min-width: 40px;
-		border-radius: 25px;
-		padding: 0;
-	}
-
-	button.delete {
-		color: var(--color-text-1);
-		background-color: hsl(0, 100%, 32%);
-	}
-
-	button.edit {
-		min-height: 50px;
-		min-width: 50px;
-		color: var(--color-text-0);
-		background-color: hsl(38, 100%, 61%);
-	}
-
-	button.copy {
-		background-color: var(--color-theme-blue);
 	}
 
 	h3.warning {

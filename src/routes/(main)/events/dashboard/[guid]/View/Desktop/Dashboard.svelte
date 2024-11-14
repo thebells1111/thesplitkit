@@ -12,7 +12,6 @@
 
 	export let blocks = [];
 	export let filterType = null;
-	export let showOptionsModal = false;
 	export let activeBlockGuid = null;
 	export let player = null;
 	export let broadcastTimeRemaining = null;
@@ -24,6 +23,9 @@
 	export let handleResetTimer = () => {};
 	export let handleBroadcast = () => {};
 	export let updateStartTime = () => {};
+	export let downloadMP3 = () => {};
+	export let handleDeleteBlock = () => {};
+	export let handleCopyBlock = () => {};
 </script>
 
 <div>
@@ -48,27 +50,33 @@
 			<audio autoplay controls bind:this={player} class:hidden={player?.src} />
 		{/if}
 
-		{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
-			<time-stamp>
-				<button class="timer-button" on:click={handleTimer}>
-					<TimerIcon size="36" />
+		<controls>
+			{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
+				<time-stamp>
+					<button class="timer-button" on:click={handleTimer}>
+						<TimerIcon size="36" />
 
-					{#if isRunning}
-						<pause>
-							<PauseIcon size="20" />
-						</pause>
-					{:else}
-						<play>
-							<PlayIcon size="20" />
-						</play>
-					{/if}
-				</button>
-				<timer>{formatTime(timeStamp, true)}</timer>
-				<button class="reset-button" on:click={handleResetTimer}>
-					<ResetIcon size="32" />
-				</button>
-			</time-stamp>
-		{/if}
+						{#if isRunning}
+							<pause>
+								<PauseIcon size="20" />
+							</pause>
+						{:else}
+							<play>
+								<PlayIcon size="20" />
+							</play>
+						{/if}
+					</button>
+					<timer>{formatTime(timeStamp, true)}</timer>
+					<button class="reset-button" on:click={handleResetTimer}>
+						<ResetIcon size="32" />
+					</button>
+				</time-stamp>
+			{:else}
+				<controls-spacer />
+			{/if}
+
+			<button class="sort">Sort</button>
+		</controls>
 
 		<top>
 			<transparent-spacer />
@@ -102,6 +110,9 @@
 						{broadcastTimeRemaining}
 						{handleBroadcast}
 						{updateStartTime}
+						{downloadMP3}
+						{handleDeleteBlock}
+						{handleCopyBlock}
 					/>
 				{/each}
 			</blocks>
@@ -166,9 +177,15 @@
 		min-height: 40px;
 	}
 
+	controls {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		align-items: center;
+	}
+
 	time-stamp {
 		display: flex;
-		width: calc(100% - 32px);
 		margin: 8px 0;
 		justify-content: space-between;
 		align-items: center;
@@ -181,12 +198,26 @@
 		height: 42px;
 		padding: 0;
 		overflow: hidden;
+		margin: 0 16px;
 	}
 
 	time-stamp .timer-button {
 		color: var(--color-text-0);
 
 		position: relative;
+	}
+
+	button.sort {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 42px;
+		height: 42px;
+		margin: 0 16px;
+		border-radius: 25px;
+		padding: 0;
+		color: var(--color-text-0);
+		background-color: hsl(38, 100%, 61%);
 	}
 
 	pause,

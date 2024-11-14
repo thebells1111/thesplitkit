@@ -3,11 +3,9 @@
 	console.log($mainSettings);
 
 	let enclosureUrl;
-	export let mainUnsaved;
 
 	function handleInput(e) {
 		$mainSettings.editEnclosure = e.target.value;
-		mainUnsaved = true;
 	}
 
 	$: enclosureUrl = $mainSettings?.editEnclosure || '';

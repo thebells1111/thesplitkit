@@ -1,12 +1,9 @@
 <script>
 	import { mainSettings } from '$/stores';
 
-	export let mainUnsaved;
-
 	function handleLowBandwidth(e, setting) {
 		$mainSettings.lowBandwidth = $mainSettings?.lowBandwidth || {};
 		$mainSettings.lowBandwidth[setting] = e.target.checked;
-		mainUnsaved = true;
 	}
 </script>
 

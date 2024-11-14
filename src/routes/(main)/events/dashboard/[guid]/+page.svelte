@@ -30,7 +30,6 @@
 	let showFilterModal = false;
 	let showOptionsModal = false;
 	let filterType = 'off';
-	let mainUnsaved = false;
 	let unsaved = false;
 	let showEditor = false;
 	let showSelectBlock = false;
@@ -68,8 +67,6 @@
 			$defaultBlockGuid = null;
 			await loadBlocks();
 			$activePageGuid = guid;
-
-			setTimeout(() => (mainUnsaved = false), 500);
 		}
 		console.log($liveBlocks);
 	});
@@ -191,7 +188,6 @@
 		};
 
 		activeBlockGuid = blockGuid;
-		mainUnsaved = true;
 
 		if ($changeDefault) {
 			$defaultBlockGuid = blockGuid;
@@ -293,7 +289,6 @@
 				$liveBlocks = $liveBlocks.concat(newBlock);
 			}
 			console.log($liveBlocks);
-			mainUnsaved = true;
 		}
 	}
 </script>
@@ -309,22 +304,12 @@
 		bind:showMainSettingsModal
 		bind:showFilterModal
 		blocks={$liveBlocks}
-		bind:mainUnsaved
 		bind:showSelectBlock
 		{filterType}
 	/>
 	{#if $activePageGuid === guid}
 		<broadcast-blocks>
-			<Dashboard
-				bind:blocks={filteredBlocks}
-				{filterType}
-				bind:showShareModal
-				bind:showOptionsModal
-				bind:unsaved
-				bind:showEditor
-				bind:activeBlockGuid
-				bind:addDefaultType
-			/>
+			<Dashboard bind:blocks={filteredBlocks} {filterType} bind:addDefaultType />
 		</broadcast-blocks>
 	{/if}
 {/if}

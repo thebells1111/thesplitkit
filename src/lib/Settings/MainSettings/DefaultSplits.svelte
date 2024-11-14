@@ -2,7 +2,6 @@
 	import { mainSettings } from '$/stores';
 
 	export let updateAllSplits = false;
-	export let mainUnsaved = false;
 
 	$: {
 		if ($mainSettings.splits < 0) $mainSettings.splits = 0;
@@ -33,11 +32,7 @@
 			/> %
 		</percent>
 		<label>
-			<input
-				type="checkbox"
-				bind:value={updateAllSplits}
-				on:input={() => (mainUnsaved = true)}
-			/>Update all splits
+			<input type="checkbox" bind:value={updateAllSplits} />Update all splits
 		</label>
 	</split-container>
 	<p>The other {100 - Number($mainSettings.splits)}% goes to your default block.</p>

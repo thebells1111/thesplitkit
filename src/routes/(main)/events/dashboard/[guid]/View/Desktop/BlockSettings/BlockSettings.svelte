@@ -1,117 +1,73 @@
 <script>
-	import clone from 'just-clone';
-
-	import { liveBlocks, mainSettings, defaultBlockGuid } from '$/stores';
-
+	import BlockValueSplit from './BlockValueSplit.svelte';
 	import TimeInputs from '$lib/TimeInputs/TimeInputs.svelte';
-	import Enclosure from './Enclosure.svelte';
+	import AudioUrl from './AudioUrl.svelte';
 	import Chapters from './Chapters.svelte';
-	import Clips from './Clips.svelte';
+	import BlockInfo from '../BlockInfo/BlockInfo.svelte';
+	import BlockPreview from '../BlockPreview/BlockPreview.svelte';
+	import BlockID from './BlockID.svelte';
 
-	let initialized = false;
-	let savedBlock;
+	import { defaultBlockGuid } from '$/stores';
 
-	let showSaved = false;
-
-	export let block = { settings: { split: 95 } };
-
-	$: {
-		if (block.settings.split < 0) block.settings.split = 0;
-		if (block.settings.split > 100) block.settings.split = 100;
-	}
-
-	function preventCertainInput(event) {
-		// Prevent 'e' and '-' from being inputted
-		if (event.key === 'e' || event.key === '-') {
-			event.preventDefault();
-		}
-	}
-
-	$: compareBlock(block);
-
-	function compareBlock() {
-		if (JSON.stringify(block) !== JSON.stringify(savedBlock)) {
-			savedBlock = clone(block);
-
-			if (!block.settings) {
-				block.settings = { split: 95 };
-			}
-		}
-	}
+	export let block;
+	export let downloadMP3 = () => {};
 </script>
 
-<div>
-	<settings-container>
-		<label>
-			<h3>Default Block Value Split</h3>
-			<percent
-				><input
-					type="number"
-					bind:value={block.settings.split}
-					min="0"
-					max="100"
-					on:keydown={preventCertainInput}
-				/>%</percent
-			>
-		</label>
-	</settings-container>
-	<time-settings>
-		<TimeInputs bind:block bind:time={block.startTime} title="Start Time" />
-		<TimeInputs bind:block bind:time={block.duration} title="Block Playback Duration" />
-	</time-settings>
-	<Enclosure bind:block />
-	{#if block?.chaptersUrl}
-		<Chapters bind:block />
-	{/if}
-	<!-- {#if ['podcast', 'music'].find((v) => v === block?.type) && block.enclosureUrl}
-		<Clips bind:block />
-	{/if} -->
-</div>
-
-{#if showSaved}
-	<SaveModal>
-		<h2>Saved</h2>
-	</SaveModal>
-{/if}
+<editing-container>
+	<left>
+		<BlockID {block} />
+		{#if block?.blockGuid !== $defaultBlockGuid}
+			<BlockValueSplit bind:block />
+			<AudioUrl bind:block {downloadMP3} />
+			{#if block?.chaptersUrl}
+				<Chapters bind:block />
+			{/if}
+			<time-settings>
+				<div>
+					<TimeInputs bind:block bind:time={block.startTime} title="Start Time" small={true} />
+				</div>
+				<div>
+					<TimeInputs
+						bind:block
+						bind:time={block.duration}
+						title="Block Playback Duration"
+						small={true}
+					/>
+				</div>
+			</time-settings>
+		{/if}
+	</left>
+	<right>
+		<BlockInfo bind:block />
+	</right>
+</editing-container>
 
 <style>
-	div {
-		width: calc(100% - 16px);
-	}
-	settings-container {
-		width: calc(100% - 16px);
-		margin: 8px;
-	}
-	label {
+	editing-container {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 300px;
-		margin-bottom: 4px;
+		width: 100%;
+		margin-top: 8px;
 	}
 
-	h3 {
-		margin: 0;
-		padding: 0;
-		color: var(--color-theme-blue);
-	}
-
-	percent {
-		align-self: flex-end;
-		min-width: 75px;
-	}
-
-	percent input {
-		width: 40px;
-		padding: 4px 0;
-		text-align: right;
+	left,
+	right {
+		display: block;
+		width: calc(50% - 16px);
 		margin: 0 8px;
 	}
 
 	time-settings {
-		display: block;
-		width: calc(100% - 16px);
-		margin: 0 8px;
-		max-width: 360px;
+		display: flex;
+		margin: 0;
+	}
+
+	time-settings > div {
+		width: calc(50% - 8px);
+		margin: 0 8px 0 0;
+	}
+
+	time-settings > div:nth-of-type(2) {
+		width: calc(50% - 8px);
+		margin: 0 0 0 8px;
 	}
 </style>

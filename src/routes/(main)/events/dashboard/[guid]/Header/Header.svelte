@@ -22,10 +22,10 @@
 	import { liveBlocks, defaultBlockGuid, changeDefault, mainSettings } from '$/stores';
 
 	export let filterType;
-	export let mainUnsaved = false;
 	let initialized = false;
 	let savedBlocks = [];
 	let showSaved = false;
+	let saveTimeout;
 
 	const Icons = {
 		music: MusicIcon,
@@ -35,21 +35,22 @@
 	};
 
 	$: compareBlocks($liveBlocks);
-	$: if (mainUnsaved) {
-		console.log('mainUnsaved saved');
-		remoteSave($liveBlocks, $page.params.guid);
-		mainUnsaved = false;
-	}
 
 	function compareBlocks(blocks) {
 		if (JSON.stringify(blocks) !== JSON.stringify(savedBlocks)) {
 			savedBlocks = clone(blocks);
 			if (initialized) {
-				mainUnsaved = true;
+				clearTimeout(saveTimeout);
+				saveTimeout = setTimeout(saveState, 1000);
 			} else {
 				initialized = true;
 			}
 		}
+	}
+
+	function saveState() {
+		console.log('saved state');
+		remoteSave($liveBlocks, $page.params.guid);
 	}
 
 	function submitData() {
@@ -81,14 +82,13 @@
 		});
 
 		remoteSave(newBlocks, $page.params.guid);
-		mainUnsaved = false;
 		showSaved = true;
 		setTimeout(() => (showSaved = false), 500);
 	}
 </script>
 
 <header>
-	<button class="save" class:unsaved={mainUnsaved} type="submit" on:click={submitData}>
+	<button class="save" type="submit" on:click={submitData}>
 		<Save size="32" />
 	</button>
 

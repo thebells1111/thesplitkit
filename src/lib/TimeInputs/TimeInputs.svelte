@@ -1,11 +1,12 @@
 <script>
 	import TimerIcon from '$lib/icons/Timer.svelte';
 	import NumberInput from './NumberInput.svelte';
-	export let time;
-	export let block;
-	export let title;
-	export let player;
-	export let hidePlayer;
+	export let time = null;
+	export let block = null;
+	export let title = null;
+	export let player = null;
+	export let hidePlayer = null;
+	export let small = false;
 
 	const getHours = (t) => Math.floor(t / 3600) || 0;
 	const getMinutes = (t) => Math.floor((t % 3600) / 60) || 0;
@@ -33,7 +34,7 @@
 
 <time-container>
 	<title-bar>
-		<h3>{title}</h3>
+		<h4>{title}</h4>
 		{#if player && !hidePlayer}
 			<button class="timer" on:click={handleMarkTime}><TimerIcon size="32" /></button>
 		{/if}
@@ -42,19 +43,19 @@
 	<time-inputs>
 		<label>
 			Hour
-			<NumberInput max={99} min={0} bind:value={hour} blurDefault={0} disableScroll={true} />
+			<NumberInput max={99} min={0} bind:value={hour} blurDefault={0} {small} />
 		</label>
 		<label>
 			Min
-			<NumberInput max={59} min={0} bind:value={mins} blurDefault={0} disableScroll={true} />
+			<NumberInput max={59} min={0} bind:value={mins} blurDefault={0} {small} />
 		</label>
 		<label>
 			Sec
-			<NumberInput max={59} min={0} bind:value={sec} blurDefault={0} disableScroll={true} />
+			<NumberInput max={59} min={0} bind:value={sec} blurDefault={0} {small} />
 		</label>
 		<label>
 			mSec
-			<NumberInput max={999} min={0} bind:value={msec} blurDefault={0} disableScroll={true} />
+			<NumberInput max={999} min={0} bind:value={msec} blurDefault={0} {small} />
 		</label>
 	</time-inputs>
 </time-container>
@@ -70,31 +71,22 @@
 		align-items: center;
 		margin: 4px 0;
 	}
-	h3 {
-		margin: 4px 8px 0 0;
+	h4 {
+		margin: 0;
 		color: var(--color-theme-blue);
 		display: inline-block;
 	}
 	time-inputs {
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-start;
 		width: 100%;
 	}
 
 	time-inputs label {
 		display: flex;
 		flex-direction: column;
-		font-weight: bold;
-		width: 60px;
-		margin: 0 8px;
 		justify-content: center;
 		align-items: center;
-	}
-
-	time-inputs label input {
-		width: 60%;
-		text-align: center;
-		padding: 4px;
 	}
 
 	button {

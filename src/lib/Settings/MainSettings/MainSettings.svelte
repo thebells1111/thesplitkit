@@ -14,24 +14,10 @@
 	import BroadcastSettings from './BroadcastSettings.svelte';
 	import LowBandwidth from './LowBandwidth.svelte';
 
-	let mainUnsaved = false;
 	let initialized = false;
 	let savedSettings = {};
 	let updateAllSplits = false;
 	export let showOffsetStartTimes;
-
-	$: compareSettings($mainSettings);
-
-	function compareSettings() {
-		if (JSON.stringify($mainSettings) !== JSON.stringify(savedSettings)) {
-			savedSettings = clone($mainSettings);
-			if (initialized) {
-				mainUnsaved = true;
-			} else {
-				initialized = true;
-			}
-		}
-	}
 
 	export const saveMainSettings = () => {
 		if ($page.params.guid !== 'test') {
@@ -73,7 +59,6 @@
 					.catch((error) => console.error(error));
 			}
 		}
-		mainUnsaved = false;
 	};
 
 	async function copyToClipboard(text) {
@@ -93,23 +78,23 @@
 	{$page.params.guid}
 	<CopyIcon size="24" />
 </h2>
-<BroadcastMode bind:mainUnsaved />
-<DefaultSplits bind:mainUnsaved bind:updateAllSplits />
+<BroadcastMode />
+<DefaultSplits bind:updateAllSplits />
 <EditTimes bind:showOffsetStartTimes />
 <RemoteCreds />
-<LowBandwidth bind:mainUnsaved />
+<LowBandwidth />
 <BroadcastSettings />
 
 {#if $mainSettings?.broadcastMode === 'playlist'}
-	<PlaylistSettings bind:mainUnsaved />
+	<PlaylistSettings />
 {/if}
 
 {#if $mainSettings?.broadcastMode === 'podcast'}
-	<PodcastSettings bind:mainUnsaved />
+	<PodcastSettings />
 {/if}
 
 {#if $mainSettings?.broadcastMode === 'edit'}
-	<PrerecordedSettings bind:mainUnsaved />
+	<PrerecordedSettings />
 {/if}
 
 <style>

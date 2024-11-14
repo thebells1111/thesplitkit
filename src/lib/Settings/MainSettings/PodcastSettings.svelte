@@ -5,7 +5,6 @@
 	$: console.log($mainSettings);
 
 	let enclosureUrl;
-	export let mainUnsaved;
 	let downloadInfo = '';
 
 	$: enclosureUrl = $mainSettings?.liveEnclosure || '';
@@ -17,12 +16,10 @@
 	function handleAutoSwitch(e) {
 		$mainSettings.podcast = $mainSettings.podcast || {};
 		$mainSettings.podcast.autoSwitch = e.target.checked;
-		mainUnsaved = true;
 	}
 
 	function handleInput(e, setting) {
 		$mainSettings[setting] = e.target.value;
-		mainUnsaved = true;
 	}
 
 	async function setMP3Metadata(blob, metadata) {

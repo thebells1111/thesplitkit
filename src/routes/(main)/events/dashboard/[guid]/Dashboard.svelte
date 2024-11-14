@@ -2,6 +2,10 @@
 	import { onMount, tick } from 'svelte';
 	import io from 'socket.io-client';
 	import clone from 'just-clone';
+	import { saveAs } from 'file-saver';
+	import { ID3Writer } from 'browser-id3-writer';
+
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	import fetchChapters from '$lib/functions/dashboard/fetchChapters.js';
 	import getEpisode from '$lib/functions/dashboard/getEpisode.js';
 	import processBlock from '$lib/functions/dashboard/processBlock.js';
@@ -23,7 +27,7 @@
 		liveBlocks,
 		defaultBlockGuid,
 		mainSettings,
-		blocksList
+		copiedBlock
 	} from '$/stores';
 	export let guid = $page.params.guid;
 	export let blocks = [];
@@ -54,6 +58,7 @@
 	let broadcastingBlockGuid;
 	let fallbackBlock;
 	let broadcastingBlock;
+	let showCopied;
 
 	onMount(async () => {
 		if (!$liveBlocks?.length) {
@@ -440,10 +445,95 @@
 			console.log('fetchFeed Error: ', error);
 		}
 	}
+
+	async function setMP3Metadata(blob, metadata) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsArrayBuffer(blob);
+			reader.onloadend = () => {
+				const buffer = reader.result;
+				const writer = new ID3Writer(buffer);
+				writer
+					.setFrame('TIT2', metadata.title)
+					.setFrame('TPE1', [metadata.artist])
+					.setFrame('TALB', metadata.album)
+					.setFrame('COMM', metadata.comment)
+					.setFrame('TXXX', metadata.internalId);
+				writer.addTag();
+				const taggedArrayBuffer = writer.arrayBuffer;
+				const taggedBlob = new Blob([taggedArrayBuffer], {
+					type: 'audio/mpeg'
+				});
+				resolve(taggedBlob);
+			};
+		});
+	}
+
+	async function downloadMP3(block) {
+		const res = await fetch(
+			remoteServer + '/api/proxy?url=' + encodeURIComponent(block.enclosureUrl),
+			{
+				headers: { 'User-Agent': 'TheSplitKit/0.1' }
+			}
+		);
+		let blob = await res.blob();
+
+		const metadata = {
+			title: block.title,
+			artist: block?.line?.[1] || '',
+			album: block?.line?.[0] || '',
+			comment: {
+				description: 'SplitKitMeta',
+				text: `SplitKitMeta: {eventGuid:${block.eventGuid}, blockGuid:${block.blockGuid}}`
+			},
+			internalId: {
+				description: 'mAirList',
+				value: `<PlaylistItem Class="File"><Title>${block.title}</Title><Artist>${
+					block?.line?.[1] || ''
+				}</Artist><Comment>{eventGuid:${block.eventGuid}, blockGuid:${
+					block.blockGuid
+				}}</Comment><ExternalID>{eventGuid:${block.eventGuid}, blockGuid:${
+					block.blockGuid
+				}, feedGuid:${block.feedGuid}, itemGuid:${block.itemGuid}}</ExternalID></PlaylistItem>`
+			}
+		};
+
+		blob = await setMP3Metadata(blob, metadata);
+
+		saveAs(
+			blob,
+			`${sanitizeFilename(block.title)} - ${sanitizeFilename(block?.line?.[1])} - ${
+				block.blockGuid
+			}.mp3`
+		);
+
+		function sanitizeFilename(filename) {
+			return filename.replace(/[\\/:*?"<>|\x00-\x1F\x80-\x9F]/g, '');
+		}
+	}
+
+	function handleDeleteBlock(block) {
+		let confirmation = confirm(
+			'Are you sure you want to delete ' + (block?.line?.[0] || 'this block?')
+		);
+		if (confirmation) {
+			$liveBlocks = $liveBlocks.filter((v) => v?.blockGuid !== block?.blockGuid);
+			if (block?.blockGuid === $defaultBlockGuid) {
+				$defaultBlockGuid = null;
+				$liveBlocks.unshift(null);
+			}
+		}
+	}
+
+	function handleCopyBlock(block) {
+		showCopied = true;
+		$copiedBlock = clone(block);
+		setTimeout(() => (showCopied = false), 333);
+	}
 </script>
 
 <Dashboard
-	bind:blocks
+	bind:blocks={$liveBlocks}
 	bind:filterType
 	bind:showOptionsModal
 	bind:activeBlockGuid
@@ -457,101 +547,16 @@
 	{handleResetTimer}
 	{handleBroadcast}
 	{updateStartTime}
+	{downloadMP3}
+	{handleDeleteBlock}
+	{handleCopyBlock}
 />
 
+{#if showCopied}
+	<SaveModal>
+		<h2>Copied</h2>
+	</SaveModal>
+{/if}
+
 <style>
-	div {
-		width: 100%;
-		max-width: 600px;
-		margin: 0 auto;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		height: 100%;
-		overflow: auto;
-	}
-
-	top {
-		position: relative;
-		width: 100%;
-		display: flex;
-	}
-
-	transparent-spacer {
-		display: block;
-		height: 20px;
-		width: calc(100% - 8px);
-		background: linear-gradient(to top, transparent, white);
-		position: absolute;
-		bottom: -20px;
-		z-index: 3;
-	}
-
-	blocks {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		overflow: auto;
-		padding-top: 18px;
-		margin-bottom: 0px;
-		padding-bottom: 16px;
-	}
-
-	.socket-connect {
-		margin: 0 auto 8px auto;
-		width: 250px;
-		background-image: linear-gradient(to bottom, hsl(277, 100%, 44%), hsl(277, 100%, 26.7%));
-		color: var(--color-text-1);
-	}
-
-	warning {
-		font-weight: bold;
-		color: red;
-	}
-
-	audio {
-		width: calc(100% - 16px);
-		height: 40px;
-		min-height: 40px;
-	}
-
-	time-stamp {
-		display: flex;
-		width: calc(100% - 32px);
-		margin: 8px 0;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	time-stamp button {
-		background-color: white;
-		color: red;
-		width: 42px;
-		height: 42px;
-		padding: 0;
-		overflow: hidden;
-	}
-
-	time-stamp .timer-button {
-		color: var(--color-text-0);
-
-		position: relative;
-	}
-
-	pause,
-	play {
-		position: absolute;
-		background-color: white;
-		border-radius: 24px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		bottom: 0px;
-		right: 0px;
-	}
-
-	timer {
-		font-size: 1.1em;
-		font-weight: bold;
-	}
 </style>
