@@ -321,7 +321,7 @@
 {/if}
 
 {#if showMainSettingsModal}
-	<Modal bind:showModal={showMainSettingsModal} onClose={saveMainSettings}>
+	<Modal bind:showModal={showMainSettingsModal} closeModal={saveMainSettings}>
 		<MainSettings bind:saveMainSettings bind:showOffsetStartTimes />
 	</Modal>
 {/if}
@@ -343,7 +343,7 @@
 {/if}
 
 {#if showSelectBlock}
-	<Modal bind:showModal={showSelectBlock} bind:unsaved onClose={() => ($changeDefault = false)}>
+	<Modal bind:showModal={showSelectBlock} bind:unsaved closeModal={() => ($changeDefault = false)}>
 		<SelectBlock {addBlock} {addFeed} bind:showSelectBlock />
 	</Modal>
 {/if}
@@ -379,7 +379,7 @@
 	broadcast-blocks {
 		display: block;
 		flex: 1;
-		height: calc(100% - 8px);
+		height: calc(100% - 60px);
 	}
 
 	.unverified {

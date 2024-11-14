@@ -313,7 +313,7 @@
 {/if}
 
 {#if showSettingsModal}
-	<Modal bind:showModal={showSettingsModal} onClose={saveBlock.bind(this, block)}>
+	<Modal bind:showModal={showSettingsModal} closeModal={saveBlock.bind(this, block)}>
 		<BlockSettings bind:block {activeBlockGuid} />
 	</Modal>
 {/if}

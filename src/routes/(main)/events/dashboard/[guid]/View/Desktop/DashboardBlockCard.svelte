@@ -14,13 +14,13 @@
 	export let block = {};
 	export let index;
 	export let broadcastingBlockGuid;
-	export let activeBlockGuid;
 	export let broadcastTimeRemaining;
 	export let handleBroadcast = () => {};
 	export let updateStartTime = () => {};
 	export let downloadMP3 = () => {};
 	export let handleDeleteBlock = () => {};
 	export let handleCopyBlock = () => {};
+	export let expandAll = false;
 
 	function broadcast(block) {
 		if (broadcastingBlockGuid !== block?.blockGuid) {
@@ -45,6 +45,12 @@
 		if (activeIndex > -1) {
 			$liveBlocks[activeIndex] = block;
 		}
+	}
+
+	$: toggleEditor(expandAll);
+
+	function toggleEditor(expandAll) {
+		showEditing = expandAll;
 	}
 </script>
 
@@ -174,6 +180,7 @@
 	time-container {
 		margin-top: 4px;
 		display: flex;
+		height: 18px;
 	}
 
 	start-time,
@@ -245,7 +252,7 @@
 
 	bottom-container {
 		display: flex;
-		align-items: center;
+		align-items: flex-end;
 		justify-content: space-between;
 		width: 100%;
 	}
@@ -274,12 +281,6 @@
 	button.broadcast {
 		color: var(--color-text-1);
 		background-color: rgb(0, 132, 180);
-	}
-
-	sort {
-		display: flex;
-		align-items: center;
-		justify-content: center;
 	}
 
 	editor {

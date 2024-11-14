@@ -23,7 +23,7 @@
 		display: flex;
 		margin: 4px 8px;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-end;
 	}
 
 	button {
@@ -40,13 +40,6 @@
 	button.delete {
 		color: var(--color-text-1);
 		background-color: hsl(0, 100%, 32%);
-	}
-
-	button.edit {
-		min-height: 50px;
-		min-width: 50px;
-		color: var(--color-text-0);
-		background-color: hsl(38, 100%, 61%);
 	}
 
 	button.copy {

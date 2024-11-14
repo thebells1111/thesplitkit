@@ -1,11 +1,27 @@
 <script>
-	import Close from '$lib/icons/Close.svelte';
-	export let showModal;
+	import { onMount } from 'svelte';
+	import Close from '../../lib/icons/Close.svelte';
+
+	export let closeModal = () => {};
+	export let showModal = false;
 	export let unsaved = false;
 	export let isFeedDownload = false;
-	export let onClose = () => {};
-	function closeModal() {
-		onClose();
+
+	onMount(() => {
+		const handleKeyDown = (event) => {
+			if (event.key === 'Escape') {
+				onClose();
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyDown);
+
+		// Cleanup function to remove event listener
+		return () => document.removeEventListener('keydown', handleKeyDown);
+	});
+
+	function onClose() {
+		closeModal();
 		if (unsaved) {
 			const userConfirmation = window.confirm('Your changes are unsaved. Do you want to continue?');
 			if (userConfirmation) {
@@ -25,18 +41,17 @@
 	}
 </script>
 
-{#if showModal}
-	<blurred-background on:mousedown|self={closeModal} on:touchend|self={closeModal}>
-		<modal>
-			<button class="close icon" on:click={closeModal}>
-				<Close size="24" />
-			</button>
-			<modal-content>
-				<slot />
-			</modal-content>
-		</modal>
-	</blurred-background>
-{/if}
+<blurred-background on:mousedown|self={onClose} on:touchend|self={onClose}>
+	<modal>
+		<button class="close" on:click={onClose}>
+			<Close size="24" />
+		</button>
+
+		<container>
+			<slot />
+		</container>
+	</modal>
+</blurred-background>
 
 <style>
 	blurred-background {
@@ -66,15 +81,6 @@
 		box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 1);
 	}
 
-	modal-content {
-		display: flex;
-		flex-direction: column;
-		padding: 40px 0px 0px 0px;
-		width: 100%;
-		align-items: center;
-		height: calc(100% - 40px);
-	}
-
 	button {
 		background-color: rgb(0, 132, 180);
 		color: white;
@@ -96,15 +102,7 @@
 		color: rgba(0, 0, 0, 0.75);
 		z-index: 33;
 		border: 1px solid transparent;
-	}
-
-	fade-bottom {
-		display: block;
-		height: 20px;
-		width: 100%;
-		background: linear-gradient(to bottom, transparent, white);
-		position: absolute;
-		bottom: 0px;
+		box-shadow: none;
 	}
 
 	@media screen and (max-width: 992px) {

@@ -6,7 +6,12 @@
 	import TimerIcon from '$lib/icons/Timer.svelte';
 	import PlayIcon from '$lib/icons/PlayArrow.svelte';
 	import PauseIcon from '$lib/icons/Pause.svelte';
+	import ExpandAllIcon from '$lib/icons/ExpandAll.svelte';
+	import CollapseAllIcon from '$lib/icons/CollapseAll.svelte';
+	import SwapVertIcon from '$icons/SwapVert.svelte';
 	import NoDefault from './NoDefault/NoDefault.svelte';
+	import Modal from '$lib/Modal/Modal.svelte';
+	import BlockSorter from './BlockSorter/BlockSorter.svelte';
 
 	import { socket, liveBlocks, defaultBlockGuid, mainSettings, blocksList } from '$/stores';
 
@@ -26,6 +31,9 @@
 	export let downloadMP3 = () => {};
 	export let handleDeleteBlock = () => {};
 	export let handleCopyBlock = () => {};
+
+	let showBlockSorter = false;
+	let expandAll = false;
 </script>
 
 <div>
@@ -75,7 +83,26 @@
 				<controls-spacer />
 			{/if}
 
-			<button class="sort">Sort</button>
+			<button
+				class="sort"
+				on:click={() => {
+					expandAll = !expandAll;
+				}}
+			>
+				{#if expandAll}
+					<CollapseAllIcon size="30" />
+				{:else}
+					<ExpandAllIcon size="30" />
+				{/if}
+			</button>
+			<button
+				class="sort"
+				on:click={() => {
+					showBlockSorter = !showBlockSorter;
+				}}
+			>
+				<SwapVertIcon size="30" />
+			</button>
 		</controls>
 
 		<top>
@@ -96,6 +123,10 @@
 							{broadcastTimeRemaining}
 							{handleBroadcast}
 							{updateStartTime}
+							{downloadMP3}
+							{handleDeleteBlock}
+							{handleCopyBlock}
+							{expandAll}
 						/>
 					{/if}
 				{/each}
@@ -113,6 +144,7 @@
 						{downloadMP3}
 						{handleDeleteBlock}
 						{handleCopyBlock}
+						{expandAll}
 					/>
 				{/each}
 			</blocks>
@@ -121,6 +153,17 @@
 		{/if}
 	{/if}
 </div>
+
+{#if showBlockSorter && $liveBlocks?.length > 1}
+	<Modal
+		bind:showModal={showBlockSorter}
+		closeModal={() => {
+			$liveBlocks = $liveBlocks;
+		}}
+	>
+		<BlockSorter bind:blocks={$liveBlocks} />
+	</Modal>
+{/if}
 
 <style>
 	div {

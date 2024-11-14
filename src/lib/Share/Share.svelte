@@ -290,7 +290,7 @@
 	<Modal
 		bind:showModal={showFeedModal}
 		isFeedDownload={true}
-		onClose={() => {
+		closeModal={() => {
 			showDownloadFeed = false;
 			publisherFeedType = false;
 		}}

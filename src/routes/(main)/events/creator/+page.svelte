@@ -164,7 +164,7 @@
 {#if showHelpModal}
 	<SmallModal
 		bind:showModal={showHelpModal}
-		onClose={() => {
+		closeModal={() => {
 			helpText = '';
 		}}
 	>
