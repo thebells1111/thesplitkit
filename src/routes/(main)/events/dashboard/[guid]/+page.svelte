@@ -343,7 +343,7 @@
 {/if}
 
 {#if showSelectBlock}
-	<Modal bind:showModal={showSelectBlock} bind:unsaved closeModal={() => ($changeDefault = false)}>
+	<Modal bind:showModal={showSelectBlock}>
 		<SelectBlock {addBlock} {addFeed} bind:showSelectBlock />
 	</Modal>
 {/if}

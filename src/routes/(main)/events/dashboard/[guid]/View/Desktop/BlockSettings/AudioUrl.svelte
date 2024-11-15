@@ -41,7 +41,7 @@
 	}
 
 	button {
-		background-color: hsl(0, 0%, 96%);
+		background-color: hsl(0, 0%, 100%);
 		color: var(--color-text-0);
 		display: flex;
 		align-items: center;
@@ -51,8 +51,6 @@
 		margin: 0;
 		border-radius: 25px;
 		padding: 0;
-		color: hsl(278, 100%, 92%);
-		background-color: hsl(277, 100%, 44%);
 		position: absolute;
 		right: 0;
 		top: 16px;

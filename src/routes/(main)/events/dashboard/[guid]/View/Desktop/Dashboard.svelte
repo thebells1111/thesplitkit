@@ -14,6 +14,7 @@
 	import BlockSorter from './BlockSorter/BlockSorter.svelte';
 
 	import { socket, liveBlocks, defaultBlockGuid, mainSettings, blocksList } from '$/stores';
+	import BlockSettings from './BlockSettings/BlockSettings.svelte';
 
 	export let blocks = [];
 	export let filterType = null;
@@ -34,6 +35,32 @@
 
 	let showBlockSorter = false;
 	let expandAll = false;
+
+	// Scroll functions for each button
+	function scrollToTop() {
+		const blocksContainer = document.querySelector('blocks');
+		if (blocksContainer) {
+			blocksContainer.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to very top
+		}
+	}
+
+	function scrollToBottom() {
+		const blocksContainer = document.querySelector('blocks');
+		if (blocksContainer) {
+			blocksContainer.scrollTo({ top: blocksContainer.scrollHeight, behavior: 'smooth' }); // Scroll to very bottom
+		}
+	}
+
+	function scrollToActive() {
+		const activeDiv = document.querySelector('blocks > div.active');
+		if (activeDiv) {
+			activeDiv.scrollIntoView({
+				behavior: 'smooth',
+				block: 'start',
+				inline: 'nearest'
+			});
+		}
+	}
 </script>
 
 <div>
@@ -59,50 +86,67 @@
 		{/if}
 
 		<controls>
+			<button-container>
+				<button
+					class="expand"
+					on:click={() => {
+						expandAll = !expandAll;
+					}}
+				>
+					{#if expandAll}
+						<CollapseAllIcon size="30" />
+					{:else}
+						<ExpandAllIcon size="30" />
+					{/if}
+				</button>
+				<p>{expandAll ? 'collapse all' : 'expand all'}</p>
+			</button-container>
 			{#if ['playlist', 'podcast'].find((v) => v === $mainSettings?.broadcastMode)}
 				<time-stamp>
-					<button class="timer-button" on:click={handleTimer}>
-						<TimerIcon size="36" />
-
-						{#if isRunning}
-							<pause>
-								<PauseIcon size="20" />
-							</pause>
-						{:else}
-							<play>
-								<PlayIcon size="20" />
-							</play>
-						{/if}
-					</button>
-					<timer>{formatTime(timeStamp, true)}</timer>
-					<button class="reset-button" on:click={handleResetTimer}>
-						<ResetIcon size="32" />
-					</button>
+					<controls>
+						<button class="timer-button" on:click={handleTimer}>
+							<TimerIcon size="36" />
+							{#if isRunning}
+								<pause>
+									<PauseIcon size="20" />
+								</pause>
+							{:else}
+								<play>
+									<PlayIcon size="20" />
+								</play>
+							{/if}
+						</button>
+						<timer>{formatTime(timeStamp, true)}</timer>
+						<button class="reset-button" on:click={handleResetTimer}>
+							<ResetIcon size="32" />
+						</button>
+					</controls>
+					<p>master clock</p>
 				</time-stamp>
 			{:else}
 				<controls-spacer />
 			{/if}
 
-			<button
-				class="sort"
-				on:click={() => {
-					expandAll = !expandAll;
-				}}
-			>
-				{#if expandAll}
-					<CollapseAllIcon size="30" />
-				{:else}
-					<ExpandAllIcon size="30" />
-				{/if}
-			</button>
-			<button
-				class="sort"
-				on:click={() => {
-					showBlockSorter = !showBlockSorter;
-				}}
-			>
-				<SwapVertIcon size="30" />
-			</button>
+			<block-nav>
+				<button-container>
+					<button class="scroll top" on:click={scrollToTop}> top </button>
+					<button class="scroll active" on:click={scrollToActive}> active </button>
+					<button class="scroll bottom" on:click={scrollToBottom}> bottom </button>
+				</button-container>
+				<p>scroll to block</p>
+			</block-nav>
+
+			<button-container>
+				<button
+					class="sort"
+					on:click={() => {
+						showBlockSorter = !showBlockSorter;
+					}}
+				>
+					<SwapVertIcon size="30" />
+				</button>
+				<p>sort blocks</p>
+			</button-container>
 		</controls>
 
 		<top>
@@ -198,7 +242,7 @@
 		flex-direction: column;
 		overflow: auto;
 		padding-top: 18px;
-		margin-bottom: 0px;
+		margin-bottom: 16px;
 		padding-bottom: 16px;
 	}
 
@@ -224,17 +268,23 @@
 		display: flex;
 		width: 100%;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 	}
 
 	time-stamp {
 		display: flex;
-		margin: 8px 0;
-		justify-content: space-between;
+		flex-direction: column;
+		margin: 8px 0 0 0;
+		justify-content: flex-start;
+		align-items: center;
+		width: 210px;
+	}
+	time-stamp > controls {
 		align-items: center;
 	}
 
-	time-stamp button {
+	time-stamp > controls p,
+	time-stamp > controls button {
 		background-color: white;
 		color: red;
 		width: 42px;
@@ -250,7 +300,41 @@
 		position: relative;
 	}
 
-	button.sort {
+	block-nav {
+		display: flex;
+		flex-direction: column;
+		width: 210px;
+		justify-content: center;
+		align-items: center;
+	}
+
+	block-nav > button-container {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+	}
+
+	block-nav > button-container > button:nth-of-type(2) {
+		margin: 0;
+	}
+
+	button-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		margin: 8px 0 0 0;
+	}
+
+	button-container p,
+	time-stamp > p,
+	block-nav > p {
+		font-size: 0.7em;
+		margin: 0;
+		padding: 4px 0 0 0;
+	}
+
+	button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -259,8 +343,8 @@
 		margin: 0 16px;
 		border-radius: 25px;
 		padding: 0;
+		background-color: hsl(0, 0%, 100%);
 		color: var(--color-text-0);
-		background-color: hsl(38, 100%, 61%);
 	}
 
 	pause,
@@ -278,5 +362,24 @@
 	timer {
 		font-size: 1.1em;
 		font-weight: bold;
+	}
+
+	.scroll {
+		font-size: 0.6em;
+	}
+
+	.scroll.top {
+		background-color: var(--color-theme-light-purple);
+		color: hsl(277, 100%, 44%);
+	}
+
+	.scroll.active {
+		background-color: var(--color-theme-light-blue);
+		color: rgb(0, 132, 180);
+	}
+
+	.scroll.bottom {
+		color: var(--color-text-0);
+		background-color: var(--color-theme-light-yellow);
 	}
 </style>

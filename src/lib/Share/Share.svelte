@@ -310,9 +310,11 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		width: calc(100% - 8px);
-		margin: 0 4px;
+		width: calc(100% - 16px);
+		margin: 0 8px;
 		height: 100%;
+		position: relative;
+		top: -58px;
 	}
 	button {
 		margin: 1rem;
@@ -329,7 +331,7 @@
 
 	button-row.top {
 		position: absolute;
-		top: 200px;
+		top: 170px;
 		max-width: 360px;
 	}
 

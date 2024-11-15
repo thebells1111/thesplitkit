@@ -3,7 +3,6 @@
 	import AddFeed from './AddFeed.svelte';
 	import AddMusic from './AddMusic/AddMusic.svelte';
 	import MusicIcon from '$lib/icons/Music.svelte';
-	import PersonIcon from '$lib/icons/Person.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
 	import CopyIcon from '$lib/icons/Copy.svelte';
@@ -22,7 +21,6 @@
 	let modalsConfig = {
 		podcast: { show: false },
 		chapter: { show: false },
-		person: { show: false },
 		music: { show: false }
 		// add other modals here
 	};
@@ -116,12 +114,7 @@
 			</icon>
 			Podcast
 		</button>
-		<button on:click={handleSelect.bind(this, 'person')}>
-			<icon>
-				<PersonIcon size="40" />
-			</icon>
-			Person
-		</button>
+
 		{#if $copiedBlock && !handleChangeType}
 			<button on:click={handleSelect.bind(this, 'paste')}>
 				<icon>

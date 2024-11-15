@@ -88,21 +88,8 @@
 </script>
 
 <header>
-	<button class="save" type="submit" on:click={submitData}>
-		<Save size="32" />
-	</button>
-
-	<button
-		class="filter-button"
-		class:filtered={filterType !== 'off'}
-		on:click={() => (showFilterModal = true)}
-	>
-		{#if filterType !== 'off'}
-			<icon>
-				<svelte:component this={Icons[filterType]} />
-			</icon>
-		{/if}
-		<Filter size="32" />
+	<button on:click={() => (showShareModal = true)}>
+		<Share size="32" />
 	</button>
 	<button
 		class="add-block"
@@ -115,10 +102,6 @@
 		}}
 	>
 		<AddBlocks size="36" />
-	</button>
-
-	<button on:click={() => (showShareModal = true)}>
-		<Share size="32" />
 	</button>
 
 	<button on:click={() => (showMainSettingsModal = true)}>
@@ -135,7 +118,7 @@
 <style>
 	header {
 		width: 100%;
-		max-width: 450px;
+		max-width: 250px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;

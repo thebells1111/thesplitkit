@@ -1,10 +1,22 @@
 <script>
+	import ValueBlock from '$lib/ValueBlock/ValueBlock.svelte';
+	import Modal from '$lib/Modal/Modal.svelte';
+
 	import Delete from '$lib/icons/Delete.svelte';
 	import CopyIcon from '$lib/icons/Copy.svelte';
 
 	export let block = null;
 	export let handleDeleteBlock = () => {};
 	export let handleCopyBlock = () => {};
+
+	let showValueModal;
+
+	const calculateTotalPercentage = () => {
+		block.settings.totalPercentage = block.value.destinations.reduce(
+			(acc, person) => acc + parseFloat(person.split || 0),
+			0
+		);
+	};
 </script>
 
 <button-container>
@@ -12,10 +24,25 @@
 		<Delete size="27" />
 	</button>
 
+	<button
+		class="value"
+		on:click={() => {
+			showValueModal = true;
+		}}
+	>
+		edit value block
+	</button>
+
 	<button class="copy" on:click={handleCopyBlock.bind(this, block)}>
 		<CopyIcon size="27" />
 	</button>
 </button-container>
+
+{#if showValueModal}
+	<Modal bind:showModal={showValueModal}>
+		<ValueBlock bind:data={block} {calculateTotalPercentage} />
+	</Modal>
+{/if}
 
 <style>
 	button-container {
@@ -44,5 +71,14 @@
 
 	button.copy {
 		background-color: var(--color-theme-blue);
+	}
+
+	button.value {
+		color: hsl(278, 100%, 92%);
+		background-color: hsl(277, 100%, 44%);
+		width: 150px;
+		min-height: initial;
+		height: initial;
+		margin: 0 0 8px 8px;
 	}
 </style>

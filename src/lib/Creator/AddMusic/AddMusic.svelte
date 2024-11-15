@@ -231,18 +231,19 @@
 	</section>
 </albums>
 
-<Modal bind:showModal={showSongs}>
-	<SongSelect {addFeed} {episodes} feed={selectedFeed} />
-</Modal>
+{#if showSongs}
+	<Modal bind:showModal={showSongs}>
+		<SongSelect {addFeed} {episodes} feed={selectedFeed} />
+	</Modal>
+{/if}
 
 <style>
 	albums {
 		display: flex;
 		flex-direction: column;
-		height: calc(100%);
 		overflow: hidden;
-		width: calc(100% - 16px);
-		height: 100%;
+		width: calc(100%);
+		height: calc(100% - 42px);
 	}
 
 	albums-top {
@@ -270,8 +271,8 @@
 	section {
 		padding: 0;
 		margin: 0 8px;
-		width: calc(100% - 16px);
-		height: calc(100%);
+		width: calc(100% - 8px);
+		height: calc(100% - 72px);
 		overflow: auto;
 		position: relative;
 	}

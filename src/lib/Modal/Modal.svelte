@@ -22,6 +22,8 @@
 
 	function onClose() {
 		closeModal();
+		console.log(unsaved);
+		console.log(isFeedDownload);
 		if (unsaved) {
 			const userConfirmation = window.confirm('Your changes are unsaved. Do you want to continue?');
 			if (userConfirmation) {
@@ -74,23 +76,28 @@
 		width: calc(100% - 16px);
 		height: calc(100% - 32px);
 		max-width: 991px;
-		overflow-y: auto;
-		overflow-x: hidden;
+		overflow: hidden;
 		border-radius: 8px;
 		background-color: white;
 		box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 1);
 	}
 
 	button {
-		background-color: rgb(0, 132, 180);
 		color: white;
 		padding: 4px 12px;
 		border: 1px solid transparent;
 		border-radius: 25px;
 		font-size: 1.05em;
 		cursor: pointer;
-		margin: 8px 0;
 		height: 50px;
+		position: absolute;
+	}
+
+	container {
+		display: block;
+		margin-top: 58px;
+		width: 100%;
+		height: calc(100%);
 	}
 
 	.close {

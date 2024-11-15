@@ -15,7 +15,6 @@
 
 <editing-container>
 	<left>
-		<BlockID {block} />
 		{#if block?.blockGuid !== $defaultBlockGuid}
 			<BlockValueSplit bind:block />
 			<AudioUrl bind:block {downloadMP3} />
@@ -36,6 +35,7 @@
 				</div>
 			</time-settings>
 		{/if}
+		<BlockID {block} />
 	</left>
 	<right>
 		<BlockInfo bind:block />
@@ -58,7 +58,7 @@
 
 	time-settings {
 		display: flex;
-		margin: 0;
+		margin: 0 0 8px 0;
 	}
 
 	time-settings > div {

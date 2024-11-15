@@ -155,7 +155,9 @@
 	ul {
 		padding: 20px 0;
 		margin: 0 8px;
-		width: calc(100% - 16px);
+		width: calc(100% - 32px);
+		max-width: 760px;
+		height: calc(100% - 396px);
 		overflow: auto;
 	}
 

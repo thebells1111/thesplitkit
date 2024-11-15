@@ -22,6 +22,26 @@
 		<CopyIcon size="14" />
 	</div>
 </block-id>
+{#if block?.feedGuid}
+	<block-id on:click={copyToClipboard.bind(this, block.feedGuid)}>
+		<div>
+			<h4>Feed Guid</h4>
+
+			<p>{block.feedGuid}</p>
+			<CopyIcon size="14" />
+		</div>
+	</block-id>
+{/if}
+{#if block?.itemGuid}
+	<block-id on:click={copyToClipboard.bind(this, block.itemGuid)}>
+		<div>
+			<h4>Item Guid</h4>
+
+			<p>{block.itemGuid}</p>
+			<CopyIcon size="14" />
+		</div>
+	</block-id>
+{/if}
 
 <style>
 	block-id {
