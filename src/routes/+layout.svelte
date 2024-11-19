@@ -154,7 +154,7 @@
 		margin: 0;
 		box-sizing: border-box;
 		overflow: hidden;
-		height: calc(100vh - 46px);
+		height: calc(100% - 42px);
 	}
 
 	credentials {

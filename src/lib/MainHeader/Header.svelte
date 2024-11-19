@@ -96,6 +96,7 @@
 		justify-content: space-between;
 		width: calc(100% - 8px);
 		margin: 0 8px;
+		height: 42px;
 	}
 
 	p {

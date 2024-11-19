@@ -379,7 +379,7 @@
 	broadcast-blocks {
 		display: block;
 		flex: 1;
-		height: calc(100% - 60px);
+		height: calc(100% - 64px);
 	}
 
 	.unverified {

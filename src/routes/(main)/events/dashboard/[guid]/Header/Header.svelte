@@ -122,7 +122,8 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin: 8px auto;
+		margin: 0 auto;
+		height: 64px;
 	}
 
 	button,
