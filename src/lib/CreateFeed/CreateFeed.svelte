@@ -126,21 +126,31 @@
 	});
 </script>
 
-{#if publisherFeedType === 'podcast'}
-	<svelte:component
-		this={podcastScreens[screenIndex]}
-		bind:screenIndex
-		bind:feed
-		bind:item
-		bind:showFeedModal
-	/>
-{:else if publisherFeedType === 'publisher'}
-	<svelte:component
-		this={publisherScreens[screenIndex]}
-		bind:screenIndex
-		bind:feed
-		bind:item
-		bind:showFeedModal
-		bind:publisherFeedType
-	/>
-{/if}
+<div>
+	{#if publisherFeedType === 'podcast'}
+		<svelte:component
+			this={podcastScreens[screenIndex]}
+			bind:screenIndex
+			bind:feed
+			bind:item
+			bind:showFeedModal
+		/>
+	{:else if publisherFeedType === 'publisher'}
+		<svelte:component
+			this={publisherScreens[screenIndex]}
+			bind:screenIndex
+			bind:feed
+			bind:item
+			bind:showFeedModal
+			bind:publisherFeedType
+		/>
+	{/if}
+</div>
+
+<style>
+	div {
+		display: block;
+		margin: 8px;
+		height: calc(100% - 8px);
+	}
+</style>

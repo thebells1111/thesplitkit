@@ -32,7 +32,6 @@
 	export let guid = $page.params.guid;
 	export let blocks = [];
 	export let filterType;
-	export let showOptionsModal = false;
 	export let activeBlockGuid;
 
 	let player;
@@ -535,7 +534,6 @@
 <Dashboard
 	bind:blocks={$liveBlocks}
 	bind:filterType
-	bind:showOptionsModal
 	bind:activeBlockGuid
 	bind:player
 	bind:broadcastTimeRemaining

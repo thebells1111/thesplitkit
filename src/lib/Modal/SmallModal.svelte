@@ -46,7 +46,6 @@
 	modal {
 		display: block;
 		position: relative;
-		width: calc(100% - 56px);
 		max-width: 960px;
 		overflow: hidden;
 		border-radius: 8px;

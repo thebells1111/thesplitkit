@@ -1,4 +1,5 @@
 <script>
+	import { tick } from 'svelte';
 	import formatTime from '$functions/formatTime.js';
 	import getMediaDuration from '$functions/getMediaDuration.js';
 
@@ -8,7 +9,7 @@
 	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
 	import TimerIcon from '$lib/icons/Timer.svelte';
 
-	import { defaultBlockGuid, mainSettings, liveBlocks } from '$/stores';
+	import { defaultBlockGuid, mainSettings, liveBlocks, addedBlockGuid } from '$/stores';
 
 	export let showEditing = false;
 	export let block = {};
@@ -21,6 +22,13 @@
 	export let handleDeleteBlock = () => {};
 	export let handleCopyBlock = () => {};
 	export let expandAll = false;
+
+	$: if ($addedBlockGuid === block.blockGuid) {
+		showEditing = true;
+		setTimeout(() => {
+			$addedBlockGuid = null;
+		}, 0);
+	}
 
 	function broadcast(block) {
 		if (broadcastingBlockGuid !== block?.blockGuid) {

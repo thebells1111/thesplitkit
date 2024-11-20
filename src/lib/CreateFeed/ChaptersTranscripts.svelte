@@ -110,8 +110,7 @@
 	container {
 		display: flex;
 		flex-direction: column;
-		width: calc(100% - 16px);
-		height: calc(100% - 50px);
+		height: calc(100% - 68px);
 		overflow: auto;
 	}
 

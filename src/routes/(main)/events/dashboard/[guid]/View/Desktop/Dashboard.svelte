@@ -157,31 +157,11 @@
 			<Person {blocks} bind:broadcastingBlockGuid {handleBroadcast} />
 		{:else if blocks?.[0] || blocks?.[1]}
 			<blocks bind:this={$blocksList}>
-				{#each blocks.filter((v) => v?.blockGuid === $defaultBlockGuid) as block, index}
-					{#if block}
-						<DashboardBlockCard
-							bind:block
-							{index}
-							bind:broadcastingBlockGuid
-							bind:activeBlockGuid
-							{broadcastTimeRemaining}
-							{handleBroadcast}
-							{updateStartTime}
-							{downloadMP3}
-							{handleDeleteBlock}
-							{handleCopyBlock}
-							{expandAll}
-						/>
-					{/if}
-				{/each}
-				{#each blocks
-					.filter((v) => v?.blockGuid !== $defaultBlockGuid)
-					.filter((v) => v) as block, index}
+				{#each blocks.filter((v) => v) as block, index}
 					<DashboardBlockCard
 						bind:block
 						{index}
 						bind:broadcastingBlockGuid
-						bind:activeBlockGuid
 						{broadcastTimeRemaining}
 						{handleBroadcast}
 						{updateStartTime}
@@ -262,6 +242,7 @@
 		width: calc(100% - 16px);
 		height: 40px;
 		min-height: 40px;
+		margin: 8px 0 4px 0;
 	}
 
 	controls {

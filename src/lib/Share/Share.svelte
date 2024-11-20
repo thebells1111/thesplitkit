@@ -252,19 +252,25 @@
 
 {#if showRemoteValuesModal}
 	<Modal bind:showModal={showRemoteValuesModal}>
-		<RemoteValue />
+		<share-container>
+			<RemoteValue />
+		</share-container>
 	</Modal>
 {/if}
 
 {#if showDownloadChaptersModal}
 	<Modal bind:showModal={showDownloadChaptersModal}>
-		<DownloadChapters />
+		<download-container>
+			<DownloadChapters />
+		</download-container>
 	</Modal>
 {/if}
 
 {#if showShowNotesModal}
 	<Modal bind:showModal={showShowNotesModal}>
-		<ShowNotes />
+		<share-container>
+			<ShowNotes />
+		</share-container>
 	</Modal>
 {/if}
 
@@ -435,8 +441,22 @@
 	}
 
 	podcast-code {
-		margin: 8px;
+		display: block;
+		margin: 80px 16px 0 16px;
 		position: relative;
+	}
+
+	share-container {
+		display: block;
+		height: calc(100% - 16px);
+		padding: 0 8px 16px 8px;
+		overflow: auto;
+	}
+
+	download-container {
+		display: block;
+		height: calc(100%);
+		overflow: auto;
 	}
 
 	code-block {

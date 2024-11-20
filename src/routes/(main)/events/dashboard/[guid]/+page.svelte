@@ -7,14 +7,13 @@
 	import Share from '$lib/Share/Share.svelte';
 	import Filter from './Header/Filter.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
+	import SmallModal from '$lib/Modal/SmallModal.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 	import EventsHeader from './Header/Header.svelte';
 	import Dashboard from './Dashboard.svelte';
 	import MainSettings from '$lib/Settings/MainSettings/MainSettings.svelte';
 	import OffsetStartTimes from '$lib/Settings/MainSettings/OffsetStartTimes.svelte';
 
-	import EditOptions from '$lib/Creator/EditOptions.svelte';
-	import PromoEditor from '$lib/PromoEditor/PromoEditor.svelte';
 	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
 	import {
 		remoteServer,
@@ -22,19 +21,17 @@
 		defaultBlockGuid,
 		mainSettings,
 		activePageGuid,
-		changeDefault
+		changeDefault,
+		blocksList,
+		addedBlockGuid
 	} from '$/stores';
 
 	let showShareModal = false;
 	let showMainSettingsModal = false;
 	let showFilterModal = false;
-	let showOptionsModal = false;
 	let filterType = 'off';
-	let unsaved = false;
-	let showEditor = false;
 	let showSelectBlock = false;
 	let filteredBlocks = [];
-	let activeBlockGuid;
 	let showAdded = false;
 	let showSaved = false;
 	let addDefaultType;
@@ -140,30 +137,12 @@
 		return true;
 	}
 
-	function saveState(editingBlock) {
-		console.log('saved');
-		showSaved = true;
-		setTimeout(() => (showSaved = false), 500);
-		editingBlock?.value?.destinations?.forEach((v) => (v.split = v.split.toString()));
-		const index = $liveBlocks.findIndex((v) => v?.blockGuid === activeBlockGuid);
-		if (index > -1) {
-			$liveBlocks[index] = clone(editingBlock);
-		}
-
-		const filteredIndex = filteredBlocks.findIndex((v) => v?.blockGuid === activeBlockGuid);
-		if (filteredIndex > -1) {
-			filteredBlocks[index] = clone(editingBlock);
-		}
-
-		unsaved = false;
-	}
-
 	function addBlock(type) {
 		const newBlock = {
 			image: '',
-			title: 'Title - click to edit',
-			line: ['Text - click to edit', 'Text - click to edit'],
-			link: { text: 'Link - click to edit', url: '' },
+			title: '',
+			line: ['', ''],
+			link: { text: '', url: '' },
 			description: '',
 			value: { type: 'lightning', method: 'keysend', destinations: [] },
 
@@ -187,8 +166,6 @@
 			split: $mainSettings.splits || 95
 		};
 
-		activeBlockGuid = blockGuid;
-
 		if ($changeDefault) {
 			$defaultBlockGuid = blockGuid;
 			newBlock.settings.default = true;
@@ -198,9 +175,11 @@
 			$liveBlocks = $liveBlocks.concat(newBlock);
 		}
 
+		$addedBlockGuid = newBlock.blockGuid;
+
 		setTimeout(() => {
 			showSelectBlock = false;
-			showEditor = true;
+			$blocksList.scrollTo({ top: $blocksList.scrollHeight, behavior: 'smooth' });
 		}, 0);
 	}
 
@@ -273,7 +252,6 @@
 			} while (!isBlockGuidUnique(blockGuid, $liveBlocks));
 
 			newBlock.blockGuid = blockGuid;
-			activeBlockGuid = blockGuid;
 			newBlock.settings = {
 				split: $mainSettings.splits
 			};
@@ -332,29 +310,10 @@
 	</Modal>
 {/if}
 
-{#if showEditor}
-	<Modal bind:showModal={showEditor} bind:unsaved>
-		<PromoEditor
-			baseBlock={clone($liveBlocks?.find((v) => v?.blockGuid === activeBlockGuid))}
-			{saveState}
-			bind:unsaved
-		/>
-	</Modal>
-{/if}
-
 {#if showSelectBlock}
-	<Modal bind:showModal={showSelectBlock}>
+	<SmallModal bind:showModal={showSelectBlock}>
 		<SelectBlock {addBlock} {addFeed} bind:showSelectBlock />
-	</Modal>
-{/if}
-
-{#if showOptionsModal}
-	<EditOptions
-		block={$liveBlocks.find((v) => v?.blockGuid === activeBlockGuid) || {}}
-		bind:showOptionsModal
-		bind:showEditor
-		{activeBlockGuid}
-	/>
+	</SmallModal>
 {/if}
 
 {#if showOffsetStartTimes}

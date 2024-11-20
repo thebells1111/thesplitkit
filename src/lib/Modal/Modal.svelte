@@ -97,7 +97,7 @@
 		display: block;
 		margin-top: 58px;
 		width: 100%;
-		height: calc(100%);
+		height: calc(100% - 58px);
 	}
 
 	.close {

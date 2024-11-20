@@ -73,31 +73,37 @@
 	}
 </script>
 
-<h2 on:click={copyToClipboard.bind(this, $page.params.guid)}>
-	<span>Event ID:</span>
-	{$page.params.guid}
-	<CopyIcon size="24" />
-</h2>
-<BroadcastMode />
-<DefaultSplits bind:updateAllSplits />
-<EditTimes bind:showOffsetStartTimes />
-<RemoteCreds />
-<LowBandwidth />
-<BroadcastSettings />
+<div>
+	<h2 on:click={copyToClipboard.bind(this, $page.params.guid)}>
+		<span>Event ID:</span>
+		{$page.params.guid}
+		<CopyIcon size="24" />
+	</h2>
+	<BroadcastMode />
+	<DefaultSplits bind:updateAllSplits />
+	<EditTimes bind:showOffsetStartTimes />
+	<RemoteCreds />
+	<LowBandwidth />
+	<BroadcastSettings />
 
-{#if $mainSettings?.broadcastMode === 'playlist'}
-	<PlaylistSettings />
-{/if}
+	{#if $mainSettings?.broadcastMode === 'playlist'}
+		<PlaylistSettings />
+	{/if}
 
-{#if $mainSettings?.broadcastMode === 'podcast'}
-	<PodcastSettings />
-{/if}
+	{#if $mainSettings?.broadcastMode === 'podcast'}
+		<PodcastSettings />
+	{/if}
 
-{#if $mainSettings?.broadcastMode === 'edit'}
-	<PrerecordedSettings />
-{/if}
+	{#if $mainSettings?.broadcastMode === 'edit'}
+		<PrerecordedSettings />
+	{/if}
+</div>
 
 <style>
+	div {
+		height: calc(100%);
+		overflow: auto;
+	}
 	h2 {
 		cursor: copy;
 	}

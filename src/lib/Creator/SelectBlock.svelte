@@ -1,5 +1,6 @@
 <script>
 	import SmallModal from '$lib/Modal/SmallModal.svelte';
+	import Modal from '$lib/Modal/Modal.svelte';
 	import AddFeed from './AddFeed.svelte';
 	import AddMusic from './AddMusic/AddMusic.svelte';
 	import MusicIcon from '$lib/icons/Music.svelte';
@@ -17,6 +18,10 @@
 	export let addFeed = () => {};
 	export let handleChangeType = null;
 	export let showSelectBlock;
+
+	let showHelp = false;
+	let helpMode = '';
+	let showModal = false;
 
 	let modalsConfig = {
 		podcast: { show: false },
@@ -42,6 +47,10 @@
 
 			if (['person', 'chapter'].find((v) => type === v)) {
 				addBlock(type);
+			}
+
+			if (['podcast', 'music'].find((v) => type === v)) {
+				showModal = true;
 			}
 		} else {
 			if (['paste'].find((v) => v === type)) {
@@ -80,58 +89,52 @@
 		await tick();
 		$blocksList.scrollTo({ top: $blocksList.scrollHeight, behavior: 'smooth' });
 	}
-
-	let showHelp = false;
-	let helpMode = '';
 </script>
 
-{#if modalsConfig.podcast.show}
-	<AddFeed {addFeed} />
-{:else if modalsConfig.music.show}
-	<AddMusic {addFeed} />
-{:else}
-	{#if $changeDefault}
-		<h1>Default Block</h1>
+<div>
+	<button on:click={handleSelect.bind(this, 'chapter')}>
+		<icon>
+			<ChapterIcon size="40" />
+		</icon>
+		Chapter
+	</button>
+	<button on:click={handleSelect.bind(this, 'music')}>
+		<icon>
+			<MusicIcon size="40" />
+		</icon>
+		Music
+	</button>
+	<button on:click={handleSelect.bind(this, 'podcast')}>
+		<icon>
+			<PodcastIcon size="40" />
+		</icon>
+		Podcast
+	</button>
+
+	{#if $copiedBlock && !handleChangeType}
+		<button on:click={handleSelect.bind(this, 'paste')}>
+			<icon>
+				<CopyIcon size="40" />
+			</icon>
+			Paste
+		</button>
 	{/if}
-	<h2>Select Block Type</h2>
+</div>
 
-	<div>
-		<button on:click={handleSelect.bind(this, 'chapter')}>
-			<icon>
-				<ChapterIcon size="40" />
-			</icon>
-			Chapter
-		</button>
-		<button on:click={handleSelect.bind(this, 'music')}>
-			<icon>
-				<MusicIcon size="40" />
-			</icon>
-			Music
-		</button>
-		<button on:click={handleSelect.bind(this, 'podcast')}>
-			<icon>
-				<PodcastIcon size="40" />
-			</icon>
-			Podcast
-		</button>
-
-		{#if $copiedBlock && !handleChangeType}
-			<button on:click={handleSelect.bind(this, 'paste')}>
-				<icon>
-					<CopyIcon size="40" />
-				</icon>
-				Paste
-			</button>
+{#if showModal}
+	<Modal
+		bind:showModal
+		closeModal={() => {
+			console.log('hi');
+			showSelectBlock = false;
+		}}
+	>
+		{#if modalsConfig.podcast.show}
+			<AddFeed {addFeed} />
+		{:else if modalsConfig.music.show}
+			<AddMusic {addFeed} />
 		{/if}
-		<button
-			on:click={() => {
-				showHelp = true;
-			}}
-		>
-			<icon class="help"> ? </icon>
-			Help
-		</button>
-	</div>
+	</Modal>
 {/if}
 
 {#if showHelp}
@@ -255,9 +258,9 @@
 		color: var(--color-theme-blue);
 	}
 	div {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 10px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	button {

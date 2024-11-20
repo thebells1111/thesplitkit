@@ -34,7 +34,6 @@
 	export let guid = $page.params.guid;
 	export let blocks = [];
 	export let filterType;
-	export let showOptionsModal = false;
 	export let activeBlockGuid;
 
 	let player;
@@ -497,7 +496,6 @@
 							{index}
 							bind:broadcastingBlockGuid
 							bind:activeBlockGuid
-							bind:showOptionsModal
 							{broadcastTimeRemaining}
 							{handleBroadcast}
 							{updateStartTime}
@@ -512,7 +510,6 @@
 						{index}
 						bind:broadcastingBlockGuid
 						bind:activeBlockGuid
-						bind:showOptionsModal
 						{broadcastTimeRemaining}
 						{handleBroadcast}
 						{updateStartTime}
@@ -579,6 +576,7 @@
 		width: calc(100% - 16px);
 		height: 40px;
 		min-height: 40px;
+		margin: 8px 0 4px 0;
 	}
 
 	time-stamp {

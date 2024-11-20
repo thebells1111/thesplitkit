@@ -5,7 +5,6 @@
 	import Modal from '$lib/Modal/Modal.svelte';
 	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
 
-	import EditIcon from '$lib/icons/Edit.svelte';
 	import TunerIcon from '$lib/icons/Tuner.svelte';
 	import MusicIcon from '$lib/icons/Music.svelte';
 	import PersonIcon from '$lib/icons/Person.svelte';
@@ -22,7 +21,6 @@
 	export let broadcastingBlockGuid;
 	export let showSettingsModal = false;
 	export let activeBlockGuid;
-	export let showOptionsModal = true;
 	export let broadcastTimeRemaining;
 	export let handleBroadcast = () => {};
 	export let updateStartTime = () => {};
@@ -189,6 +187,8 @@
 
 		return normalizedData;
 	}
+
+	$: console.log($addedIndex);
 </script>
 
 {#if block}
@@ -259,15 +259,6 @@
 			</time-container>
 
 			<button-container>
-				<button
-					class="edit"
-					on:click={() => {
-						showOptionsModal = true;
-						activeBlockGuid = block?.blockGuid;
-					}}
-				>
-					<EditIcon size="27" /></button
-				>
 				{#if block?.blockGuid !== $defaultBlockGuid}
 					<button class="tuner" on:click={() => (showSettingsModal = true)}>
 						<TunerIcon size="27" />

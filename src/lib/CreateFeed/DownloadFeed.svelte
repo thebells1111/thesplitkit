@@ -79,7 +79,7 @@
 		if (!feed?.['itunes:explicit']) {
 			rssErrors.push('Click Yes or No on Podcast Explicit Content');
 		}
-		rssErrors.push(checkValue(feed, 'podcast'));
+		checkValue(feed, 'podcast');
 		if (['podcast'].includes(publisherFeedType)) {
 			if (!item.title) {
 				rssErrors.push('Your episode needs a title.');
@@ -102,7 +102,7 @@
 			) {
 				rssErrors.push('Invalid Transcript URL');
 			}
-			rssErrors.push(checkValue(item, 'episode'));
+			checkValue(item, 'episode');
 			rssErrors = rssErrors.filter((v) => v);
 			createVTS();
 		} else if (['publisher'].includes(publisherFeedType)) {
@@ -167,7 +167,6 @@
 	}
 
 	function checkValue(obj, type) {
-		let warning = '';
 		let totalSplit = 0;
 
 		obj['podcast:value'] = obj?.['podcast:value'] || {
@@ -190,7 +189,7 @@
 		value['podcast:valueRecipient'] = [].concat(value['podcast:valueRecipient']).filter((v) => v);
 
 		if (value?.['podcast:valueRecipient']?.length === 0) {
-			warning += `Provide a value recipient for your ${type}.\n`;
+			rssErrors.push(`Provide a value recipient for your ${type}.`);
 		} else if (
 			value?.['podcast:valueRecipient']?.length === 1 &&
 			!value['podcast:valueRecipient']['@_name'] &&
@@ -201,15 +200,15 @@
 		} else {
 			value['podcast:valueRecipient'].forEach((recipient, i) => {
 				if (!recipient['@_name']) {
-					warning += `Recipient ${i} in ${type} doesn't have a name.\n`;
+					rssErrors.push(`Recipient ${i} in ${type} doesn't have a name.`);
 				}
 				if (!recipient['@_address']) {
 					let recipientName = recipient['@_name'] || `Recipient ${i}`;
-					warning += `${recipientName} in ${type} doesn't have an address.\n`;
+					rssErrors.push(`${recipientName} in ${type} doesn't have an address.`);
 				}
 				if (!recipient['@_split']) {
 					let recipientName = recipient['@_name'] || `Recipient ${i}`;
-					warning += `${recipientName} in ${type} doesn't have a split.\n`;
+					rssErrors.push(`${recipientName} in ${type} doesn't have a split.`);
 				} else {
 					recipient['@_split'] = Number(recipient['@_split']);
 					totalSplit += recipient['@_fee'] ? 0 : recipient['@_split'];
@@ -217,10 +216,11 @@
 			});
 
 			if (totalSplit !== 100) {
-				warning += type.charAt(0).toUpperCase() + type.slice(1) + " splits don't add up to 100%.\n";
+				rssErrors.push(
+					type.charAt(0).toUpperCase() + type.slice(1) + " splits don't add up to 100%."
+				);
 			}
 		}
-		return warning;
 	}
 
 	async function downloadFeed() {
@@ -329,6 +329,8 @@
 		saveAs(blob, `${title.toLowerCase()}.xml`);
 		showFeedModal = false;
 	}
+
+	$: console.log(rssErrors);
 </script>
 
 <container>
@@ -361,8 +363,7 @@
 	container {
 		display: flex;
 		flex-direction: column;
-		width: calc(100% - 16px);
-		height: calc(100% - 50px);
+		height: calc(100% - 40px);
 		overflow: auto;
 		align-items: center;
 	}

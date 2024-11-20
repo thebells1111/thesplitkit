@@ -2,7 +2,7 @@ import addFeed from '../addFeed';
 
 import { remoteServer } from '$/stores';
 
-export default async function buildBlock(block, activeBlockGuid, eventGuid) {
+export default async function buildBlock(block, eventGuid) {
 	console.log(block);
 	let feedUrl = `${remoteServer}/api/queryindex?q=${encodeURIComponent(
 		`/podcasts/byguid?guid=${block.feedGuid}`
@@ -20,6 +20,6 @@ export default async function buildBlock(block, activeBlockGuid, eventGuid) {
 	let episode = episodeData?.episode;
 
 	if (feed && episode) {
-		return addFeed(episode, 'music', feed, activeBlockGuid, eventGuid);
+		return addFeed(episode, 'music', feed, eventGuid);
 	}
 }

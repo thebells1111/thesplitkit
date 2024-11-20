@@ -343,14 +343,13 @@
 		padding: 8px;
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
-		height: 100%;
+		overflow: auto;
+		height: calc(100% - 16px);
 	}
 
 	default-block-container {
 		display: block;
 		flex: 1;
-		overflow: hidden;
 	}
 
 	add-feed-container {

@@ -23,10 +23,10 @@
 		on:click={() => {
 			screenIndex++;
 		}}
-		>{#if publisherFeedType === 'podcast'}
-			Episode Info
-		{:else if publisherFeedType === 'publisher'}
+		>{#if publisherFeedType === 'publisher'}
 			Download Feed
+		{:else}
+			Episode Info
 		{/if}
 	</button>
 </button-container>
@@ -35,13 +35,11 @@
 	container {
 		display: flex;
 		flex-direction: column;
-		width: calc(100% - 16px);
-		height: calc(100% - 50px);
 		overflow: auto;
+		height: calc(100% - 40px);
 	}
 	button-container {
-		width: calc(100% - 16px);
-		margin: 8px 8px 16px 8px;
+		margin: 8px 8px 0px 8px;
 		display: flex;
 		justify-content: space-between;
 	}

@@ -177,11 +177,10 @@
 	notes {
 		display: flex;
 		flex-direction: column;
-		width: calc(100% - 16px);
-		height: calc(100% - 50px);
+		height: calc(100% - 80px);
 	}
 	#editor {
-		width: calc(100% - 16px);
+		width: calc(100%);
 		flex: 1;
 	}
 
@@ -189,7 +188,7 @@
 		margin: 8px;
 	}
 	button-container {
-		width: calc(100% - 16px);
+		width: calc(100%);
 		margin: 0px 0px 8px 0px;
 		display: flex;
 		justify-content: space-between;
