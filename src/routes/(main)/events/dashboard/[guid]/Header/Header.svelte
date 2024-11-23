@@ -1,38 +1,25 @@
 <script>
 	import Settings from '$lib/icons/Settings.svelte';
 	import Share from '$lib/icons/Share.svelte';
-	import Filter from '$lib/icons/Filter.svelte';
 	import AddBlocks from '$lib/icons/AddBlocks.svelte';
 	import { page } from '$app/stores';
-	import MusicIcon from '$lib/icons/Music.svelte';
-	import PersonIcon from '$lib/icons/Person.svelte';
-	import ChapterIcon from '$lib/icons/Chapter.svelte';
-	import PodcastIcon from '$lib/icons/Podcast.svelte';
 	import remoteSave from '$lib/functions/remoteSave.js';
+	import Save from '$lib/icons/Save.svelte';
 
 	export let showShareModal;
 	export let showMainSettingsModal;
-	export let showFilterModal;
 	export let showSelectBlock;
 
 	import clone from 'just-clone';
-	import Save from '$lib/icons/Save.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
 	import { liveBlocks, defaultBlockGuid, changeDefault, mainSettings } from '$/stores';
 
-	export let filterType;
 	let initialized = false;
 	let savedBlocks = [];
 	let showSaved = false;
 	let saveTimeout;
-
-	const Icons = {
-		music: MusicIcon,
-		person: PersonIcon,
-		chapter: ChapterIcon,
-		podcast: PodcastIcon
-	};
+	let savingText = '';
 
 	$: compareBlocks($liveBlocks);
 
@@ -49,45 +36,24 @@
 	}
 
 	function saveState() {
-		console.log('saved state');
 		remoteSave($liveBlocks, $page.params.guid);
+		savingText = `Last Saved: ${formatTime(new Date())}`;
 	}
 
-	function submitData() {
-		const newBlocks = $liveBlocks.map((block) => {
-			if (block) {
-				const newBlock = clone(block);
-				console.log(newBlock);
-				newBlock.line = newBlock.line
-					.map((v) => {
-						if (v !== 'Text - click to edit') {
-							return v;
-						} else {
-							return '';
-						}
-					})
-					.filter((v) => v);
-
-				if (newBlock?.title === 'Title - click to edit') {
-					newBlock.title = '';
-				}
-				if (newBlock?.link?.text === 'Link - click to edit') {
-					newBlock.link.text = '';
-				}
-				if (!newBlock?.link?.text || !newBlock?.link?.url) {
-					newBlock.link = { text: '', url: '' };
-				}
-				return newBlock;
-			}
-		});
-
-		remoteSave(newBlocks, $page.params.guid);
-		showSaved = true;
-		setTimeout(() => (showSaved = false), 500);
+	function formatTime(date) {
+		const hours = date.getHours();
+		const minutes = date.getMinutes().toString().padStart(2, '0');
+		const seconds = date.getSeconds().toString().padStart(2, '0');
+		const ampm = hours >= 12 ? 'pm' : 'am';
+		const hour12 = hours % 12 || 12; // Convert 0 hour to 12
+		return `${hour12}:${minutes}:${seconds} ${ampm}`;
 	}
 </script>
 
 <header>
+	<button class="save" type="submit" on:click={saveState}>
+		<Save size="32" />
+	</button>
 	<button on:click={() => (showShareModal = true)}>
 		<Share size="32" />
 	</button>
@@ -107,6 +73,8 @@
 	<button on:click={() => (showMainSettingsModal = true)}>
 		<Settings size="32" />
 	</button>
+	<spacer />
+	<p>{savingText}</p>
 </header>
 
 {#if showSaved}
@@ -118,16 +86,16 @@
 <style>
 	header {
 		width: 100%;
-		max-width: 250px;
+		max-width: 350px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		margin: 0 auto;
 		height: 64px;
+		position: relative;
 	}
 
-	button,
-	a {
+	button {
 		background-color: hsl(0, 0%, 96%);
 		color: var(--color-text-0);
 		display: flex;
@@ -154,23 +122,18 @@
 		color: hsl(0, 0%, 77%);
 	}
 
-	.filtered {
-		background-color: antiquewhite;
+	spacer {
+		width: 60px;
 	}
 
-	.unsaved {
-		animation: heartbeat 1s infinite;
-		z-index: 2;
-	}
-
-	.filter-button {
-		position: relative;
-	}
-
-	icon {
+	p {
 		position: absolute;
-		bottom: 4px;
-		right: 4px;
+		text-align: center;
+		font-size: 0.9em;
+		bottom: -20px;
+		margin: 0;
+		padding: 0;
+		width: 100%;
 	}
 
 	@keyframes heartbeat {
