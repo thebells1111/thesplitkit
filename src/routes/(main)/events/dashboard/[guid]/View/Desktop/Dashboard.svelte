@@ -249,7 +249,7 @@
 		width: calc(100% - 16px);
 		height: 40px;
 		min-height: 40px;
-		margin: 8px 0 4px 0;
+		margin: 28px 0 4px 0;
 	}
 
 	controls {
