@@ -87,12 +87,12 @@
 
 					blob = await setMP3Metadata(blob, metadata);
 					let artist = sanitizeFilename(block?.line?.[1] || '');
-					let album = sanitizeFilename(block?.line?.[1]);
+					let album = sanitizeFilename(block?.line?.[0]);
 					let song = sanitizeFilename(block.title);
 					zip.file(
 						(artist ? `${artist} - ` : '') +
 							(album ? `${album} - ` : '') +
-							(song ? `${song} - ` : '') +
+							(song ? `${song}` : '') +
 							'.mp3',
 						blob
 					);
