@@ -86,11 +86,14 @@
 					};
 
 					blob = await setMP3Metadata(blob, metadata);
-
+					let artist = sanitizeFilename(block?.line?.[1] || '');
+					let album = sanitizeFilename(block?.line?.[1]);
+					let song = sanitizeFilename(block.title);
 					zip.file(
-						`${sanitizeFilename(block.title)} - ${sanitizeFilename(block?.line?.[1])} - ${
-							block.blockGuid
-						}.mp3`,
+						(artist ? `${artist} - ` : '') +
+							(album ? `${album} - ` : '') +
+							(song ? `${song} - ` : '') +
+							'.mp3',
 						blob
 					);
 				}
