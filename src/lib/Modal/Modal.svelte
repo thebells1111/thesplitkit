@@ -22,8 +22,7 @@
 
 	function onClose() {
 		closeModal();
-		console.log(unsaved);
-		console.log(isFeedDownload);
+
 		if (unsaved) {
 			const userConfirmation = window.confirm('Your changes are unsaved. Do you want to continue?');
 			if (userConfirmation) {

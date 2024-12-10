@@ -1,7 +1,5 @@
 <script>
-	import { tick } from 'svelte';
 	import formatTime from '$functions/formatTime.js';
-	import getMediaDuration from '$functions/getMediaDuration.js';
 
 	import BlockSettings from './BlockSettings/BlockSettings.svelte';
 	import BlockFooter from './BlockFooter/BlockFooter.svelte';
@@ -9,13 +7,14 @@
 	import BroadcastIcon from '$lib/icons/Broadcast.svelte';
 	import TimerIcon from '$lib/icons/Timer.svelte';
 
-	import { defaultBlockGuid, mainSettings, liveBlocks, addedBlockGuid } from '$/stores';
+	import { defaultBlockGuid, mainSettings, changeDefault, addedBlockGuid } from '$/stores';
 
 	export let showEditing = false;
 	export let block = {};
 	export let index;
 	export let broadcastingBlockGuid;
 	export let broadcastTimeRemaining;
+	export let showSelectBlock;
 	export let handleBroadcast = () => {};
 	export let updateStartTime = () => {};
 	export let downloadMP3 = () => {};
@@ -36,29 +35,15 @@
 		}
 	}
 
-	async function saveBlock(block) {
-		if (block.enclosureUrl && !$mainSettings?.lowBandwidth?.audio) {
-			if (!block.duration) {
-				try {
-					block.duration = await getMediaDuration(block.enclosureUrl);
-				} catch (error) {
-					block.duration = 0;
-				}
-			} else {
-				block.duration = 0;
-			}
-		}
-
-		let activeIndex = $liveBlocks.findIndex((v) => v?.blockGuid === block?.blockGuid);
-		if (activeIndex > -1) {
-			$liveBlocks[activeIndex] = block;
-		}
-	}
-
 	$: toggleEditor(expandAll);
 
 	function toggleEditor(expandAll) {
 		showEditing = expandAll;
+	}
+
+	function updateDefault() {
+		showSelectBlock = true;
+		$changeDefault = true;
 	}
 </script>
 
@@ -76,7 +61,7 @@
 				block.value.destinations.some((item) => !item.address))}
 	>
 		{#if block?.blockGuid === $defaultBlockGuid}
-			<default>-default block-</default>
+			<button class="default-change" on:click={updateDefault}>change default block</button>
 		{/if}
 
 		<card-info>
@@ -234,12 +219,17 @@
 		box-shadow: 0 0px 8px 1px rgba(0, 131, 179, 0.75);
 	}
 
-	default {
-		position: absolute;
-		top: -1px;
-		left: calc(50% - 50px);
+	.default-change {
+		position: relative;
+		left: calc(50% - 80px);
 		color: var(--color-theme-purple);
 		font-weight: bold;
+		width: 160px;
+		color: hsl(278, 100%, 92%);
+		background-color: hsl(277, 100%, 44%);
+		min-height: initial;
+		height: initial;
+		margin: 4px 0;
 	}
 	div.warning {
 		border: 1px solid red;

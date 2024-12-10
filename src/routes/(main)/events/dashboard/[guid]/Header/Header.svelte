@@ -1,38 +1,23 @@
 <script>
 	import Settings from '$lib/icons/Settings.svelte';
 	import Share from '$lib/icons/Share.svelte';
-	import Filter from '$lib/icons/Filter.svelte';
 	import AddBlocks from '$lib/icons/AddBlocks.svelte';
 	import { page } from '$app/stores';
-	import MusicIcon from '$lib/icons/Music.svelte';
-	import PersonIcon from '$lib/icons/Person.svelte';
-	import ChapterIcon from '$lib/icons/Chapter.svelte';
-	import PodcastIcon from '$lib/icons/Podcast.svelte';
 	import remoteSave from '$lib/functions/remoteSave.js';
 
 	export let showShareModal;
 	export let showMainSettingsModal;
-	export let showFilterModal;
 	export let showSelectBlock;
 
 	import clone from 'just-clone';
-	import Save from '$lib/icons/Save.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
 	import { liveBlocks, defaultBlockGuid, changeDefault, mainSettings } from '$/stores';
 
-	export let filterType;
 	let initialized = false;
 	let savedBlocks = [];
 	let showSaved = false;
 	let saveTimeout;
-
-	const Icons = {
-		music: MusicIcon,
-		person: PersonIcon,
-		chapter: ChapterIcon,
-		podcast: PodcastIcon
-	};
 
 	$: compareBlocks($liveBlocks);
 
@@ -51,39 +36,6 @@
 	function saveState() {
 		console.log('saved state');
 		remoteSave($liveBlocks, $page.params.guid);
-	}
-
-	function submitData() {
-		const newBlocks = $liveBlocks.map((block) => {
-			if (block) {
-				const newBlock = clone(block);
-				console.log(newBlock);
-				newBlock.line = newBlock.line
-					.map((v) => {
-						if (v !== 'Text - click to edit') {
-							return v;
-						} else {
-							return '';
-						}
-					})
-					.filter((v) => v);
-
-				if (newBlock?.title === 'Title - click to edit') {
-					newBlock.title = '';
-				}
-				if (newBlock?.link?.text === 'Link - click to edit') {
-					newBlock.link.text = '';
-				}
-				if (!newBlock?.link?.text || !newBlock?.link?.url) {
-					newBlock.link = { text: '', url: '' };
-				}
-				return newBlock;
-			}
-		});
-
-		remoteSave(newBlocks, $page.params.guid);
-		showSaved = true;
-		setTimeout(() => (showSaved = false), 500);
 	}
 </script>
 

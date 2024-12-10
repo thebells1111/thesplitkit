@@ -1,6 +1,6 @@
 <script>
 	import { XMLParser } from 'fast-xml-parser';
-	import { remoteServer, mainSettings } from '$/stores';
+	import { remoteServer, mainSettings, changeDefault, liveBlocks } from '$/stores';
 	import AddBlocksIcon from '$lib/icons/AddBlocks.svelte';
 	export let addFeed = () => {};
 	let selectedFeed = {};
@@ -31,6 +31,8 @@
 	}
 
 	function fetchEpisodes(guid) {
+		console.log('dude');
+		console.log(guid);
 		let feedUrl =
 			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
 		let episodesUrl =
@@ -41,6 +43,7 @@
 			.then(async ([feedRes, episodesRes]) => {
 				let data = await feedRes.json();
 				let feed = data.feed;
+				console.log(feed);
 
 				const res = await fetch(remoteServer + '/api/proxy?url=' + encodeURIComponent(feed.url), {
 					headers: { 'User-Agent': 'TheSplitKit/0.1' }
@@ -108,19 +111,6 @@
 		}
 	}
 
-	function isValidUrl(url) {
-		const pattern = new RegExp(
-			'^(https?:\\/\\/)?' + // protocol
-				'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
-				'((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-				'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-				'(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-				'(\\#[-a-z\\d_]*)?$',
-			'i'
-		); // fragment locator
-		return !!pattern.test(url);
-	}
-
 	function removeAtSign(data) {
 		let dataArray = [].concat(data);
 
@@ -136,6 +126,13 @@
 		});
 
 		return cleanedData;
+	}
+
+	$: if ($changeDefault) {
+		console.log('hi');
+
+		console.log($liveBlocks[0]);
+		fetchEpisodes($liveBlocks[0].feedGuid);
 	}
 </script>
 

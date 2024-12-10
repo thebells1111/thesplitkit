@@ -4,6 +4,7 @@
 
 	import Delete from '$lib/icons/Delete.svelte';
 	import CopyIcon from '$lib/icons/Copy.svelte';
+	import { defaultBlockGuid } from '$/stores';
 
 	export let block = null;
 	export let handleDeleteBlock = () => {};

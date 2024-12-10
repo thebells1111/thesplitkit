@@ -280,14 +280,17 @@
 	<EventsHeader
 		bind:showShareModal
 		bind:showMainSettingsModal
-		bind:showFilterModal
 		blocks={$liveBlocks}
 		bind:showSelectBlock
-		{filterType}
 	/>
 	{#if $activePageGuid === guid}
 		<broadcast-blocks>
-			<Dashboard bind:blocks={filteredBlocks} {filterType} bind:addDefaultType />
+			<Dashboard
+				bind:blocks={filteredBlocks}
+				{filterType}
+				bind:addDefaultType
+				bind:showSelectBlock
+			/>
 		</broadcast-blocks>
 	{/if}
 {/if}

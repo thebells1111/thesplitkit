@@ -33,6 +33,7 @@
 	export let blocks = [];
 	export let filterType;
 	export let activeBlockGuid;
+	export let showSelectBlock;
 
 	let player;
 	let broadcastTimeRemaining;
@@ -534,12 +535,12 @@
 <Dashboard
 	bind:blocks={$liveBlocks}
 	bind:filterType
-	bind:activeBlockGuid
 	bind:player
 	bind:broadcastTimeRemaining
 	bind:timeStamp
 	bind:isRunning
 	bind:broadcastingBlockGuid
+	bind:showSelectBlock
 	{socketConnect}
 	{handleTimer}
 	{handleResetTimer}

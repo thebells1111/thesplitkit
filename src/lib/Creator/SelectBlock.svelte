@@ -89,6 +89,10 @@
 		await tick();
 		$blocksList.scrollTo({ top: $blocksList.scrollHeight, behavior: 'smooth' });
 	}
+
+	$: if ($changeDefault) {
+		handleSelect('podcast');
+	}
 </script>
 
 <div>
@@ -125,8 +129,8 @@
 	<Modal
 		bind:showModal
 		closeModal={() => {
-			console.log('hi');
 			showSelectBlock = false;
+			$changeDefault = false;
 		}}
 	>
 		{#if modalsConfig.podcast.show}

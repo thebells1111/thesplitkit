@@ -14,16 +14,15 @@
 	import BlockSorter from './BlockSorter/BlockSorter.svelte';
 
 	import { socket, liveBlocks, defaultBlockGuid, mainSettings, blocksList } from '$/stores';
-	import BlockSettings from './BlockSettings/BlockSettings.svelte';
 
 	export let blocks = [];
 	export let filterType = null;
-	export let activeBlockGuid = null;
 	export let player = null;
 	export let broadcastTimeRemaining = null;
 	export let timeStamp = 0;
 	export let isRunning = false;
 	export let broadcastingBlockGuid = null;
+	export let showSelectBlock = false;
 	export let socketConnect = () => {};
 	export let handleTimer = () => {};
 	export let handleResetTimer = () => {};
@@ -160,8 +159,9 @@
 				{#each blocks.filter((v) => v) as block, index}
 					<DashboardBlockCard
 						bind:block
-						{index}
 						bind:broadcastingBlockGuid
+						bind:showSelectBlock
+						{index}
 						{broadcastTimeRemaining}
 						{handleBroadcast}
 						{updateStartTime}
