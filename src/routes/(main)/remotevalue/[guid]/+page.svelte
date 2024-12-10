@@ -146,45 +146,46 @@
 		</button>
 	</warning-container>
 {:else}
-	<instruction-block>
-		<h4>
-			In your feed, paste the Value Time Splits in the {`<podcast:value>`} tag of your episode.
-		</h4>
-
-		<h4>Below is an example:</h4>
-		<p class="instructions">
-			{`<podcast:value type="lightning" method="keysend" suggested="0.00000005000" >`}
-		</p>
-		<p class="instructions indent-1">
-			{`<podcast:valueRecipient`}
-		</p>
-		<p class="instructions indent-2">
-			{`name="Podcastindex.org"`}
-		</p>
-		<p class="instructions indent-2">
-			{`type="node"`}
-		</p>
-		<p class="instructions indent-2">
-			{`address="03ae9f91a0cb8ff43840e3c322c4c61f019d8c1c3cea15a25cfc425ac605e61a4a"`}
-		</p>
-		<p class="instructions indent-2">
-			{`split="100"`}
-		</p>
-		<p class="instructions indent-1">
-			{`/>`}
-		</p>
-		<p class="instructions indent-1 paste">Paste your value time splits here.</p>
-		<p class="instructions">
-			{`</podcast:value>`}
-		</p>
-	</instruction-block>
-	<h3>Here's your<br /> Value Time Splits<br /> to paste.</h3>
-	<textarea>{xmlText}</textarea>
-	<button class="dl-link" on:click={copyText}>
-		<copy-link-icon class="multi-icon">
-			<CopyIcon size="32" />
-		</copy-link-icon>
-	</button>
+	<container>
+		<instruction-block>
+			<h4>
+				In your feed, paste the Value Time Splits in the {`<podcast:value>`} tag of your episode.
+			</h4>
+			<h4>Below is an example:</h4>
+			<p class="instructions">
+				{`<podcast:value type="lightning" method="keysend" suggested="0.00000005000" >`}
+			</p>
+			<p class="instructions indent-1">
+				{`<podcast:valueRecipient`}
+			</p>
+			<p class="instructions indent-2">
+				{`name="Podcastindex.org"`}
+			</p>
+			<p class="instructions indent-2">
+				{`type="node"`}
+			</p>
+			<p class="instructions indent-2">
+				{`address="03ae9f91a0cb8ff43840e3c322c4c61f019d8c1c3cea15a25cfc425ac605e61a4a"`}
+			</p>
+			<p class="instructions indent-2">
+				{`split="100"`}
+			</p>
+			<p class="instructions indent-1">
+				{`/>`}
+			</p>
+			<p class="instructions indent-1 paste">Paste your value time splits here.</p>
+			<p class="instructions">
+				{`</podcast:value>`}
+			</p>
+		</instruction-block>
+		<h3>Here's your<br /> Value Time Splits<br /> to paste.</h3>
+		<textarea>{xmlText}</textarea>
+		<button class="dl-link" on:click={copyText}>
+			<copy-link-icon class="multi-icon">
+				<CopyIcon size="32" />
+			</copy-link-icon>
+		</button>
+	</container>
 {/if}
 
 <style>
@@ -220,7 +221,7 @@
 		box-shadow: 0 2px 6px 1px rgba(0, 0, 0, 0.5);
 		position: absolute;
 		bottom: 24px;
-		right: 20px;
+		right: 10px;
 		background-color: var(--color-theme-blue);
 		width: 50px;
 		height: 50px;
@@ -245,6 +246,12 @@
 	.paste {
 		color: red;
 		font-weight: bold;
+	}
+
+	container {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 	}
 
 	h3 {

@@ -160,11 +160,16 @@
 
 		blob = await setMP3Metadata(blob, metadata);
 
+		let artist = sanitizeFilename(block?.line?.[1] || '');
+		let album = sanitizeFilename(block?.line?.[0]);
+		let song = sanitizeFilename(block.title);
+
 		saveAs(
 			blob,
-			`${sanitizeFilename(block.title)} - ${sanitizeFilename(block?.line?.[1])} - ${
-				block.blockGuid
-			}.mp3`
+			(artist ? `${artist} - ` : '') +
+				(album ? `${album} - ` : '') +
+				(song ? `${song}` : '') +
+				'.mp3'
 		);
 
 		function sanitizeFilename(filename) {

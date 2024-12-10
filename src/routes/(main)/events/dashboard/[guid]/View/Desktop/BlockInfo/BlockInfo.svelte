@@ -7,6 +7,10 @@
 </script>
 
 <label>
+	<h4>Image</h4>
+	<input bind:value={block.image} />
+</label>
+<label>
 	<h4>Title</h4>
 	<input bind:value={block.title} />
 </label>

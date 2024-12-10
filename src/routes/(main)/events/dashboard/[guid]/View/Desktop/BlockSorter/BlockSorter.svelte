@@ -64,7 +64,8 @@
 	sortable-list-container {
 		display: block;
 		width: 100%;
-		padding-top: 50px;
+		overflow: auto;
+		height: 100%;
 	}
 
 	.list-group-item {

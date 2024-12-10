@@ -115,7 +115,14 @@
 								</play>
 							{/if}
 						</button>
-						<timer>{formatTime(timeStamp, true)}</timer>
+						{#if isRunning}
+							<timer>{formatTime(timeStamp, true)}</timer>
+						{:else}
+							<timer-input>
+								<input bind:value={timeStamp} type="number" />
+								<p class="input-secs">secs</p>
+							</timer-input>
+						{/if}
 						<button class="reset-button" on:click={handleResetTimer}>
 							<ResetIcon size="32" />
 						</button>
@@ -242,7 +249,7 @@
 		width: calc(100% - 16px);
 		height: 40px;
 		min-height: 40px;
-		margin: 8px 0 4px 0;
+		margin: 28px 0 4px 0;
 	}
 
 	controls {
@@ -343,6 +350,42 @@
 	timer {
 		font-size: 1.1em;
 		font-weight: bold;
+		width: 40px;
+		display: flex;
+		justify-content: center;
+	}
+
+	timer-input {
+		width: 40px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		position: relative;
+	}
+
+	timer-input > p.input-secs {
+		font-size: 0.8em;
+		color: initial;
+		text-align: center;
+		padding: 0;
+		margin: 0;
+		width: initial;
+		height: initial;
+	}
+
+	input {
+		width: 40px;
+	}
+
+	input[type='number']::-webkit-inner-spin-button,
+	input[type='number']::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	input[type='number'] {
+		-moz-appearance: textfield; /* Firefox */
 	}
 
 	.scroll {
