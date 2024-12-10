@@ -31,8 +31,6 @@
 	}
 
 	function fetchEpisodes(guid) {
-		console.log('dude');
-		console.log(guid);
 		let feedUrl =
 			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
 		let episodesUrl =
@@ -129,9 +127,6 @@
 	}
 
 	$: if ($changeDefault) {
-		console.log('hi');
-
-		console.log($liveBlocks[0]);
 		fetchEpisodes($liveBlocks[0].feedGuid);
 	}
 </script>

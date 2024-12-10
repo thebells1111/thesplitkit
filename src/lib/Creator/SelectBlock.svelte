@@ -90,7 +90,7 @@
 		$blocksList.scrollTo({ top: $blocksList.scrollHeight, behavior: 'smooth' });
 	}
 
-	$: if ($changeDefault) {
+	$: if ($changeDefault && $liveBlocks?.[0]?.feedGuid) {
 		handleSelect('podcast');
 	}
 </script>
