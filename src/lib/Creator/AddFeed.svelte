@@ -126,7 +126,7 @@
 		return cleanedData;
 	}
 
-	$: if ($changeDefault) {
+	$: if ($changeDefault && $liveBlocks?.[0]?.feedGuid) {
 		fetchEpisodes($liveBlocks[0].feedGuid);
 	}
 </script>
