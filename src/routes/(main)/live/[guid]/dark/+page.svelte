@@ -162,10 +162,6 @@
 	redirectUrl += `&response_type=code&redirect_uri=${$page.url.href}`;
 	redirectUrl += `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 
-	function closeInfoModal() {
-		showInfoModal = false;
-	}
-
 	function getTitle(block) {
 		return getText(block?.title || block?.feedTitle || '');
 	}
@@ -222,7 +218,7 @@
 		<image-container>
 			<img
 				class="image"
-				src={block?.image || block?.artwork || '/splitkit300.png'}
+				src={block?.image || block?.artwork || '/splitkit300dark.png'}
 				alt="live artwork"
 				width="300"
 				height="300"
@@ -276,7 +272,7 @@
 {/if}
 
 {#if showModal}
-	<Modal bind:showModal>
+	<Modal bind:showModal dark>
 		<boost-container>
 			<h2>{activeBlock.title}</h2>
 			<label>
@@ -318,22 +314,14 @@
 {/if}
 
 {#if showInfoModal}
-	<blurred-background
-		class="info"
-		on:mousedown|self={closeInfoModal}
-		on:touchend|self={closeInfoModal}
-	>
-		<info-modal>
-			<button class="close icon" on:click={closeInfoModal}>
-				<Close size="24" />
-			</button>
+	<Modal bind:showModal={showInfoModal} dark>
+		<show-info>
 			<h2>Notes</h2>
 			<notes>
 				{@html DOMPurify.sanitize(block.description?.replace(/\r?\n/g, '<br/>'))}
 			</notes>
-			<!-- <textarea value={block.description} readonly /> -->
-		</info-modal>
-	</blurred-background>
+		</show-info>
+	</Modal>
 {/if}
 
 <style>
@@ -345,6 +333,14 @@
 		padding: 0;
 	}
 
+	h1,
+	h2,
+	h3,
+	p,
+	a {
+		color: #ffffff;
+	}
+
 	container {
 		max-width: 450px;
 		min-width: 300px;
@@ -354,46 +350,244 @@
 		align-items: center;
 		height: 100%;
 	}
+	h1 {
+		text-align: center;
+		margin: 4px 0 0 0;
+		min-height: 1.6em;
+		width: 100%;
+	}
 
-	h1,
-	h2,
-	h3,
-	p,
-	a {
-		color: #ffffff;
+	h2 {
+		text-align: center;
+		margin-top: 4px;
+		min-height: 1.5em;
+		width: 100%;
+	}
+	h3 {
+		text-align: center;
+		margin-top: 0;
+		min-height: 1.5em;
+		width: 100%;
+	}
+
+	p {
+		text-align: center;
+	}
+
+	spacer {
+		display: block;
+		height: 8px;
+		width: 100%;
+	}
+	a,
+	spacer {
+		flex: 1;
 	}
 
 	img {
 		width: 300px;
 	}
 
+	boost-container {
+		width: calc(100% - 16px);
+		margin: 0 8px;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	boost-container h2 {
+		margin: 0;
+	}
+
+	boost-container textarea {
+		width: calc(100% - 8px);
+		resize: none;
+		margin: 8px 0;
+		height: 200px;
+		padding: 4px;
+		flex: 1;
+	}
+
+	balance-text {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 8px;
+	}
+
+	balance-text h3,
+	amount-text h3 {
+		margin: 0 8px 0 0;
+		min-height: 1em;
+		width: initial;
+	}
+
+	balance-text p,
+	amount-text p {
+		margin: 0;
+		text-align: right;
+		width: inital;
+		min-height: 1em;
+	}
+
+	amount-text {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		align-items: flex-end;
+	}
+
+	amount-text p,
+	amount-text h3 {
+		margin: 0;
+		padding: 0;
+	}
+
+	amount-container {
+		width: 100%;
+		display: block;
+		position: relative;
+		margin-bottom: 8px;
+	}
+	.amount {
+		width: calc(100% - 16px);
+		padding: 2px 8px 20px 8px;
+	}
+
+	amount-container p {
+		position: absolute;
+		top: 6px;
+		padding: 0 8px;
+		font-size: 0.9em;
+	}
+
+	amount-container .sats {
+		left: 0;
+	}
+
+	amount-container .conversion {
+		right: 0;
+	}
+	btn-container {
+		display: flex;
+		justify-content: space-around;
+		width: 100%;
+	}
+	btn-container button {
+		width: 20%;
+	}
+
+	input[type='number']::-webkit-outer-spin-button,
+	input[type='number']::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	input[type='number'] {
+		-moz-appearance: textfield;
+	}
+
+	label {
+		align-self: flex-start;
+		display: flex;
+		flex-direction: column;
+	}
+
 	button {
-		background-color: #1e88e5;
-		color: #ffffff;
-		border: none;
-		padding: 10px 20px;
-		font-size: 16px;
+		background-color: rgb(0, 132, 180);
+		color: white;
+		padding: 4px 12px;
+		border: 1px solid transparent;
+		border-radius: 25px;
+		font-size: 1.05em;
 		cursor: pointer;
-		border-radius: 4px;
+		margin: 8px 0;
+		height: 50px;
 	}
 
-	button:hover {
-		background-color: #1565c0;
+	.boost {
+		width: calc(100% - 16px);
+		background-color: #ff6680;
+		color: white;
+		font-weight: 600;
+		margin: 8px 0 16px 0;
 	}
 
-	button.info {
+	image-container {
+		display: block;
+		position: relative;
+	}
+	white-background {
+		display: block;
+		position: absolute;
+		background-color: white;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		z-index: -1;
+	}
+	image-container button.info {
+		position: absolute;
+		bottom: -4px;
+		right: 4px;
+		width: initial;
+		height: 34px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
 		background-color: transparent;
-		border: 1px solid #ffffff;
-		color: #ffffff;
+		color: hsl(283, 99%, 49%);
+		box-shadow: none;
+		filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.5));
 	}
 
-	button.close {
-		background-color: #e53935;
-		color: #ffffff;
+	show-info {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		position: relative;
+		width: 100%;
+		height: calc(100% - 50px);
+		overflow-y: auto;
+		overflow-x: hidden;
+		border-radius: 8px;
 	}
 
-	Modal {
-		background: #212121;
+	notes {
+		display: block;
+		width: calc(100% - 32px);
+		height: calc(100% - 32px);
+		margin: 8px 0;
+		overflow: auto;
+	}
+
+	show-info h2 {
+		margin: 16px 0 8px 0;
+		height: initial;
+		min-height: initial;
+	}
+
+	textarea {
+		width: calc(100% - 32px);
+		height: calc(100% - 32px);
+		resize: none;
+		margin: 8px 0;
+		padding: 4px;
+		background-color: #424242;
+		border: none;
+
 		color: #e0e0e0;
+		outline: 1px solid #e0e0e0;
+	}
+
+	input {
+		background-color: #424242;
+		border: none;
+		color: #e0e0e0;
+		outline: 1px solid #e0e0e0;
+		padding: 2px;
 	}
 </style>

@@ -6,6 +6,7 @@
 	export let showModal = false;
 	export let unsaved = false;
 	export let isFeedDownload = false;
+	export let dark = false;
 
 	onMount(() => {
 		const handleKeyDown = (event) => {
@@ -43,7 +44,7 @@
 </script>
 
 <blurred-background on:mousedown|self={onClose} on:touchend|self={onClose}>
-	<modal>
+	<modal class:dark>
 		<button class="close" on:click={onClose}>
 			<Close size="24" />
 		</button>
@@ -81,6 +82,12 @@
 		box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 1);
 	}
 
+	.dark {
+		background-color: #424242;
+		color: #e0e0e0;
+		box-shadow: 0px 3px 10px 3px rgb(39, 39, 39);
+	}
+
 	button {
 		color: white;
 		padding: 4px 12px;
@@ -90,6 +97,10 @@
 		cursor: pointer;
 		height: 50px;
 		position: absolute;
+	}
+
+	.dark > button {
+		color: #e0e0e0;
 	}
 
 	container {
