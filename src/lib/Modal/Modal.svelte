@@ -83,7 +83,7 @@
 	}
 
 	.dark {
-		background-color: #424242;
+		background-color: #2a2a2a;
 		color: #e0e0e0;
 		box-shadow: 0px 3px 10px 3px rgb(39, 39, 39);
 	}

@@ -576,7 +576,7 @@
 		resize: none;
 		margin: 8px 0;
 		padding: 4px;
-		background-color: #424242;
+		background-color: #2a2a2a;
 		border: none;
 
 		color: #e0e0e0;
@@ -584,7 +584,7 @@
 	}
 
 	input {
-		background-color: #424242;
+		background-color: #2a2a2a;
 		border: none;
 		color: #e0e0e0;
 		outline: 1px solid #e0e0e0;

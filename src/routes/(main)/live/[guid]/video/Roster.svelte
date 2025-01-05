@@ -12,6 +12,7 @@
 
 	const guid = $page.params.guid;
 	$activePageGuid = guid;
+	export let mobile;
 	let boostagram = '';
 	let showInfoModal = false;
 	let fromIndex = true;
@@ -97,20 +98,35 @@
 	}
 </script>
 
-<div class="container">
-	{#each $liveBlocks.slice(1, Math.ceil($liveBlocks.length / 2)) as block}
-		{#if block}
-			<Card {block} bind:showModal bind:activeBlock />
+<div class="container" class:mobile>
+	{#if !mobile}
+		{#each $liveBlocks.slice(1, Math.ceil($liveBlocks.length / 2)) as block}
+			{#if block}
+				<Card {block} bind:showModal bind:activeBlock />
+			{/if}
+		{/each}
+		{#if $liveBlocks[0]}
+			<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />
 		{/if}
-	{/each}
-	{#if $liveBlocks[0]}
-		<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />
+		{#each $liveBlocks.slice(Math.ceil($liveBlocks.length / 2)) as block}
+			{#if block}
+				<Card {block} bind:showModal bind:activeBlock />
+			{/if}
+		{/each}
+	{:else}
+		{#if $liveBlocks[0]}
+			<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />
+		{/if}
+		<div class="grid">
+			{#each $liveBlocks.slice(1) as block, i}
+				{#if block}
+					<div class="grid-item">
+						<Card {block} bind:showModal bind:activeBlock />
+					</div>
+				{/if}
+			{/each}
+		</div>
 	{/if}
-	{#each $liveBlocks.slice(Math.ceil($liveBlocks.length / 2)) as block}
-		{#if block}
-			<Card {block} bind:showModal bind:activeBlock />
-		{/if}
-	{/each}
 </div>
 <p class="instructions">click a band to boost</p>
 
@@ -162,6 +178,31 @@
 		justify-content: center;
 		align-items: center;
 		width: 100%;
+	}
+
+	.container.mobile {
+		height: 100%;
+		flex-direction: column;
+	}
+
+	.grid {
+		margin-top: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 8px 8px; /* 8px between rows and columns */
+		height: calc(100% - 150px);
+		overflow: hidden;
+	}
+	.grid-item {
+		width: calc(40% - 10px); /* Two per row with 8px gap */
+		box-sizing: border-box;
+		min-height: 0;
+		min-width: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	h2 {
@@ -449,7 +490,7 @@
 		resize: none;
 		margin: 8px 0;
 		padding: 4px;
-		background-color: #424242;
+		background-color: #2a2a2a;
 		border: none;
 
 		color: #e0e0e0;
@@ -457,7 +498,7 @@
 	}
 
 	input {
-		background-color: #424242;
+		background-color: #2a2a2a;
 		border: none;
 		color: #e0e0e0;
 		outline: 1px solid #e0e0e0;

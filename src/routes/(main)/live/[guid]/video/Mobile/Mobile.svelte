@@ -26,15 +26,19 @@
 </nav>
 
 <container>
-	{#if currentScreen === 'roster'}
-		<Roster />
-	{:else if currentScreen === 'video'}
+	<div class:show={currentScreen === 'roster'}>
+		<Roster mobile />
+	</div>
+	<div class:show={currentScreen === 'video'}>
 		<Video />
-	{:else if currentScreen === 'boostBoard'}
+	</div>
+
+	<div class:show={currentScreen === 'boostBoard'}>
 		<BoostBoard />
-	{:else if currentScreen === 'chat'}
+	</div>
+	<div class="chat" class:show={currentScreen === 'chat'}>
 		<Chat />
-	{/if}
+	</div>
 </container>
 
 <style>
@@ -64,5 +68,21 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	div {
+		display: none;
+		width: 100%;
+		height: calc(100% - 40px);
+	}
+
+	.show {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.chat {
+		margin: 8px;
 	}
 </style>
