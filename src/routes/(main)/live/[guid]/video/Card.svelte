@@ -31,7 +31,7 @@
 			<img src={block.image} alt={block.title} />
 		</div>
 
-		<!-- <img class="border" src="/boo-card2.png" alt="cover art border" /> -->
+		<img class="border" src="/boo-card3.png" alt="cover art border" />
 	</album>
 </div>
 
@@ -66,11 +66,11 @@
 		z-index: 1;
 		border-radius: 0 0 3px 3px;
 		object-fit: cover;
-		height: 90%;
+		/* height: 90%;
 		width: 90%;
 		position: relative;
 		top: 0px;
-		left: 8px;
+		left: 8px; */
 	}
 
 	.artwork > img {

@@ -112,9 +112,10 @@
 		{/if}
 	{/each}
 </div>
+<p class="instructions">click a band to boost</p>
 
 {#if showModal}
-	<Modal bind:showModal>
+	<Modal bind:showModal dark>
 		<boost-container>
 			<h2>{activeBlock.title}</h2>
 			<label>
@@ -313,5 +314,153 @@
 		margin: 8px 0;
 		padding: 4px;
 		border: 1px solid black;
+	}
+
+	p.instructions {
+		color: rgb(234, 234, 234);
+		position: absolute;
+		bottom: 0;
+	}
+
+	boost-container {
+		width: calc(100% - 16px);
+		margin: 0 8px;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		color: #e0e0e0;
+	}
+
+	boost-container h2 {
+		margin: 0;
+	}
+
+	boost-container textarea {
+		width: calc(100% - 8px);
+		resize: none;
+		margin: 8px 0;
+		height: 200px;
+		padding: 4px;
+		flex: 1;
+	}
+
+	balance-text {
+		display: flex;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 8px;
+	}
+
+	balance-text h3,
+	amount-text h3 {
+		margin: 0 8px 0 0;
+		min-height: 1em;
+		width: initial;
+	}
+
+	balance-text p,
+	amount-text p {
+		margin: 0;
+		text-align: right;
+		width: inital;
+		min-height: 1em;
+	}
+
+	amount-text {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		align-items: flex-end;
+	}
+
+	amount-text p,
+	amount-text h3 {
+		margin: 0;
+		padding: 0;
+	}
+
+	amount-container {
+		width: 100%;
+		display: block;
+		position: relative;
+		margin-bottom: 8px;
+	}
+	.amount {
+		width: calc(100% - 16px);
+		padding: 2px 8px 20px 8px;
+	}
+
+	amount-container p {
+		position: absolute;
+		top: 6px;
+		padding: 0 8px;
+		font-size: 0.9em;
+	}
+
+	amount-container .sats {
+		left: 0;
+	}
+
+	amount-container .conversion {
+		right: 0;
+	}
+	btn-container {
+		display: flex;
+		justify-content: space-around;
+		width: 100%;
+	}
+	btn-container button {
+		width: 20%;
+	}
+
+	label {
+		align-self: flex-start;
+		display: flex;
+		flex-direction: column;
+	}
+
+	button {
+		background-color: rgb(0, 231, 255);
+		color: white;
+		padding: 4px 12px;
+		border: 1px solid transparent;
+		border-radius: 25px;
+		font-size: 1.05em;
+		cursor: pointer;
+		margin: 8px 0;
+		height: 50px;
+		box-shadow: none;
+		border: none;
+	}
+
+	.boost {
+		width: calc(100% - 16px);
+		background-color: rgb(248, 0, 255);
+		color: white;
+		font-weight: 600;
+		margin: 8px 0 16px 0;
+		box-shadow: none;
+	}
+
+	textarea {
+		width: calc(100% - 32px);
+		height: calc(100% - 32px);
+		resize: none;
+		margin: 8px 0;
+		padding: 4px;
+		background-color: #424242;
+		border: none;
+
+		color: #e0e0e0;
+		outline: 1px solid #e0e0e0;
+	}
+
+	input {
+		background-color: #424242;
+		border: none;
+		color: #e0e0e0;
+		outline: 1px solid #e0e0e0;
+		padding: 2px;
 	}
 </style>
