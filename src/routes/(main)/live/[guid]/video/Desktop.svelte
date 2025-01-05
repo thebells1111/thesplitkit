@@ -9,9 +9,7 @@
 <img
 	class="background"
 	alt="boo-background"
-	src={$mainSettings?.liveBackgroundUrl
-		? $mainSettings?.liveBackgroundUrl
-		: '/culturalconvergence.webp'}
+	src={$mainSettings?.liveBackgroundUrl ? $mainSettings?.liveBackgroundUrl : ''}
 />
 
 <container>
@@ -33,6 +31,7 @@
 		top: 0;
 		object-fit: cover;
 		z-index: -1;
+		background-color: black;
 	}
 
 	container {
