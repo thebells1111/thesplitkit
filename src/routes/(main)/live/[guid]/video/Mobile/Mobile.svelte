@@ -87,7 +87,6 @@
 	}
 
 	.roster {
-		display: flex;
 		flex-direction: column;
 	}
 </style>
