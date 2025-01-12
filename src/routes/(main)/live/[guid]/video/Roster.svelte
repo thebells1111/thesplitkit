@@ -28,19 +28,6 @@
 		senderName = localStorage.getItem('senderName') || 'anonymous';
 	});
 
-	function resetViewport(event) {
-		if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-			// Reset the viewport after input loses focus
-			const metaViewport = document.querySelector('meta[name="viewport"]');
-			if (metaViewport) {
-				metaViewport.setAttribute(
-					'content',
-					'width=device-width, initial-scale=1.0, maximum-scale=1.0'
-				);
-			}
-		}
-	}
-
 	async function loadBlocks() {
 		if (!$liveBlocks?.length) {
 			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
@@ -110,8 +97,6 @@
 		showInfoModal = false;
 	}
 </script>
-
-<svelte:window on:blur={resetViewport} />
 
 <p class="instructions">CLICK A BAND TO BOOST</p>
 <div class="container" class:mobile>
