@@ -351,7 +351,7 @@
 	textarea {
 		width: calc(100% - 32px);
 		height: calc(100% - 32px);
-		min-height: calc(100% - 32px);
+		min-height: calc(50% - 32px);
 		resize: none;
 		margin: 8px 0;
 		padding: 4px;
