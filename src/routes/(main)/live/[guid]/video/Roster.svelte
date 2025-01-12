@@ -510,4 +510,9 @@
 		outline: 1px solid #e0e0e0;
 		padding: 2px;
 	}
+
+	textarea,
+	input {
+		font-size: 16px;
+	}
 </style>
