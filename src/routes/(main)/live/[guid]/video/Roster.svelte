@@ -363,7 +363,7 @@
 		position: relative;
 		bottom: 0;
 		padding: 4px 8px;
-		width: 176px;
+		width: 200px;
 		margin: 0 auto;
 		backdrop-filter: blur(10px); /* Adjust the blur level */
 	}
