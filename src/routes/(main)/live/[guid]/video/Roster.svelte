@@ -98,7 +98,7 @@
 	}
 </script>
 
-<p class="instructions">click a band to boost</p>
+<p class="instructions">CLICK A BAND TO BOOST</p>
 <div class="container" class:mobile>
 	{#if !mobile}
 		{#each $liveBlocks.slice(1, Math.ceil($liveBlocks.length / 2)) as block}
