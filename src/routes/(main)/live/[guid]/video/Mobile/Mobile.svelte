@@ -26,7 +26,7 @@
 </nav>
 
 <container>
-	<div class:show={currentScreen === 'roster'}>
+	<div class="roster" class:show={currentScreen === 'roster'}>
 		<Roster mobile />
 	</div>
 	<div class:show={currentScreen === 'video'}>
@@ -84,5 +84,10 @@
 
 	.chat {
 		margin: 8px;
+	}
+
+	.roster {
+		display: flex;
+		flex-direction: column;
 	}
 </style>

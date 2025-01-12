@@ -61,6 +61,7 @@
 		overflow-y: hidden;
 		margin: 0 8px 8px 8px;
 		display: flex;
+		flex-direction: column;
 		justify-content: center;
 	}
 </style>

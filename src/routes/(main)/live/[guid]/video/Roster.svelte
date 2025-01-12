@@ -98,6 +98,7 @@
 	}
 </script>
 
+<p class="instructions">click a band to boost</p>
 <div class="container" class:mobile>
 	{#if !mobile}
 		{#each $liveBlocks.slice(1, Math.ceil($liveBlocks.length / 2)) as block}
@@ -128,7 +129,6 @@
 		</div>
 	{/if}
 </div>
-<p class="instructions">click a band to boost</p>
 
 {#if showModal}
 	<Modal bind:showModal dark>
@@ -358,9 +358,14 @@
 	}
 
 	p.instructions {
-		color: rgb(234, 234, 234);
-		position: absolute;
+		color: rgb(170, 100, 255);
+		background-color: hsla(0, 0%, 16%, 0.5);
+		position: relative;
 		bottom: 0;
+		padding: 4px 8px;
+		width: 176px;
+		margin: 0 auto;
+		backdrop-filter: blur(10px); /* Adjust the blur level */
 	}
 
 	boost-container {
