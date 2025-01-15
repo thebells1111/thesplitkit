@@ -190,6 +190,7 @@
 		bind:showModal={showBlockSorter}
 		closeModal={() => {
 			$liveBlocks = $liveBlocks;
+			$defaultBlockGuid = $liveBlocks[0].blockGuid;
 		}}
 	>
 		<BlockSorter bind:blocks={$liveBlocks} />

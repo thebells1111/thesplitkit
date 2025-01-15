@@ -1,24 +1,28 @@
 <script>
 	import Sortable from 'sortablejs';
 	import { onMount } from 'svelte';
+	import { defaultBlockGuid } from '$/stores';
 
 	export let blocks = [];
 
 	function handleSort(e) {
-		console.log(e);
 		const { oldIndex, newIndex } = e;
-
-		// Prevent the first item from being moved
-		if (oldIndex === 0 || newIndex === 0) {
-			e.preventDefault(); // Don't allow sorting if the first item is involved
-			return;
-		}
+		console.log(oldIndex);
+		console.log(newIndex);
 
 		// Move the item in the array if it's not the first item
 		if (oldIndex !== newIndex) {
 			const movedItem = blocks.splice(oldIndex, 1)[0];
 			blocks.splice(newIndex, 0, movedItem);
 		}
+
+		blocks.forEach((block, i) => {
+			block.settings = block.settings || {};
+			block.settings.default = false;
+			if (i === 0) {
+				block.settings.default = true;
+			}
+		});
 		console.log('Sorted items:', blocks);
 	}
 
@@ -35,17 +39,17 @@
 			handle: '.sortable-item', // Allows items to be grabbed only by the handle
 			onStart(evt) {
 				// Disable interaction with the first item by setting a custom class or element.
-				const firstItem = evt.from.children[0];
-				if (firstItem) {
-					firstItem.setAttribute('draggable', 'false');
-				}
+				// const firstItem = evt.from.children[0];
+				// if (firstItem) {
+				// 	firstItem.setAttribute('draggable', 'false');
+				// }
 			},
 			onEnd(evt) {
-				// Re-enable draggable behavior for the first item if necessary
-				const firstItem = evt.from.children[0];
-				if (firstItem) {
-					firstItem.setAttribute('draggable', 'true');
-				}
+				// // Re-enable draggable behavior for the first item if necessary
+				// const firstItem = evt.from.children[0];
+				// if (firstItem) {
+				// 	firstItem.setAttribute('draggable', 'true');
+				// }
 			},
 			onSort: handleSort
 		});
@@ -54,7 +58,7 @@
 
 <sortable-list-container bind:this={foo}>
 	{#each blocks as block, i}
-		<div class="list-group-item {i === 0 ? 'no-drag' : 'sortable-item'}">
+		<div class="list-group-item sortable-item">
 			{block.title}
 		</div>
 	{/each}
