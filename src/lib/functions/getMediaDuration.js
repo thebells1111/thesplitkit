@@ -1,5 +1,4 @@
 export default function getMediaDuration(url) {
-	console.log(url);
 	return new Promise((resolve, reject) => {
 		const audio = new Audio();
 		audio.preload = 'metadata'; // Load only metadata, not the entire file

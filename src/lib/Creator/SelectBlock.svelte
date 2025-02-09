@@ -3,6 +3,7 @@
 	import Modal from '$lib/Modal/Modal.svelte';
 	import AddFeed from './AddFeed.svelte';
 	import AddMusic from './AddMusic/AddMusic.svelte';
+	import AddPlaylist from './AddPlaylist/AddPlaylist.svelte';
 	import MusicIcon from '$lib/icons/Music.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
@@ -26,7 +27,8 @@
 	let modalsConfig = {
 		podcast: { show: false },
 		chapter: { show: false },
-		music: { show: false }
+		music: { show: false },
+		playlist: { show: false }
 		// add other modals here
 	};
 
@@ -49,7 +51,7 @@
 				addBlock(type);
 			}
 
-			if (['podcast', 'music'].find((v) => type === v)) {
+			if (['podcast', 'music', 'playlist'].find((v) => type === v)) {
 				showModal = true;
 			}
 		} else {
@@ -114,6 +116,12 @@
 		</icon>
 		Podcast
 	</button>
+	<button on:click={handleSelect.bind(this, 'playlist')}>
+		<icon>
+			<PodcastIcon size="40" />
+		</icon>
+		Playlist
+	</button>
 
 	{#if $copiedBlock && !handleChangeType}
 		<button on:click={handleSelect.bind(this, 'paste')}>
@@ -137,6 +145,8 @@
 			<AddFeed {addFeed} />
 		{:else if modalsConfig.music.show}
 			<AddMusic {addFeed} />
+		{:else if modalsConfig.playlist.show}
+			<AddPlaylist />
 		{/if}
 	</Modal>
 {/if}

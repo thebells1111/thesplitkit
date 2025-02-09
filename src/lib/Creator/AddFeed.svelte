@@ -1,7 +1,9 @@
 <script>
 	import { XMLParser } from 'fast-xml-parser';
+
 	import { remoteServer, mainSettings, changeDefault, liveBlocks } from '$/stores';
 	import AddBlocksIcon from '$lib/icons/AddBlocks.svelte';
+	import fetchFeed from '$functions/fetchFeed.js';
 	export let addFeed = () => {};
 	let selectedFeed = {};
 	let selectedEpisode = {};
@@ -30,100 +32,17 @@
 		} catch (error) {}
 	}
 
-	function fetchEpisodes(guid) {
-		let feedUrl =
-			remoteServer + `/api/queryindex?q=${encodeURIComponent(`/podcasts/byguid?guid=${guid}`)}`;
-		let episodesUrl =
-			remoteServer +
-			`/api/queryindex?q=${encodeURIComponent(`/episodes/bypodcastguid?guid=${guid}&max=1000`)}`;
-
-		Promise.all([fetch(feedUrl), fetch(episodesUrl)])
-			.then(async ([feedRes, episodesRes]) => {
-				let data = await feedRes.json();
-				let feed = data.feed;
-				console.log(feed);
-
-				const res = await fetch(remoteServer + '/api/proxy?url=' + encodeURIComponent(feed.url), {
-					headers: { 'User-Agent': 'TheSplitKit/0.1' }
-				});
-				const xml = await res.text();
-				if (!xml.includes('<rss')) throw new Error('Not XML');
-
-				let liveItems;
-				if (/podcast:liveitem/i.test(xml)) {
-					const options = {
-						ignoreAttributes: false
-					};
-					const parser = new XMLParser(options);
-					let xmlObj = parser.parse(xml);
-
-					let tempItems = xmlObj?.rss?.channel?.['podcast:liveItem'];
-					tempItems = tempItems ? [].concat(tempItems) : tempItems;
-					liveItems = tempItems?.map((v) => {
-						let feed = {
-							title: v.title,
-							guid: v?.guid?.['#text'] || v?.guid,
-							author: v['itunes:author'],
-							image: v?.image?.url,
-							artwork: v?.['itunes:image']?.['@_href'],
-							description: v.description,
-							value: {
-								type: 'lightning',
-								method: 'keysend',
-								destinations: []
-							}
-						};
-
-						if (v?.['podcast:value']) {
-							feed.value = {};
-							feed.value.type = v?.['podcast:value']?.['@_type'];
-							feed.value.method = v?.['podcast:value']?.['@_method'];
-							feed.value.destinations = removeAtSign(
-								v?.['podcast:value']?.['podcast:valueRecipient']
-							);
-						}
-
-						return feed;
-					});
-				}
-
-				let episodesData = await episodesRes.json();
-				let episodes = [].concat(
-					liveItems ? liveItems : [],
-					episodesData.items ? episodesData.items : []
-				);
-
-				feed.episodes = episodes;
-
-				episodeResults = feed.episodes || [];
-				selectedFeed = feed;
-			})
-			.catch((err) => {
-				console.error('Error fetching episodes:', err);
-			});
+	async function fetchEpisodes(guid) {
+		fetchFeed({ guid }).then((feed) => {
+			episodeResults = feed.episodes || [];
+			selectedFeed = feed;
+		});
 	}
 
 	function handleEnter(event) {
 		if (event.key === 'Enter') {
 			searchPodcastIndex(indexQuery);
 		}
-	}
-
-	function removeAtSign(data) {
-		let dataArray = [].concat(data);
-
-		let cleanedData = dataArray.map((item) => {
-			const newItem = {};
-
-			for (let key in item) {
-				const newKey = key.replace('@_', ''); // Creates new key without '@_'
-				newItem[newKey] = item[key];
-			}
-
-			return newItem;
-		});
-
-		return cleanedData;
 	}
 
 	$: if ($changeDefault && $liveBlocks?.[0]?.feedGuid) {

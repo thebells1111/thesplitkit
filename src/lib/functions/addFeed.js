@@ -46,7 +46,6 @@ export default async function addFeed(block, type, channel, eventGuid) {
 
 	newBlock.feedGuid = channel?.podcastGuid || block?.podcastGuid;
 
-	console.log(block);
 	newBlock.itemGuid = block.guid;
 
 	newBlock.eventGuid = eventGuid;
@@ -68,7 +67,6 @@ export default async function addFeed(block, type, channel, eventGuid) {
 	newBlock.settings = {
 		split: $mainSettings.splits
 	};
-	console.log($liveBlocks);
 
 	if ($changeDefault) {
 		$defaultBlockGuid = blockGuid;
@@ -81,9 +79,7 @@ export default async function addFeed(block, type, channel, eventGuid) {
 		$liveBlocks = $liveBlocks.concat(newBlock);
 	}
 	liveBlocks.set($liveBlocks);
-	console.log($liveBlocks);
 	console.log(newBlock);
-	// remoteSave($liveBlocks, eventGuid);
 	return newBlock;
 }
 
