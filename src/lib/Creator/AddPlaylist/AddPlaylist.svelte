@@ -3,6 +3,7 @@
 
 	import fetchFeed from '$functions/fetchFeed.js';
 	import buildBlock from '$functions/dashboard/buildBlock.js';
+	export let showSelectBlock;
 	let value = '';
 	let eventGuid = $page.params.guid;
 	let processingIndex = 0;
@@ -18,10 +19,11 @@
 				remoteItems = [].concat(feed.remoteItems);
 				playlistLength = remoteItems.length;
 				for (const [index, v] of remoteItems.entries()) {
-					processingIndex = index;
+					processingIndex = index + 1;
 					let block = { feedGuid: v.feedGuid, itemGuid: v.itemGuid, index };
 					await buildBlock(block, eventGuid);
 				}
+				showSelectBlock = false;
 			} else {
 				alert(`This feed isn't a playlist`);
 			}
@@ -51,10 +53,31 @@
 	}
 </script>
 
-{processingIndex}
-{#if processingIndex}
-	<h2>Processing {processingIndex} of {playlistLength}</h2>
-{:else}
-	<input bind:value placeholder="playlist guid, LN Beats link, or feed url" />
-	<button on:click={handlFetchFeed}>Import Playlist</button>
-{/if}
+<container>
+	{#if processingIndex}
+		<h2>Importing {processingIndex} of {playlistLength}</h2>
+	{:else}
+		<input bind:value placeholder="playlist guid, LN Beats link, or feed url" />
+		<button on:click={handlFetchFeed}>Import Playlist</button>
+	{/if}
+</container>
+
+<style>
+	container {
+		display: flex;
+	}
+	input {
+		width: 100%;
+		margin: 0 8px;
+	}
+
+	button {
+		width: 150px;
+		margin-right: 8px;
+	}
+
+	h2 {
+		text-align: center;
+		width: 100%;
+	}
+</style>

@@ -7,6 +7,7 @@
 	import MusicIcon from '$lib/icons/Music.svelte';
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
+	import PlaylistIcon from '$lib/icons/Playlist.svelte';
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import clone from 'just-clone';
 
@@ -118,7 +119,7 @@
 	</button>
 	<button on:click={handleSelect.bind(this, 'playlist')}>
 		<icon>
-			<PodcastIcon size="40" />
+			<PlaylistIcon size="40" />
 		</icon>
 		Playlist
 	</button>
@@ -146,7 +147,7 @@
 		{:else if modalsConfig.music.show}
 			<AddMusic {addFeed} />
 		{:else if modalsConfig.playlist.show}
-			<AddPlaylist />
+			<AddPlaylist bind:showSelectBlock />
 		{/if}
 	</Modal>
 {/if}
