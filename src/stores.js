@@ -34,3 +34,6 @@ export const changeDefault = writable(false);
 export const addedBlockGuid = writable(null);
 
 export const feedShowNotes = writable(''); //this is because of weirdness with TinyMCE and using item.description
+
+export const copiedValueBlock = writable();
+export const copiedValueRecipient = writable();

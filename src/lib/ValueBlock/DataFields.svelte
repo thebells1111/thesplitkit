@@ -3,14 +3,25 @@
 	export let person;
 	export let index;
 	export let updatevalue;
+	export let updatePerson;
 	export let showProviderInput = false;
 	export let provider;
+
+	import { copiedValueRecipient } from '$/stores';
 
 	let showAdvanced = false;
 
 	async function handleProviderSelect(providerName) {
 		showProviderInput = true;
 		provider = providerName;
+	}
+
+	function pasteRecipient() {
+		if (
+			window.confirm(`Are you sure you want to add ${$copiedValueRecipient.name || 'this person'}?`)
+		) {
+			updatePerson();
+		}
 	}
 </script>
 
@@ -49,6 +60,9 @@
 		/>
 	</data-top>
 	<button-row>
+		{#if $copiedValueRecipient}
+			<button class="paste" on:click={pasteRecipient}> Paste</button>
+		{/if}
 		<wallets>
 			<button class="provider alby" on:click={() => handleProviderSelect('Alby')}>
 				<img alt="alby icon" src="/alby.png" />
@@ -63,6 +77,7 @@
 				<span>v4v.app</span>
 			</button>
 		</wallets>
+
 		<button class="advanced" type="button" on:click={() => (showAdvanced = !showAdvanced)}>
 			{showAdvanced ? 'Hide' : 'Show'} Advanced Fields
 		</button>
@@ -118,14 +133,14 @@
 		justify-content: space-between;
 	}
 
-	.delete {
-		background-color: rgb(180, 0, 39);
+	.paste {
+		width: auto;
+		padding: 0 8px;
+		height: 32px;
+		color: hsl(278, 100%, 92%);
+		background-color: hsl(277, 100%, 44%);
 		color: white;
-		padding: 4px 12px;
-		border: 1px solid transparent;
-		border-radius: 25px;
-		font-size: 1.05em;
-		cursor: pointer;
+		margin: 0 0 8px 8px;
 	}
 	.required-input::placeholder {
 		color: red;

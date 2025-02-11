@@ -8,6 +8,7 @@
 	import ChapterIcon from '$lib/icons/Chapter.svelte';
 	import PodcastIcon from '$lib/icons/Podcast.svelte';
 	import PlaylistIcon from '$lib/icons/Playlist.svelte';
+
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import clone from 'just-clone';
 

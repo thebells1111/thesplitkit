@@ -2,12 +2,18 @@
 	import DataFields from './DataFields.svelte';
 	import WalletProvidersQuery from './WalletProviderQuery.svelte';
 	import Delete from '$lib/icons/Delete.svelte';
+	import CopyIcon from '$lib/icons/Copy.svelte';
+	import PasteIcon from '$lib/icons/Paste.svelte';
+	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
 	export let data = {};
 	export let calculateTotalPercentage = () => {};
 	export let unsaved = false;
+
+	import { copiedValueBlock, copiedValueRecipient } from '$/stores';
 	let showWalletModal = false;
 	let editingIndex;
+	let showCopyModal = false;
 
 	let provider = '';
 
@@ -41,11 +47,50 @@
 			calculateTotalPercentage();
 		}
 	}
+
+	function copyValueBlock() {
+		if (window.confirm(`Are you sure you want to copy this value block?`)) {
+			$copiedValueBlock = data;
+			showCopyModal = true;
+			setTimeout(() => {
+				showCopyModal = false;
+			}, 700);
+		}
+	}
+
+	function pasteValueBlock() {
+		if (window.confirm(`Are you sure you want to overwrite this value block?`)) {
+			data = $copiedValueBlock;
+		}
+	}
+
+	function copyValueRecipient(person, index) {
+		if (window.confirm(`Are you sure you want to copy ${person.name || 'this person'}?`)) {
+			$copiedValueRecipient = data.value.destinations[index];
+			showCopyModal = true;
+			setTimeout(() => {
+				showCopyModal = false;
+			}, 700);
+		}
+	}
+
+	function updatePerson() {
+		data.value.destinations.splice(-1, 1, $copiedValueRecipient);
+		calculateTotalPercentage();
+		unsaved = true;
+		showWalletModal = false;
+	}
 </script>
 
 <value-header>
 	<mobile-top>
+		<button class="copy" on:click={copyValueBlock}>
+			<CopyIcon />
+		</button>
 		<h3>Value Block</h3>
+		<button class="paste" on:click={pasteValueBlock}>
+			<PasteIcon />
+		</button>
 	</mobile-top>
 	<total-percentage>
 		Total Percentage: {data?.settings?.totalPercentage?.toFixed(2) || 0}%
@@ -66,6 +111,9 @@
 			showWalletModal = true;
 		}}
 	>
+		<button class="copy" on:click|stopPropagation={copyValueRecipient.bind(this, person, index)}>
+			<CopyIcon />
+		</button>
 		<info>
 			<p style={person.name ? '' : 'color:red'}>
 				{person.name || 'a name is required for this person'}
@@ -74,7 +122,7 @@
 				{person.split || 0}% {person.fee ? '(fee)' : ''}
 			</p>
 		</info>
-		<button on:click={deletePerson.bind(this, index)}>
+		<button on:click|stopPropagation={deletePerson.bind(this, index)}>
 			<Delete size={24} />
 		</button>
 	</person>
@@ -95,12 +143,19 @@
 					person={data.value.destinations[editingIndex]}
 					index={editingIndex}
 					{updatevalue}
+					{updatePerson}
 					bind:showProviderInput
 					bind:provider
 				/>
 			{/if}
 		</wallet-modal>
 	</blurred-background>
+{/if}
+
+{#if showCopyModal}
+	<SaveModal>
+		<h1>Copied</h1>
+	</SaveModal>
 {/if}
 
 <style>
@@ -190,6 +245,7 @@
 
 	person info {
 		flex: 1;
+		margin-left: 4px;
 	}
 
 	person p {
@@ -204,6 +260,27 @@
 		color: red;
 		background-color: transparent;
 		box-shadow: none;
+	}
+
+	.copy {
+		color: var(--color-text-0);
+		background-color: hsl(38, 100%, 61%);
+		border-radius: 30px;
+		width: 30px;
+		height: 30px;
+		padding: 0;
+	}
+	mobile-top {
+		margin-bottom: 0.25em;
+	}
+
+	.paste {
+		color: hsl(278, 100%, 92%);
+		background-color: hsl(277, 100%, 44%);
+		border-radius: 30px;
+		width: 30px;
+		height: 30px;
+		padding: 0;
 	}
 
 	@media (max-width: 799px) {
