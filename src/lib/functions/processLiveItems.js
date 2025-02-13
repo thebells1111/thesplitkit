@@ -2,7 +2,7 @@ import removeAtSign from './removeAtSign';
 
 function processLiveItems(tempItems) {
 	tempItems = tempItems ? [].concat(tempItems) : tempItems;
-	liveItems = tempItems?.map((v) => {
+	let liveItems = tempItems?.map((v) => {
 		let item = {
 			title: v.title,
 			guid: v?.guid?.['#text'] || v?.guid,
@@ -26,6 +26,7 @@ function processLiveItems(tempItems) {
 
 		return item;
 	});
+	return liveItems;
 }
 
 export default processLiveItems;

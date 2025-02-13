@@ -33,8 +33,8 @@ async function fetchFeed({ url, guid }) {
 			let liveItems;
 			let channel = await fetchRSS(feed.url);
 			console.log(channel);
-			if (channel?.['podcast:liveitem']) {
-				liveItems = processLiveItems(channel?.['podcast:liveitem']);
+			if (channel?.['podcast:liveItem']) {
+				liveItems = processLiveItems(channel?.['podcast:liveItem']);
 			}
 
 			let remoteItems;
