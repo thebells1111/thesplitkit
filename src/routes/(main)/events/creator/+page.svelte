@@ -52,6 +52,9 @@
 			editEnclosure: '',
 			podcast: { autoSwitch: true },
 			splits: 95
+		},
+		relay: {
+			broadcastMode: 'relay'
 		}
 	};
 
@@ -113,15 +116,11 @@
 </p>
 
 <p>This mode does not currently support playing the song in app like playlist mode does.</p>`,
-		manual: `<p>In manual, there's no auto switching of the blocks.</p>
+		relay: `<p>This gives you a master guid so your event guid is static.</p>
 		<p>
-			It's useful for live events like a conference or debate where there's someone available to
-			quickly update the blocks as the speaker changes or an image needs to be displayed.
+			It allows you to paste any of your other event guids and broadcast it from your master guid by proxy.
 		</p>
-		<p>
-			It could also be used by a band doing a live set by having a Split Kit operator changing the
-			block to match the song being played so the audience can boost the song live.
-		</p>`
+	`
 	};
 </script>
 
@@ -158,6 +157,12 @@
 				<h2>Manual</h2>
 			</button>
 			<button class="help" on:click={showHelp.bind(this, 'manual')}>?</button>
+		</button-container>
+		<button-container>
+			<button class="selector" on:click={generateLink.bind(this, 'relay')}>
+				<h2>Relay</h2>
+			</button>
+			<button class="help" on:click={showHelp.bind(this, 'relay')}>?</button>
 		</button-container>
 	</event-selector>
 {/if}

@@ -13,6 +13,7 @@
 	import Dashboard from './Dashboard.svelte';
 	import MainSettings from '$lib/Settings/MainSettings/MainSettings.svelte';
 	import OffsetStartTimes from '$lib/Settings/MainSettings/OffsetStartTimes.svelte';
+	import RelayInput from './RelayInput.svelte';
 
 	import SelectBlock from '$lib/Creator/SelectBlock.svelte';
 	import {
@@ -56,13 +57,13 @@
 			filteredBlocks = clone($liveBlocks);
 		}
 	}
-
+	$: console.log($mainSettings);
 	onMount(async () => {
 		// verifiedOwner = await verifyOwner();
 		console.log(verifiedOwner);
 		if (!$liveBlocks.length || $activePageGuid !== guid) {
 			$defaultBlockGuid = null;
-			await loadBlocks();
+			await loadBlocks(guid);
 			$activePageGuid = guid;
 		}
 		console.log($liveBlocks);
@@ -80,13 +81,13 @@
 		return res.status === 200;
 	}
 
-	async function loadBlocks() {
+	async function loadBlocks(loadGuid) {
 		const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
 		const data = await res.json();
 		console.log(data);
 
 		const blocks = data.blocks || [null];
-		$mainSettings = Object.keys(data.settings).length ? data.settings : $mainSettings;
+		// $mainSettings = Object.keys(data.settings).length ? data.settings : $mainSettings;
 
 		blocks.forEach((block) => {
 			if (block) {
@@ -285,12 +286,16 @@
 	/>
 	{#if $activePageGuid === guid}
 		<broadcast-blocks>
-			<Dashboard
-				bind:blocks={filteredBlocks}
-				{filterType}
-				bind:addDefaultType
-				bind:showSelectBlock
-			/>
+			{#if $mainSettings.broadcastMode === 'relay' && !$mainSettings.relayGuid}
+				<RelayInput />
+			{:else}
+				<Dashboard
+					bind:blocks={filteredBlocks}
+					{filterType}
+					bind:addDefaultType
+					bind:showSelectBlock
+				/>
+			{/if}
 		</broadcast-blocks>
 	{/if}
 {/if}
