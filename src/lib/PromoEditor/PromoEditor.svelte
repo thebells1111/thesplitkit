@@ -77,6 +77,8 @@
 			}, 0);
 		}
 	}
+
+	$: console.log(block);
 </script>
 
 {#if block}

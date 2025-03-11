@@ -5,8 +5,10 @@
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import PasteIcon from '$lib/icons/Paste.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
+	import clone from 'just-clone';
 
 	export let data = {};
+	let savedData = {};
 	export let calculateTotalPercentage = () => {};
 	export let unsaved = false;
 
@@ -50,7 +52,7 @@
 
 	function copyValueBlock() {
 		if (window.confirm(`Are you sure you want to copy this value block?`)) {
-			$copiedValueBlock = data;
+			$copiedValueBlock = clone(data);
 			showCopyModal = true;
 			setTimeout(() => {
 				showCopyModal = false;
@@ -60,7 +62,9 @@
 
 	function pasteValueBlock() {
 		if (window.confirm(`Are you sure you want to overwrite this value block?`)) {
-			data = $copiedValueBlock;
+			console.log(clone(data));
+			console.log($copiedValueBlock);
+			data.value = clone($copiedValueBlock.value);
 		}
 	}
 
@@ -80,6 +84,8 @@
 		unsaved = true;
 		showWalletModal = false;
 	}
+
+	$: console.log(data);
 </script>
 
 <value-header>

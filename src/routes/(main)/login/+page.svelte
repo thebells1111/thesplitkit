@@ -6,6 +6,7 @@
 
 	let email = '';
 	let password = '';
+	let warning;
 
 	async function login() {
 		const payload = { email, password };
@@ -23,6 +24,8 @@
 			$user.loggedIn = true;
 			$loaded = true;
 			goto('/events');
+		} else {
+			warning = data.message;
 		}
 		console.log(data);
 	}
@@ -35,11 +38,20 @@
 		`&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 
 	import { remoteServer } from '$/stores';
+
+	function handleKeydown(event) {
+		if (event.key === 'Enter') {
+			login();
+		}
+	}
 </script>
 
+{#if warning}
+	<h2 class="warning">{warning}</h2>
+{/if}
 <div>
-	<input type="email" bind:value={email} placeholder="E-mail" />
-	<input type="password" bind:value={password} placeholder="Password" />
+	<input type="email" bind:value={email} placeholder="E-mail" on:keydown={handleKeydown} />
+	<input type="password" bind:value={password} placeholder="Password" on:keydown={handleKeydown} />
 	<button on:click={login}>Log In</button>
 
 	<p>-or-</p>
@@ -64,6 +76,11 @@
 	button {
 		width: 100%;
 		margin: 4px 0;
+	}
+
+	h2.warning {
+		margin: 4px auto;
+		color: red;
 	}
 
 	@media (max-width: 799px) {

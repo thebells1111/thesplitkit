@@ -41,7 +41,7 @@
 
 {#if showValueModal}
 	<Modal bind:showModal={showValueModal}>
-		<ValueBlock bind:data={block} {calculateTotalPercentage} />
+		<ValueBlock data={block} {calculateTotalPercentage} />
 	</Modal>
 {/if}
 
