@@ -27,6 +27,7 @@
 			...data.value.destinations,
 			{ name: '', address: '', type: 'node', customKey: '', customValue: '', split: '' }
 		];
+		calculateTotalPercentage();
 		showWalletModal = true;
 	}
 
@@ -62,9 +63,8 @@
 
 	function pasteValueBlock() {
 		if (window.confirm(`Are you sure you want to overwrite this value block?`)) {
-			console.log(clone(data));
-			console.log($copiedValueBlock);
 			data.value = clone($copiedValueBlock.value);
+			calculateTotalPercentage();
 		}
 	}
 
@@ -84,8 +84,6 @@
 		unsaved = true;
 		showWalletModal = false;
 	}
-
-	$: console.log(data);
 </script>
 
 <value-header>
@@ -100,12 +98,6 @@
 	</mobile-top>
 	<total-percentage>
 		Total Percentage: {data?.settings?.totalPercentage?.toFixed(2) || 0}%
-
-		<span class="warning">
-			{data.settings.totalPercentage !== 100
-				? 'Warning: Total percentage must equal 100%'
-				: ''}</span
-		>
 	</total-percentage>
 	<button type="button" on:click={addPerson}>Add Person</button>
 </value-header>

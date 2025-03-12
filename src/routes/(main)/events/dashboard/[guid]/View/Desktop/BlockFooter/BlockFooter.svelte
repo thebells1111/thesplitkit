@@ -29,6 +29,7 @@
 		class="value"
 		on:click={() => {
 			showValueModal = true;
+			calculateTotalPercentage();
 		}}
 	>
 		edit value block
@@ -41,7 +42,7 @@
 
 {#if showValueModal}
 	<Modal bind:showModal={showValueModal}>
-		<ValueBlock data={block} {calculateTotalPercentage} />
+		<ValueBlock bind:data={block} {calculateTotalPercentage} />
 	</Modal>
 {/if}
 

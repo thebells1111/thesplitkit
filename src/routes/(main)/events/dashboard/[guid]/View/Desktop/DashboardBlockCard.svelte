@@ -45,8 +45,6 @@
 		showSelectBlock = true;
 		$changeDefault = true;
 	}
-
-	$: console.log(block);
 </script>
 
 {#if block}
