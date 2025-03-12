@@ -29,6 +29,7 @@
 		class="value"
 		on:click={() => {
 			showValueModal = true;
+			calculateTotalPercentage();
 		}}
 	>
 		edit value block

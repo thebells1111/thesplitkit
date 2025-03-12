@@ -5,8 +5,10 @@
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import PasteIcon from '$lib/icons/Paste.svelte';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
+	import clone from 'just-clone';
 
 	export let data = {};
+	let savedData = {};
 	export let calculateTotalPercentage = () => {};
 	export let unsaved = false;
 
@@ -25,6 +27,7 @@
 			...data.value.destinations,
 			{ name: '', address: '', type: 'node', customKey: '', customValue: '', split: '' }
 		];
+		calculateTotalPercentage();
 		showWalletModal = true;
 	}
 
@@ -50,7 +53,7 @@
 
 	function copyValueBlock() {
 		if (window.confirm(`Are you sure you want to copy this value block?`)) {
-			$copiedValueBlock = data;
+			$copiedValueBlock = clone(data);
 			showCopyModal = true;
 			setTimeout(() => {
 				showCopyModal = false;
@@ -60,7 +63,8 @@
 
 	function pasteValueBlock() {
 		if (window.confirm(`Are you sure you want to overwrite this value block?`)) {
-			data = $copiedValueBlock;
+			data.value = clone($copiedValueBlock.value);
+			calculateTotalPercentage();
 		}
 	}
 
@@ -94,12 +98,6 @@
 	</mobile-top>
 	<total-percentage>
 		Total Percentage: {data?.settings?.totalPercentage?.toFixed(2) || 0}%
-
-		<span class="warning">
-			{data.settings.totalPercentage !== 100
-				? 'Warning: Total percentage must equal 100%'
-				: ''}</span
-		>
 	</total-percentage>
 	<button type="button" on:click={addPerson}>Add Person</button>
 </value-header>

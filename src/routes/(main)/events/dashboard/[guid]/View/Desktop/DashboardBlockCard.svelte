@@ -139,7 +139,7 @@
 
 		<editor class:show={showEditing}>
 			<BlockSettings bind:block {downloadMP3} />
-			<BlockFooter {block} {handleDeleteBlock} {handleCopyBlock} />
+			<BlockFooter bind:block {handleDeleteBlock} {handleCopyBlock} />
 		</editor>
 	</div>
 {/if}
