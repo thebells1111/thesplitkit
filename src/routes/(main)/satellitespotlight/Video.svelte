@@ -70,7 +70,7 @@
 	{#if showLiveChapters}
 		<img
 			class="image"
-			src={block?.image || block?.artwork || '/splitkit300dark.png'}
+			src={block?.image || block?.artwork || ''}
 			alt="live artwork"
 			width="300"
 			height="300"

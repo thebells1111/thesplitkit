@@ -10,7 +10,9 @@
 <img
 	class="background"
 	alt="boo-background"
-	src={$mainSettings?.liveBackgroundUrl ? $mainSettings?.liveBackgroundUrl : ''}
+	src={$mainSettings?.liveBackgroundUrl
+		? $mainSettings?.liveBackgroundUrl
+		: 'https://images.pexels.com/photos/56944/pexels-photo-56944.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'}
 />
 
 <container>

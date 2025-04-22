@@ -363,8 +363,8 @@
 	}
 
 	p.instructions {
-		color: rgb(219, 34, 99);
-		background-color: hsla(0, 0%, 16%, 0.8);
+		color: rgb(67, 1, 9);
+		background-color: rgba(242, 211, 195, 0.8);
 		position: absolute;
 		bottom: 8px;
 		left: calc(50% - 110px);

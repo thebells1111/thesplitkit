@@ -12,7 +12,11 @@
 
 		try {
 			await QRCode.toCanvas(qrCodeCanvas, code, {
-				width: 180
+				width: 180,
+				color: {
+					dark: '#430109',
+					light: '#ECDCD4D7'
+				}
 			});
 		} catch (err) {
 			console.error(err);
