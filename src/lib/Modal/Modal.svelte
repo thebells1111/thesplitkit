@@ -7,6 +7,7 @@
 	export let unsaved = false;
 	export let isFeedDownload = false;
 	export let dark = false;
+	export let img;
 
 	onMount(() => {
 		const handleKeyDown = (event) => {
@@ -17,7 +18,6 @@
 
 		document.addEventListener('keydown', handleKeyDown);
 
-		// Cleanup function to remove event listener
 		return () => document.removeEventListener('keydown', handleKeyDown);
 	});
 
@@ -44,7 +44,12 @@
 </script>
 
 <blurred-background on:mousedown|self={onClose} on:touchend|self={onClose}>
-	<modal class:dark>
+	<modal
+		class:dark
+		style={img
+			? `background-image: url('${img}'); background-size: cover; background-position: center;`
+			: ''}
+	>
 		<button class="close" on:click={onClose}>
 			<Close size="24" />
 		</button>
@@ -79,7 +84,10 @@
 		overflow: hidden;
 		border-radius: 8px;
 		background-color: white;
-		box-shadow: 0px 3px 10px 3px rgba(0, 0, 0, 1);
+		box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.75);
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
 	}
 
 	.dark {
@@ -126,7 +134,7 @@
 		modal {
 			position: relative;
 			width: 100%;
-			height: calc(100%);
+			height: 100%;
 			overflow-y: auto;
 			overflow-x: hidden;
 			border-radius: 0;

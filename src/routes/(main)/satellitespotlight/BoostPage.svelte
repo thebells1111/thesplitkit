@@ -81,7 +81,7 @@
 	}
 </script>
 
-<Modal bind:showModal dark>
+<Modal bind:showModal img="./main-bg.png">
 	<boost-container>
 		<h2>{activeBlock.title}</h2>
 		<label>
@@ -137,6 +137,8 @@
 
 	p {
 		text-align: center;
+		font-weight: 600;
+		color: #222;
 	}
 
 	boost-container {
@@ -181,6 +183,8 @@
 		text-align: right;
 		width: inital;
 		min-height: 1em;
+		font-weight: 600;
+		color: #222;
 	}
 
 	amount-text {
@@ -243,6 +247,7 @@
 		align-self: flex-start;
 		display: flex;
 		flex-direction: column;
+		font-weight: 600;
 	}
 
 	button {
@@ -273,6 +278,7 @@
 		margin: 8px 0;
 		padding: 4px;
 		border: 1px solid black;
+		font-weight: 600;
 	}
 
 	boost-container {
@@ -281,7 +287,7 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		color: #e0e0e0;
+		color: #222;
 	}
 
 	boost-container h2 {
@@ -374,8 +380,8 @@
 	}
 
 	button {
-		background-color: rgb(0, 231, 255);
-		color: white;
+		background-color: rgb(223, 1, 40);
+		color: rgb(233, 225, 229);
 		padding: 4px 12px;
 		border: 1px solid transparent;
 		border-radius: 25px;
@@ -389,8 +395,8 @@
 
 	.boost {
 		width: calc(100% - 16px);
-		background-color: rgb(248, 0, 255);
-		color: white;
+		background-color: rgb(85, 0, 17);
+		color: rgb(233, 225, 229);
 		font-weight: 600;
 		margin: 8px 0 16px 0;
 		box-shadow: none;
@@ -402,23 +408,29 @@
 		resize: none;
 		margin: 8px 0;
 		padding: 4px;
-		background-color: #2a2a2a;
+		background-color: transparent;
 		border: none;
 
-		color: #e0e0e0;
-		outline: 1px solid #e0e0e0;
+		color: #222;
+		outline: 1px solid #222;
 	}
 
 	input {
-		background-color: #2a2a2a;
+		background-color: transparent;
 		border: none;
-		color: #e0e0e0;
-		outline: 1px solid #e0e0e0;
+		color: #222;
+		outline: 1px solid #222;
 		padding: 2px;
+		font-weight: 600;
 	}
 
 	textarea,
 	input {
 		font-size: 16px;
+	}
+
+	textarea::placeholder {
+		font-weight: 600;
+		color: #222;
 	}
 </style>
