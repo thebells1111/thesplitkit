@@ -1,43 +1,26 @@
 <script>
-	import Card from './Card.svelte';
-	import Banner from './Banner.svelte';
 	import { onMount } from 'svelte';
-	import QR from './QR.svelte';
+	import Modal from '$lib/Modal/Modal.svelte';
 
-	import { remoteServer, liveBlocks, activePageGuid, user, mainSettings } from '$/stores';
+	import { user } from '$/stores';
+
+	export let showModal;
+	export let activeBlock;
 
 	import sendBoost from '$lib/functions/sendBoost';
 	import throwConfetti from '$lib/functions/throwConfetti';
-	import Modal from '$lib/Modal/Modal.svelte';
-	const guid = '1e34e11b-f536-4280-b068-7dd1a9399b12';
 
-	$activePageGuid = guid;
-	export let mobile;
-	let boostagram = '';
 	let showInfoModal = false;
+	let senderName = 'anonymous';
+	let boostagram = '';
 	let fromIndex = true;
 	let amount = 1;
 	let btcPrice = 250000;
-	let showModal = false;
-	let senderName = 'anonymous';
-	let activeBlock = {};
-	$: console.log($user);
+
 	onMount(() => {
-		loadBlocks();
 		fetchConversionRate();
 		senderName = localStorage.getItem('senderName') || 'anonymous';
 	});
-
-	async function loadBlocks() {
-		if (!$liveBlocks?.length) {
-			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
-			const data = await res.json();
-			$liveBlocks = data.blocks;
-			$mainSettings = data.settings;
-			console.log(data);
-			console.log($liveBlocks);
-		}
-	}
 
 	async function fetchConversionRate() {
 		let res = await fetch('https://blockchain.info/tobtc?currency=USD&value=10000');
@@ -98,117 +81,47 @@
 	}
 </script>
 
-<p class="instructions" class:mobile>CLICK A BAND TO BOOST</p>
-<div class="container" class:mobile>
-	{#if !mobile}
-		{#if $liveBlocks[0]}
-			<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />
-		{/if}
-		<div class="bands">
-			{#each $liveBlocks.slice(1) as block}
-				{#if block}
-					<Card {block} bind:showModal bind:activeBlock />
-				{/if}
-			{/each}
-		</div>
-		<QR />
-	{:else}
-		{#if $liveBlocks[0]}
-			<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />
-		{/if}
-		<div class="grid">
-			{#each $liveBlocks.slice(1) as block, i}
-				{#if block}
-					<div class="grid-item">
-						<Card {block} bind:showModal bind:activeBlock />
-					</div>
-				{/if}
-			{/each}
-		</div>
-	{/if}
-</div>
-
-{#if showModal}
-	<Modal bind:showModal dark>
-		<boost-container>
-			<h2>{activeBlock.title}</h2>
-			<label>
-				Your Name
-				<input type="text" bind:value={senderName} />
-			</label>
-			<textarea bind:value={boostagram} rows="4" placeholder="Enter your message here..." />
-			<balance-text>
-				<h3>Balance:</h3>
-				<p>{$user.balance || 0} sats</p>
-			</balance-text>
-			<amount-text>
-				<h3>Amount</h3>
-				<p>between 1 and {Math.floor(Math.min($user.balance * 0.99, 5000000))}</p>
-			</amount-text>
-			<amount-container>
-				<input
-					class="amount"
-					type="number"
-					bind:value={amount}
-					step="1"
-					min="1"
-					max="5000000"
-					on:keydown={handleKeyDown}
-					on:blur={enforceMinMax}
-				/>
-				<p class="sats">{amount > 1 ? 'sats' : 'sat'}</p>
-				<p class="conversion">~${satsToDollars(amount)}</p>
-			</amount-container>
-			<btn-container>
-				<button on:click={() => setAmount(1000)}>1k</button>
-				<button on:click={() => setAmount(5000)}>5k</button>
-				<button on:click={() => setAmount(10000)}>10k</button>
-				<button on:click={() => setAmount(25000)}>25k</button>
-			</btn-container>
-			<button class="boost" on:click={handleBoost}>Boost 🚀</button>
-		</boost-container>
-	</Modal>
-{/if}
+<Modal bind:showModal dark>
+	<boost-container>
+		<h2>{activeBlock.title}</h2>
+		<label>
+			Your Name
+			<input type="text" bind:value={senderName} />
+		</label>
+		<textarea bind:value={boostagram} rows="4" placeholder="Enter your message here..." />
+		<balance-text>
+			<h3>Balance:</h3>
+			<p>{$user.balance || 0} sats</p>
+		</balance-text>
+		<amount-text>
+			<h3>Amount</h3>
+			<p>between 1 and {Math.floor(Math.min($user.balance * 0.99, 5000000))}</p>
+		</amount-text>
+		<amount-container>
+			<input
+				class="amount"
+				type="number"
+				bind:value={amount}
+				step="1"
+				min="1"
+				max="5000000"
+				on:keydown={handleKeyDown}
+				on:blur={enforceMinMax}
+			/>
+			<p class="sats">{amount > 1 ? 'sats' : 'sat'}</p>
+			<p class="conversion">~${satsToDollars(amount)}</p>
+		</amount-container>
+		<btn-container>
+			<button on:click={() => setAmount(1000)}>1k</button>
+			<button on:click={() => setAmount(5000)}>5k</button>
+			<button on:click={() => setAmount(10000)}>10k</button>
+			<button on:click={() => setAmount(25000)}>25k</button>
+		</btn-container>
+		<button class="boost" on:click={handleBoost}>Boost 🚀</button>
+	</boost-container>
+</Modal>
 
 <style>
-	.container {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 100%;
-	}
-
-	.container.mobile {
-		height: 100%;
-		flex-direction: column;
-	}
-
-	.bands {
-		flex-grow: 1;
-		display: flex;
-		justify-content: center;
-	}
-
-	.grid {
-		margin-top: 8px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 8px 8px; /* 8px between rows and columns */
-		height: calc(100% - 150px);
-		overflow: hidden;
-	}
-	.grid-item {
-		width: calc(40% - 10px); /* Two per row with 8px gap */
-		box-sizing: border-box;
-		min-height: 0;
-		min-width: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
 	h2 {
 		text-align: center;
 		margin-top: 4px;
@@ -360,24 +273,6 @@
 		margin: 8px 0;
 		padding: 4px;
 		border: 1px solid black;
-	}
-
-	p.instructions {
-		color: rgb(67, 1, 9);
-		background-color: rgba(242, 211, 195, 0.8);
-		position: absolute;
-		bottom: 8px;
-		left: calc(50% - 110px);
-		padding: 4px 8px;
-		width: 220px;
-		margin: 0 auto;
-		font-weight: 600;
-		backdrop-filter: blur(10px); /* Adjust the blur level */
-	}
-
-	p.instructions.mobile {
-		position: relative;
-		bottom: 0;
 	}
 
 	boost-container {

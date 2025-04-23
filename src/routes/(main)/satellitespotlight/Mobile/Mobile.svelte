@@ -1,5 +1,5 @@
 <script>
-	import Roster from '../Roster.svelte';
+	import Roster from './Roster.svelte';
 	import Video from '../Video.svelte';
 	import BoostBoard from '../BoostBoard.svelte';
 	import Chat from '../Chat.svelte';
@@ -27,7 +27,7 @@
 
 <container>
 	<div class="roster" class:show={currentScreen === 'roster'}>
-		<Roster mobile />
+		<Roster />
 	</div>
 	<div class:show={currentScreen === 'video'}>
 		<Video />
