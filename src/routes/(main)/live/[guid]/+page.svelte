@@ -337,6 +337,13 @@
 {/if}
 
 <style>
+	:global(body) {
+		background-color: white;
+		color: #121212;
+		font-family: Arial, sans-serif;
+		margin: 0;
+		padding: 0;
+	}
 	container {
 		max-width: 450px;
 		min-width: 300px;
