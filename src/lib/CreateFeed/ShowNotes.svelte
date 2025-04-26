@@ -151,6 +151,8 @@
 	}
 </script>
 
+<svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
+
 <!-- HTML -->
 <button-container>
 	<button on:click={importNotes}>Import Notes from Previous Episode</button>

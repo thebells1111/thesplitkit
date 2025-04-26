@@ -1,4 +1,44 @@
 @import '@fontsource/fira-mono';
+@font-face {
+    font-family: "WindSong";
+    src: url("/fonts/WindSong-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "FleurDeLeah";
+    src: url("/fonts/FleurDeLeah-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "LoversQuarrel";
+    src: url("/fonts/LoversQuarrel-Regular.ttf") format("truetype");
+  }
+
+
+  @font-face {
+    font-family: "WindSongBold";
+    src: url("/fonts/WindSong-Medium.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Dancing";
+    src: url("/fonts/DancingScript-VariableFont_wght.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "HomemadeApple";
+    src: url("/fonts/HomemadeApple-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "LaBelleAurore";
+    src: url("/fonts/LaBelleAurore-Regular.ttf") format("truetype");
+  }
+  
+  @font-face {
+    font-family: "Tangerine";
+    src: url("/fonts/Tangerine-Regular.ttf") format("truetype");
+  }
 
 :root {
 	--font-body: Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,

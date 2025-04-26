@@ -128,10 +128,8 @@
 	};
 </script>
 
-<svelte:head><script src="/tinymce/tinymce.min.js"></script></svelte:head>
-
 <div class="app">
-	{#if !['/(main)/roster/[guid]/boo', '/(main)/live/[guid]/video'].find((v) => v === $page?.route?.id)}
+	{#if !['/(main)/spotlight25', '/(main)/roster/[guid]/boo', '/(main)/live/[guid]/video'].find((v) => v === $page?.route?.id)}
 		<Header />
 	{/if}
 	<main>

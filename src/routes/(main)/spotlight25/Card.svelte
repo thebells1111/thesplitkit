@@ -9,6 +9,7 @@
 	export let block = {};
 	export let showModal;
 	export let activeBlock;
+	export let imgSrc = '';
 
 	let redirectUrl = `https://getalby.com/oauth?client_id=${albyClientId}`;
 	redirectUrl += `&response_type=code&redirect_uri=${$page.url.href}`;
@@ -34,7 +35,7 @@
 		<img class="border" src="/boo-card3.png" alt="cover art border" />
 	</album> -->
 
-	<img src={block.image} alt={block.title} />
+	<img src={imgSrc || block.image} alt={block.title} />
 </div>
 
 <style>

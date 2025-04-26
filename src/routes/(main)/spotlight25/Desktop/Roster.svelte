@@ -1,39 +1,28 @@
 <script>
 	import Card from '../Card.svelte';
 	import Banner from '../Banner.svelte';
-	import { onMount } from 'svelte';
 	import QR from '../QR.svelte';
 	import BoostPage from '../BoostPage.svelte';
 
-	import { remoteServer, liveBlocks, activePageGuid, mainSettings } from '$/stores';
-
-	export let guid;
-
-	$activePageGuid = guid;
+	import { liveBlocks } from '$/stores';
 
 	let showModal = false;
 	let activeBlock = {};
-
-	onMount(() => {
-		loadBlocks();
-	});
-
-	async function loadBlocks() {
-		if (!$liveBlocks?.length) {
-			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
-			const data = await res.json();
-			$liveBlocks = data.blocks;
-			$mainSettings = data.settings;
-			console.log(data);
-			console.log($liveBlocks);
-		}
-	}
+	export let broadcastingBlock;
 </script>
 
 <p class="instructions">CLICK A BAND TO BOOST</p>
 
 <div class="container">
-	<div class="support">Support the Crew</div>
+	{#if $liveBlocks[0]}
+		<Banner
+			block={$liveBlocks[0]}
+			bind:showModal
+			bind:activeBlock
+			class="crew"
+			imgSrc="./crewsupport.png"
+		/>
+	{/if}
 
 	<div class="bands">
 		{#each $liveBlocks.slice(1, Math.ceil($liveBlocks.length / 2)) as block}
@@ -42,9 +31,12 @@
 			{/if}
 		{/each}
 
-		{#if $liveBlocks[0]}
-			<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock class="banner" />
-		{/if}
+		<Banner
+			block={broadcastingBlock?.img ? broadcastingBlock : $liveBlocks[0]}
+			bind:showModal
+			bind:activeBlock
+			class="banner"
+		/>
 
 		{#each $liveBlocks.slice(Math.ceil($liveBlocks.length / 2)) as block}
 			{#if block}

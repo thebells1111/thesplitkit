@@ -52,7 +52,7 @@
 		$user.balance -= amount;
 	}
 
-	$: console.log(senderName);
+	$: console.log(activeBlock.value.destinations);
 
 	function handleKeyDown(event) {
 		const keyValue = event.key;
@@ -84,216 +84,130 @@
 <Modal bind:showModal img="./main-bg.png">
 	<boost-container>
 		<h2>{activeBlock.title}</h2>
-		<label>
-			Your Name
-			<input type="text" bind:value={senderName} />
-		</label>
-		<textarea bind:value={boostagram} rows="4" placeholder="Enter your message here..." />
-		<balance-text>
-			<h3>Balance:</h3>
-			<p>{$user.balance || 0} sats</p>
-		</balance-text>
-		<amount-text>
-			<h3>Amount</h3>
-			<p>between 1 and {Math.floor(Math.min($user.balance * 0.99, 5000000))}</p>
-		</amount-text>
-		<amount-container>
-			<input
-				class="amount"
-				type="number"
-				bind:value={amount}
-				step="1"
-				min="1"
-				max="5000000"
-				on:keydown={handleKeyDown}
-				on:blur={enforceMinMax}
-			/>
-			<p class="sats">{amount > 1 ? 'sats' : 'sat'}</p>
-			<p class="conversion">~${satsToDollars(amount)}</p>
-		</amount-container>
+		<panels>
+			<left>
+				<balance-text>
+					<h3>Balance:</h3>
+					<p>{$user.balance || 0} sats</p>
+				</balance-text>
+				<label>
+					Your Name
+					<input type="text" bind:value={senderName} />
+				</label>
+				<textarea bind:value={boostagram} rows="4" placeholder="Enter your message here..." />
+				<amount-text>
+					<h3>Amount</h3>
+					<p>between 1 and {Math.floor(Math.min($user.balance * 0.99, 5000000))}</p>
+				</amount-text>
+				<amount-container>
+					<input
+						class="amount"
+						type="number"
+						bind:value={amount}
+						step="1"
+						min="1"
+						max="5000000"
+						on:keydown={handleKeyDown}
+						on:blur={enforceMinMax}
+					/>
+					<p class="sats">{amount > 1 ? 'sats' : 'sat'}</p>
+					<p class="conversion">~${satsToDollars(amount)}</p>
+				</amount-container>
+			</left>
+			<right>
+				<header>
+					<p>Name</p>
+					<p>Split</p>
+				</header>
+				<ul>
+					{#each activeBlock.value.destinations || [] as person}
+						<li>
+							<p>{person.name}</p>
+							<p>{person.split}</p>
+						</li>
+					{/each}
+				</ul>
+			</right>
+		</panels>
 		<btn-container>
 			<button on:click={() => setAmount(1000)}>1k</button>
 			<button on:click={() => setAmount(5000)}>5k</button>
 			<button on:click={() => setAmount(10000)}>10k</button>
 			<button on:click={() => setAmount(25000)}>25k</button>
 		</btn-container>
-		<button class="boost" on:click={handleBoost}>Boost 🚀</button>
+		<button class="boost" on:click={handleBoost}>Boost </button>
 	</boost-container>
 </Modal>
 
 <style>
-	h2 {
+	boost-container {
+		width: calc(100% - 16px);
+		margin: 0 8px;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		color: #222;
+		font-family: 'Tangerine';
+	}
+	boost-container h2 {
+		margin: 0;
 		text-align: center;
 		margin-top: 4px;
 		min-height: 1.5em;
 		width: 100%;
+		font-size: 3em;
+		font-family: 'FleurDeLeah', cursive;
 	}
 	h3 {
 		text-align: center;
 		margin-top: 0;
 		min-height: 1.5em;
 		width: 100%;
+		font-size: 1.5em;
 	}
-
 	p {
 		text-align: center;
 		font-weight: 600;
 		color: #222;
+		font-size: 1.5em;
 	}
-
-	boost-container {
-		width: calc(100% - 16px);
-		margin: 0 8px;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
-
-	boost-container h2 {
-		margin: 0;
-	}
-
-	boost-container textarea {
-		width: calc(100% - 8px);
-		resize: none;
-		margin: 8px 0;
-		height: 200px;
-		padding: 4px;
-		flex: 1;
-	}
-
-	balance-text {
-		display: flex;
-		width: 100%;
-		justify-content: center;
-		align-items: center;
-		margin-bottom: 8px;
-	}
-
-	balance-text h3,
-	amount-text h3 {
-		margin: 0 8px 0 0;
-		min-height: 1em;
-		width: initial;
-	}
-
-	balance-text p,
-	amount-text p {
-		margin: 0;
-		text-align: right;
-		width: inital;
-		min-height: 1em;
-		font-weight: 600;
-		color: #222;
-	}
-
-	amount-text {
+	panels {
 		display: flex;
 		width: 100%;
 		justify-content: space-between;
-		align-items: flex-end;
 	}
-
-	amount-text p,
-	amount-text h3 {
-		margin: 0;
-		padding: 0;
-	}
-
-	amount-container {
-		width: 100%;
+	left,
+	right {
 		display: block;
-		position: relative;
-		margin-bottom: 8px;
+		width: calc(50% - 8px);
 	}
-	.amount {
-		width: calc(100% - 16px);
-		padding: 0 8px 20px 8px;
-	}
-
-	amount-container p {
-		position: absolute;
-		top: 6px;
-		padding: 0 8px;
-		font-size: 0.9em;
-	}
-
-	amount-container .sats {
-		left: 0;
-	}
-
-	amount-container .conversion {
-		right: 0;
-	}
-	btn-container {
+	header {
 		display: flex;
-		justify-content: space-around;
-		width: 100%;
-	}
-	btn-container button {
-		width: 20%;
-	}
-
-	input[type='number']::-webkit-outer-spin-button,
-	input[type='number']::-webkit-inner-spin-button {
-		-webkit-appearance: none;
-		margin: 0;
-	}
-	input[type='number'] {
-		-moz-appearance: textfield;
-	}
-
-	label {
-		align-self: flex-start;
-		display: flex;
-		flex-direction: column;
-		font-weight: 600;
-	}
-
-	button {
-		background-color: rgb(0, 132, 180);
-		color: white;
-		padding: 4px 12px;
-		border: 1px solid transparent;
-		border-radius: 25px;
-		font-size: 1.05em;
-		cursor: pointer;
-		margin: 8px 0;
-		height: 50px;
-	}
-
-	.boost {
-		width: calc(100% - 16px);
-		background-color: #ff6680;
-		color: white;
-		font-weight: 600;
-		margin: 8px 0 16px 0;
-	}
-
-	textarea {
-		width: calc(100% - 32px);
-		height: calc(100% - 32px);
-		min-height: calc(50% - 32px);
-		resize: none;
-		margin: 8px 0;
-		padding: 4px;
-		border: 1px solid black;
-		font-weight: 600;
-	}
-
-	boost-container {
-		width: calc(100% - 16px);
+		justify-content: space-between;
 		margin: 0 8px;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		color: #222;
 	}
-
-	boost-container h2 {
+	header > p {
+		margin: 0;
+		padding: 0;
+		text-decoration: underline;
+		font-family: 'LoversQuarrel';
+	}
+	ul {
+		padding: 8px;
+		height: calc(100% - 32px);
+		overflow: auto;
 		margin: 0;
 	}
-
+	li {
+		list-style: none;
+		padding: 0 8px;
+		display: flex;
+		justify-content: space-between;
+	}
+	li > p {
+		padding: 0;
+		margin: 4px 0;
+	}
 	boost-container textarea {
 		width: calc(100% - 8px);
 		resize: none;
@@ -301,42 +215,47 @@
 		height: 200px;
 		padding: 4px;
 		flex: 1;
+		font-family: 'Dancing';
+		background-color: transparent;
+		border: none;
+		color: #222;
+		outline: 1px solid #222;
+		font-size: 16px;
+		font-weight: 600;
 	}
-
-	balance-text {
-		display: flex;
-		width: 100%;
-		justify-content: center;
-		align-items: center;
-		margin-bottom: 8px;
+	boost-container textarea::placeholder {
+		font-weight: 600;
+		color: #222;
 	}
-
-	balance-text h3,
-	amount-text h3 {
-		margin: 0 8px 0 0;
-		min-height: 1em;
-		width: initial;
-	}
-
-	balance-text p,
-	amount-text p {
-		margin: 0;
-		text-align: right;
-		width: inital;
-		min-height: 1em;
-	}
-
+	balance-text,
 	amount-text {
 		display: flex;
 		width: 100%;
 		justify-content: space-between;
 		align-items: flex-end;
 	}
-
-	amount-text p,
+	balance-text h3,
 	amount-text h3 {
 		margin: 0;
-		padding: 0;
+		min-height: 1em;
+		width: initial;
+	}
+	balance-text p,
+	amount-text p {
+		margin: 0;
+		text-align: right;
+		width: initial;
+		min-height: 1em;
+		color: #222;
+	}
+
+	balance-text {
+		justify-content: center;
+		font-size: 1.5em;
+	}
+
+	balance-text > p {
+		margin-left: 8px;
 	}
 
 	amount-container {
@@ -349,18 +268,15 @@
 		width: calc(100% - 16px);
 		padding: 2px 8px 20px 8px;
 	}
-
 	amount-container p {
 		position: absolute;
-		top: 6px;
+		top: -6px;
 		padding: 0 8px;
-		font-size: 0.9em;
+		font-family: 'Tangerine';
 	}
-
 	amount-container .sats {
 		left: 0;
 	}
-
 	amount-container .conversion {
 		right: 0;
 	}
@@ -372,65 +288,52 @@
 	btn-container button {
 		width: 20%;
 	}
-
-	label {
-		align-self: flex-start;
-		display: flex;
-		flex-direction: column;
-	}
-
-	button {
-		background-color: rgb(223, 1, 40);
-		color: rgb(233, 225, 229);
-		padding: 4px 12px;
-		border: 1px solid transparent;
-		border-radius: 25px;
-		font-size: 1.05em;
-		cursor: pointer;
-		margin: 8px 0;
-		height: 50px;
-		box-shadow: none;
-		border: none;
-	}
-
 	.boost {
 		width: calc(100% - 16px);
-		background-color: rgb(85, 0, 17);
+		background-color: hsl(0, 52%, 39%);
 		color: rgb(233, 225, 229);
 		font-weight: 600;
 		margin: 8px 0 16px 0;
 		box-shadow: none;
+		font-family: 'WindSongBold';
 	}
-
-	textarea {
-		width: calc(100% - 32px);
-		height: calc(100% - 32px);
-		resize: none;
-		margin: 8px 0;
-		padding: 4px;
-		background-color: transparent;
+	button {
+		background-color: hsl(2, 35%, 52%);
+		color: rgb(233, 225, 229);
+		padding: 4px 12px;
 		border: none;
-
-		color: #222;
-		outline: 1px solid #222;
+		border-radius: 25px;
+		font-size: 1.6em;
+		cursor: pointer;
+		margin: 8px 0;
+		height: 50px;
+		box-shadow: none;
+		font-family: 'LoversQuarrel';
 	}
-
-	input {
+	input,
+	textarea {
 		background-color: transparent;
 		border: none;
 		color: #222;
 		outline: 1px solid #222;
 		padding: 2px;
 		font-weight: 600;
-	}
-
-	textarea,
-	input {
+		font-family: 'Dancing';
 		font-size: 16px;
 	}
-
-	textarea::placeholder {
+	input[type='number']::-webkit-outer-spin-button,
+	input[type='number']::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+	input[type='number'] {
+		-moz-appearance: textfield;
+	}
+	label {
+		align-self: flex-start;
+		display: flex;
+		flex-direction: column;
 		font-weight: 600;
-		color: #222;
+		font-size: 1.5em;
 	}
 </style>

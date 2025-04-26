@@ -9,6 +9,8 @@
 	function changeScreen(screenName) {
 		currentScreen = screenName;
 	}
+
+	export let broadcastingBlock;
 </script>
 
 <img
@@ -27,7 +29,7 @@
 
 <container>
 	<div class="roster" class:show={currentScreen === 'roster'}>
-		<Roster />
+		<Roster {broadcastingBlock} />
 	</div>
 	<div class:show={currentScreen === 'video'}>
 		<Video />

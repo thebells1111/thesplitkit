@@ -1,34 +1,15 @@
 <script>
 	import Card from '../Card.svelte';
 	import Banner from '../Banner.svelte';
-	import { onMount } from 'svelte';
-	import QR from '../QR.svelte';
 	import BoostPage from '../BoostPage.svelte';
 
-	import { remoteServer, liveBlocks, activePageGuid, mainSettings } from '$/stores';
+	import { liveBlocks } from '$/stores';
 
-	export let guid;
-
-	$activePageGuid = guid;
 	let mobile;
 
 	let showModal = false;
 
 	let activeBlock = {};
-	onMount(() => {
-		loadBlocks();
-	});
-
-	async function loadBlocks() {
-		if (!$liveBlocks?.length) {
-			const res = await fetch(remoteServer + '/api/sk/getblocks?guid=' + guid);
-			const data = await res.json();
-			$liveBlocks = data.blocks;
-			$mainSettings = data.settings;
-			console.log(data);
-			console.log($liveBlocks);
-		}
-	}
 </script>
 
 <p class="instructions" class:mobile>CLICK A BAND TO BOOST</p>
