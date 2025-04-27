@@ -36,7 +36,7 @@
 				<li class="item">
 					<p>
 						Click the Showcase button. The event MCs are always updating who the support goes to
-						based on what's going on with the show. This is the recommend way.
+						based on what's going on with the show. This is the recommended way.
 					</p>
 				</li>
 				<li class="item">
