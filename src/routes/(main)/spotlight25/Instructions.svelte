@@ -34,25 +34,25 @@
 
 			<ol>
 				<li class="item">
-					<span>
+					<p>
 						Click the Showcase button. The event MCs are always updating who the support goes to
-						based on what's going on with the show. This is the recommend way.</span
-					>
+						based on what's going on with the show. This is the recommend way.
+					</p>
 				</li>
 				<li class="item">
-					<span> Click a band. All your support will go to that particular band. </span>
+					<p>Click a band. All your support will go to that particular band.</p>
 				</li>
 
 				<li class="item">
-					<span>
+					<p>
 						Click Support the Crew and you donation goes to all the people that made this possible.
-					</span>
+					</p>
 				</li>
 				<li class="item">
-					<span>
+					<p>
 						You can also scan the QR code (or click it to copy the address to your clipboard), and
-						support from the wallet of your choice.</span
-					>
+						support from the wallet of your choice.
+					</p>
 				</li>
 			</ol>
 		</div>
@@ -105,7 +105,7 @@
 		background-repeat: no-repeat;
 		background-position: center;
 		margin: 0 auto;
-		font-family: 'Dancing';
+		font-family: 'IndieFlower';
 	}
 
 	h1 {
@@ -133,12 +133,10 @@
 
 	p {
 		margin: 0 auto;
-		text-align: center;
-		position: absolute;
 		width: 100%;
 		bottom: 32px;
-		font-size: 1.2em;
-		z-index: -1;
+		font-size: 0.9em;
+		line-height: 1em;
 	}
 
 	@media (max-width: 950px) {
