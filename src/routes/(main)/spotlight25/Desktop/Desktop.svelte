@@ -15,7 +15,7 @@
 	alt="boo-background"
 	src={$mainSettings?.liveBackgroundUrl
 		? $mainSettings?.liveBackgroundUrl
-		: 'https://music.behindthesch3m3s.com/wp-content/uploads/Sat_Skirmish/sproutingsymphonies/art/close-up-flowering-branches.jpg'}
+		: 'https://music.behindthesch3m3s.com/wp-content/uploads/Sat_Skirmish/sproutingsymphonies/art/spring-arrangement-twigs-with-tree-flowers.jpg'}
 />
 
 <container>
