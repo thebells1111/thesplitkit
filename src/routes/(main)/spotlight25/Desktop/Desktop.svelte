@@ -3,9 +3,11 @@
 	import Video from '../Video.svelte';
 	import Chat from '../Chat.svelte';
 	import BoostBoard from '../BoostBoard.svelte';
+	import Instructions from '../Instructions.svelte';
 	import { mainSettings } from '$/stores';
 	export let guid;
 	export let broadcastingBlock;
+	let showInstructions = false;
 </script>
 
 <img
@@ -23,9 +25,13 @@
 		<Chat />
 	</top>
 	<bottom>
-		<Roster {guid} {broadcastingBlock} />
+		<Roster {guid} {broadcastingBlock} bind:showInstructions />
 	</bottom>
 </container>
+
+{#if showInstructions}
+	<Instructions bind:showInstructions />
+{/if}
 
 <style>
 	.background {

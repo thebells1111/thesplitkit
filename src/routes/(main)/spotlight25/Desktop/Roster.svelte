@@ -9,9 +9,17 @@
 	let showModal = false;
 	let activeBlock = {};
 	export let broadcastingBlock;
+	export let showInstructions;
 </script>
 
-<p class="instructions">CLICK A BAND TO BOOST</p>
+<p
+	class="instructions"
+	on:click={() => {
+		showInstructions = true;
+	}}
+>
+	How do I boost?
+</p>
 
 <div class="container">
 	{#if $liveBlocks[0]}
@@ -67,19 +75,6 @@
 		overflow: hidden;
 	}
 
-	.support {
-		flex: 0 0 auto;
-		width: min(20vw, 180px);
-		aspect-ratio: 1;
-		border-radius: 50%;
-		background-color: antiquewhite;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: bold;
-		text-align: center;
-	}
-
 	.bands {
 		display: flex;
 		flex: 1 1 auto;
@@ -91,14 +86,9 @@
 		overflow: hidden;
 	}
 
-	.support,
 	.qr-wrapper {
 		width: clamp(80px, 15vw, 180px);
 		aspect-ratio: 1;
-	}
-	.support {
-		font-size: clamp(12px, 1.5vw, 24px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 	}
 
 	p.instructions {
@@ -106,12 +96,13 @@
 		background-color: hsla(20, 39%, 88%, 0.5);
 		position: absolute;
 		bottom: 8px;
-		left: calc(50% - 110px);
-		padding: 4px 8px;
-		width: 220px;
+		padding: 4px 0;
+		width: 180px;
+		left: 24px;
 		margin: 0 auto;
 		font-weight: 600;
 		backdrop-filter: blur(10px);
 		text-align: center;
+		cursor: pointer;
 	}
 </style>

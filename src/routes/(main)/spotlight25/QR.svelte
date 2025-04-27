@@ -31,9 +31,14 @@
 	onDestroy(() => {
 		if (observer && container) observer.unobserve(container);
 	});
+
+	function copyAddressToClipboard() {
+		navigator.clipboard.writeText(code);
+		alert('Copied address to clipboard');
+	}
 </script>
 
-<div class="qr-wrapper" bind:this={container}>
+<div class="qr-wrapper" bind:this={container} on:click={copyAddressToClipboard}>
 	<img src="./qrbg.png" alt="QR Background" />
 	<canvas bind:this={qrCodeCanvas} />
 </div>
@@ -43,6 +48,7 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
+		cursor: pointer;
 	}
 
 	img,
