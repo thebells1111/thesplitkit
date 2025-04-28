@@ -21,7 +21,7 @@
 	alt="boo-background"
 	src={$mainSettings?.liveBackgroundUrl
 		? $mainSettings?.liveBackgroundUrl
-		: 'https://images.pexels.com/photos/56944/pexels-photo-56944.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'}
+		: 'https://music.behindthesch3m3s.com/wp-content/uploads/Sat_Skirmish/sproutingsymphonies/art/spring-arrangement-twigs-with-tree-flowers.jpg'}
 />
 <nav>
 	<button on:click={changeScreen.bind(this, 'boostBoard')}>Boost<br /> Board</button>
