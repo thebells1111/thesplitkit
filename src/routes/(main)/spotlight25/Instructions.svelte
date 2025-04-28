@@ -173,12 +173,9 @@
 			font-size: 1.1em;
 		}
 
-		p {
-			bottom: 16px;
-		}
-
-		p > span {
-			display: block;
+		.close {
+			top: 16px;
+			right: 16px;
 		}
 	}
 </style>

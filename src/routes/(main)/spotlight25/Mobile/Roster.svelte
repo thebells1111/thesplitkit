@@ -1,21 +1,33 @@
 <script>
 	import Card from '../Card.svelte';
 	import Banner from '../Banner.svelte';
+	import QR from '../QR.svelte';
 	import BoostPage from '../BoostPage.svelte';
 
 	import { liveBlocks } from '$/stores';
 
-	let mobile;
-
 	let showModal = false;
-
 	let activeBlock = {};
+	export let broadcastingBlock;
+	export let showInstructions;
 </script>
 
-<p class="instructions" class:mobile>CLICK A BAND TO BOOST</p>
-<div class="container" class:mobile>
+<p
+	class="instructions"
+	on:click={() => {
+		showInstructions = true;
+	}}
+>
+	How do I boost?
+</p>
+
+<div class="container">
 	{#if $liveBlocks[0]}
-		<Banner block={$liveBlocks[0]} bind:showModal bind:activeBlock />
+		<Banner
+			block={broadcastingBlock?.img ? broadcastingBlock : $liveBlocks[0]}
+			bind:showModal
+			bind:activeBlock
+		/>
 	{/if}
 	<div class="grid">
 		{#each $liveBlocks.slice(1) as block, i}
@@ -26,6 +38,15 @@
 			{/if}
 		{/each}
 	</div>
+	{#if $liveBlocks[0]}
+		<Banner
+			block={$liveBlocks[0]}
+			bind:showModal
+			bind:activeBlock
+			class="crew"
+			imgSrc="./crewsupport.png"
+		/>
+	{/if}
 </div>
 
 {#if showModal}
@@ -40,15 +61,9 @@
 		width: 100%;
 	}
 
-	.container.mobile {
+	.container {
 		height: 100%;
 		flex-direction: column;
-	}
-
-	.bands {
-		flex-grow: 1;
-		display: flex;
-		justify-content: center;
 	}
 
 	.grid {
@@ -75,31 +90,15 @@
 		text-align: center;
 	}
 
-	.support {
-		background-color: antiquewhite;
-		width: 180px;
-		height: 180px;
-		border-radius: 180px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
 	p.instructions {
 		color: rgb(67, 1, 9);
 		background-color: hsla(20, 39%, 88%, 0.5);
-		position: absolute;
-		bottom: 8px;
-		left: calc(50% - 110px);
-		padding: 4px 8px;
-		width: 220px;
+		position: relative;
+		padding: 4px 0;
+		width: 180px;
 		margin: 0 auto;
 		font-weight: 600;
 		backdrop-filter: blur(10px); /* Adjust the blur level */
-	}
-
-	p.instructions.mobile {
-		position: relative;
-		bottom: 0;
+		margin-bottom: 8px;
 	}
 </style>

@@ -3,6 +3,7 @@
 	import Video from '../Video.svelte';
 	import BoostBoard from '../BoostBoard.svelte';
 	import Chat from '../Chat.svelte';
+	import Instructions from '../Instructions.svelte';
 	let currentScreen = 'roster';
 	import { mainSettings } from '$/stores';
 
@@ -10,7 +11,9 @@
 		currentScreen = screenName;
 	}
 
+	export let guid;
 	export let broadcastingBlock;
+	let showInstructions = false;
 </script>
 
 <img
@@ -29,7 +32,7 @@
 
 <container>
 	<div class="roster" class:show={currentScreen === 'roster'}>
-		<Roster {broadcastingBlock} />
+		<Roster {guid} {broadcastingBlock} bind:showInstructions />
 	</div>
 	<div class:show={currentScreen === 'video'}>
 		<Video />
@@ -42,6 +45,10 @@
 		<Chat />
 	</div>
 </container>
+
+{#if showInstructions}
+	<Instructions bind:showInstructions />
+{/if}
 
 <style>
 	.background {
@@ -56,12 +63,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-around;
+
+		background-color: hsla(20, 39%, 88%, 0.5);
 	}
 
 	nav > button {
 		width: 25%;
 		background-color: transparent;
 		box-shadow: none;
+		color: rgb(67, 1, 9);
 	}
 
 	container {
