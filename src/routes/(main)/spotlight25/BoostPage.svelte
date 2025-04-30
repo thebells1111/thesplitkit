@@ -6,6 +6,7 @@
 
 	export let showModal;
 	export let activeBlock;
+	export let paymentType;
 
 	import sendBoost from '$lib/functions/sendBoost';
 	import throwConfetti from '$lib/functions/throwConfetti';
@@ -20,6 +21,7 @@
 	onMount(() => {
 		fetchConversionRate();
 		senderName = localStorage.getItem('senderName') || 'anonymous';
+		console.log(senderName);
 	});
 
 	async function fetchConversionRate() {
@@ -36,20 +38,32 @@
 	}
 
 	async function handleBoost() {
-		sendBoost({ block: activeBlock, satAmount: amount, boostagram, senderName, fromIndex })
-			.then((data) => {
-				console.log(data);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+		if (paymentType === 'qr') {
+			localStorage.setItem('senderName', senderName);
+			console.log(activeBlock);
+			let res = await fetch(
+				`https://thesplitbox.com/lnurlp/tsk-1e34e11b-f536-4280-b068-7dd1a9399b12/callback?amount=${
+					amount * 1000
+				}&comment=${boostagram}&name=${senderName}&blockGuid=${activeBlock.blockGuid}`
+			);
+			let data = await res.json();
+			console.log(data);
+		} else if ($user.loggedIn) {
+			sendBoost({ block: activeBlock, satAmount: amount, boostagram, senderName, fromIndex })
+				.then((data) => {
+					console.log(data);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 
-		throwConfetti();
-		console.log('Boost button pressed');
-		localStorage.setItem('senderName', senderName);
-		boostagram = '';
-		showModal = false;
-		$user.balance -= amount;
+			throwConfetti();
+			console.log('Boost button pressed');
+			localStorage.setItem('senderName', senderName);
+			boostagram = '';
+			showModal = false;
+			$user.balance -= amount;
+		}
 	}
 
 	$: console.log(activeBlock.value.destinations);
@@ -86,10 +100,12 @@
 		<h2>{activeBlock.title}</h2>
 		<panels>
 			<left>
-				<balance-text>
-					<h3>Balance:</h3>
-					<p>{$user.balance || 0} sats</p>
-				</balance-text>
+				{#if $user.loggedIn}
+					<balance-text>
+						<h3>Balance:</h3>
+						<p>{$user.balance || 0} sats</p>
+					</balance-text>
+				{/if}
 				<label>
 					Your Name
 					<input type="text" bind:value={senderName} />
@@ -97,7 +113,9 @@
 				<textarea bind:value={boostagram} rows="4" placeholder="Enter your message here..." />
 				<amount-text>
 					<h3>Amount</h3>
-					<p>between 1 and {Math.floor(Math.min($user.balance * 0.99, 5000000))}</p>
+					{#if $user.loggedIn}
+						<p>between 1 and {Math.floor(Math.min($user.balance * 0.99, 5000000))}</p>
+					{/if}
 				</amount-text>
 				<amount-container>
 					<input

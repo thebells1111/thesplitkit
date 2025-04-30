@@ -10,6 +10,7 @@
 	export let showModal;
 	export let activeBlock;
 	export let imgSrc = '';
+	export let paymentType;
 
 	let redirectUrl = `https://getalby.com/oauth?client_id=${albyClientId}`;
 	redirectUrl += `&response_type=code&redirect_uri=${$page.url.href}`;
@@ -21,12 +22,8 @@
 		src={imgSrc || block.image}
 		alt={block.title}
 		on:click={() => {
-			if ($user.loggedIn) {
-				showModal = true;
-				activeBlock = clone(block);
-			} else {
-				goto(redirectUrl);
-			}
+			showModal = true;
+			activeBlock = clone(block);
 		}}
 	/>
 </div>

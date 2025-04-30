@@ -3,13 +3,23 @@
 	import Banner from '../Banner.svelte';
 	import QR from '../QR.svelte';
 	import BoostPage from '../BoostPage.svelte';
+	import PaymentSelector from '../PaymentSelector.svelte';
+	import { page } from '$app/stores';
 
-	import { liveBlocks } from '$/stores';
+	import { liveBlocks, albyClientId, user } from '$/stores';
+
+	let redirectUrl = `https://getalby.com/oauth?client_id=${albyClientId}`;
+	redirectUrl += `&response_type=code&redirect_uri=${$page.url.href}`;
+	redirectUrl += `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 
 	let showModal = false;
 	let activeBlock = {};
 	export let broadcastingBlock;
 	export let showInstructions;
+	let paymentType;
+
+	$: console.log(paymentType);
+	$: console.log(showModal);
 </script>
 
 <p
@@ -35,7 +45,7 @@
 	<div class="bands">
 		{#each $liveBlocks.slice(1, Math.ceil($liveBlocks.length / 2)) as block}
 			{#if block}
-				<Card {block} bind:showModal bind:activeBlock class="card" />
+				<Card {block} bind:showModal bind:activeBlock class="card" bind:paymentType />
 			{/if}
 		{/each}
 
@@ -59,7 +69,11 @@
 </div>
 
 {#if showModal}
-	<BoostPage bind:showModal bind:activeBlock />
+	{#if !paymentType && !$user.loggedIn}
+		<PaymentSelector bind:paymentType />
+	{:else}
+		<BoostPage bind:showModal bind:activeBlock {paymentType} />
+	{/if}
 {/if}
 
 <style>
