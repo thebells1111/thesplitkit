@@ -180,7 +180,7 @@
 		display: flex;
 		flex-direction: column;
 		color: #222;
-		font-family: 'Tangerine';
+		font-family: 'Berkshire';
 	}
 	boost-container h2 {
 		margin: 0;
@@ -194,15 +194,13 @@
 	h3 {
 		text-align: center;
 		margin-top: 0;
-		min-height: 1.5em;
 		width: 100%;
-		font-size: 1.5em;
 	}
 	p {
 		text-align: center;
 		font-weight: 600;
 		color: #222;
-		font-size: 1.5em;
+		font-size: 1em;
 	}
 	panels {
 		display: flex;
@@ -225,7 +223,6 @@
 		margin: 0;
 		padding: 0;
 		text-decoration: underline;
-		font-family: 'LoversQuarrel';
 	}
 	ul {
 		padding: 8px;
@@ -250,7 +247,6 @@
 		height: 200px;
 		padding: 4px;
 		flex: 1;
-		font-family: 'Dancing';
 		background-color: transparent;
 		border: none;
 		color: #222;
@@ -307,7 +303,6 @@
 		position: absolute;
 		top: -6px;
 		padding: 0 8px;
-		font-family: 'Tangerine';
 	}
 	amount-container .sats {
 		left: 0;
@@ -323,15 +318,7 @@
 	btn-container button {
 		width: 20%;
 	}
-	.boost {
-		width: calc(100% - 16px);
-		background-color: hsl(0, 52%, 39%);
-		color: rgb(233, 225, 229);
-		font-weight: 600;
-		margin: 8px 0 16px 0;
-		box-shadow: none;
-		font-family: 'WindSongBold';
-	}
+
 	button {
 		background-color: hsl(2, 35%, 52%);
 		color: rgb(233, 225, 229);
@@ -345,6 +332,16 @@
 		box-shadow: none;
 		font-family: 'LoversQuarrel';
 	}
+
+	.boost {
+		width: calc(100% - 16px);
+		background-color: hsl(0, 52%, 39%);
+		color: rgb(233, 225, 229);
+		font-weight: 600;
+		margin: 8px 0 16px 0;
+		box-shadow: none;
+		font-family: WindSongBold;
+	}
 	input,
 	textarea {
 		background-color: transparent;
@@ -353,7 +350,7 @@
 		outline: 1px solid #222;
 		padding: 2px;
 		font-weight: 600;
-		font-family: 'Dancing';
+		font-family: 'Berkshire';
 		font-size: 16px;
 	}
 	input[type='number']::-webkit-outer-spin-button,
