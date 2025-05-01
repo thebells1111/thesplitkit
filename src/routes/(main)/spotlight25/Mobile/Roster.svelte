@@ -16,7 +16,6 @@
 	let activeBlock = {};
 	export let broadcastingBlock;
 	export let showInstructions;
-	export let controlGuid;
 	let paymentType;
 
 	$: console.log(paymentType);

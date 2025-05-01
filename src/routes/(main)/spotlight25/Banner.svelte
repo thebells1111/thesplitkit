@@ -1,6 +1,7 @@
 <script>
 	import clone from 'just-clone';
 
+	import { liveBlocks } from '$/stores';
 	export let block = {};
 	export let showModal;
 	export let activeBlock;
@@ -9,7 +10,7 @@
 
 <div>
 	<img
-		src={imgSrc || block?.image}
+		src={imgSrc || block?.image || $liveBlocks[0].image}
 		alt={block?.title}
 		on:click={() => {
 			showModal = true;

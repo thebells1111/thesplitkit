@@ -45,7 +45,7 @@
 			localStorage.setItem('senderName', senderName);
 			console.log(activeBlock);
 			let res = await fetch(
-				`https://thesplitbox.com/lnurlp/tsk-1e34e11b-f536-4280-b068-7dd1a9399b12/callback?amount=${
+				`https://thesplitbox.com/lnurlp/tsk-${activeBlock.eventGuid}/callback?amount=${
 					amount * 1000
 				}&comment=${boostagram}&senderName=${senderName}&blockGuid=${activeBlock.blockGuid}`
 			);

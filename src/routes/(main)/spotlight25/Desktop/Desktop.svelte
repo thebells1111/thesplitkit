@@ -7,7 +7,6 @@
 	import { mainSettings } from '$/stores';
 	export let guid;
 	export let broadcastingBlock;
-	export let controlGuid;
 	let showInstructions = false;
 </script>
 
@@ -26,7 +25,7 @@
 		<Chat />
 	</top>
 	<bottom>
-		<Roster {guid} {controlGuid} {broadcastingBlock} bind:showInstructions />
+		<Roster {guid} {broadcastingBlock} bind:showInstructions />
 	</bottom>
 </container>
 

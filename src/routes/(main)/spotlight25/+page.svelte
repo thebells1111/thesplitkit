@@ -47,7 +47,7 @@
 </script>
 
 {#if isMobile}
-	<Mobile {guid} {broadcastingBlock} {controlGuid} />
+	<Mobile {guid} {broadcastingBlock} />
 {:else}
-	<Desktop {guid} {broadcastingBlock} {controlGuid} />
+	<Desktop {guid} {broadcastingBlock} />
 {/if}

@@ -16,7 +16,6 @@
 	let activeBlock = {};
 	export let broadcastingBlock;
 	export let showInstructions;
-	export let controlGuid;
 	let paymentType;
 
 	$: console.log(paymentType);
@@ -55,18 +54,18 @@
 				<Card {block} bind:showModal bind:activeBlock class="card" />
 			{/if}
 		{/each}
-		<Banner
-			block={broadcastingBlock?.value ? broadcastingBlock : $liveBlocks[0]}
-			bind:showModal
-			bind:activeBlock
-			eventGuid="0dfce62a-2a4c-4a48-a559-cb93d2390b20"
-			class="banner"
-		/>
 
 		<!-- <div class="qr-wrapper">
 			<QR imgSrc="./qrbg.png" />
 		</div> -->
 	</div>
+
+	<Banner
+		block={broadcastingBlock?.value ? broadcastingBlock : $liveBlocks[0]}
+		bind:showModal
+		bind:activeBlock
+		class="banner"
+	/>
 </div>
 
 {#if showModal}
@@ -101,6 +100,7 @@
 		overflow: hidden;
 	}
 
+	.banner-wrapper,
 	.qr-wrapper {
 		width: clamp(80px, 15vw, 180px);
 		aspect-ratio: 1;
