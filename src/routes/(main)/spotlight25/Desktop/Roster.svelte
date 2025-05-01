@@ -49,6 +49,11 @@
 			{/if}
 		{/each}
 
+		{#each $liveBlocks.slice(Math.ceil($liveBlocks.length / 2)) as block}
+			{#if block}
+				<Card {block} bind:showModal bind:activeBlock class="card" />
+			{/if}
+		{/each}
 		<Banner
 			block={broadcastingBlock?.img ? broadcastingBlock : $liveBlocks[0]}
 			bind:showModal
@@ -56,15 +61,9 @@
 			class="banner"
 		/>
 
-		{#each $liveBlocks.slice(Math.ceil($liveBlocks.length / 2)) as block}
-			{#if block}
-				<Card {block} bind:showModal bind:activeBlock class="card" />
-			{/if}
-		{/each}
-	</div>
-
-	<div class="qr-wrapper">
-		<QR />
+		<div class="qr-wrapper">
+			<QR imgSrc="./qrbg.png" />
+		</div>
 	</div>
 </div>
 
@@ -112,7 +111,7 @@
 		bottom: 8px;
 		padding: 4px 0;
 		width: 180px;
-		left: 24px;
+		left: calc(50% - 86px);
 		margin: 0 auto;
 		font-weight: 600;
 		backdrop-filter: blur(10px);

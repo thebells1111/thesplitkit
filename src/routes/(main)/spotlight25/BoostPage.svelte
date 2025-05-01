@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
+	import QR from './QR.svelte';
 
 	import { user } from '$/stores';
 
@@ -17,6 +18,8 @@
 	let fromIndex = true;
 	let amount = 1;
 	let btcPrice = 250000;
+	let showQR = false;
+	let invoice;
 
 	onMount(() => {
 		fetchConversionRate();
@@ -47,6 +50,8 @@
 				}&comment=${boostagram}&name=${senderName}&blockGuid=${activeBlock.blockGuid}`
 			);
 			let data = await res.json();
+			invoice = data.pr;
+			showQR = true;
 			console.log(data);
 		} else if ($user.loggedIn) {
 			sendBoost({ block: activeBlock, satAmount: amount, boostagram, senderName, fromIndex })
@@ -95,7 +100,7 @@
 	}
 </script>
 
-<Modal bind:showModal img="./main-bg.png">
+<Modal bind:showModal imgSrc="./main-bg.png">
 	<boost-container>
 		<h2>{activeBlock.title}</h2>
 		<panels>
@@ -157,6 +162,16 @@
 	</boost-container>
 </Modal>
 
+{#if showQR}
+	<Modal bind:showModal={showQR} backgroundColor="rgb(223,206,200)" width="300px" height="300px">
+		<div class="qr-container">
+			<div class="qr">
+				<QR code={invoice} />
+			</div>
+		</div>
+	</Modal>
+{/if}
+
 <style>
 	boost-container {
 		width: calc(100% - 16px);
@@ -193,11 +208,13 @@
 		display: flex;
 		width: 100%;
 		justify-content: space-between;
+		height: calc(100% - 204px);
 	}
 	left,
 	right {
 		display: block;
 		width: calc(50% - 8px);
+		margin-bottom: 8px;
 	}
 	header {
 		display: flex;
@@ -353,5 +370,20 @@
 		flex-direction: column;
 		font-weight: 600;
 		font-size: 1.5em;
+	}
+
+	.qr-container {
+		width: 100%;
+		height: calc(100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		top: -30px;
+	}
+
+	.qr {
+		width: 260px;
+		height: 260px;
 	}
 </style>

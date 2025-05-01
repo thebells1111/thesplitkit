@@ -7,7 +7,10 @@
 	export let unsaved = false;
 	export let isFeedDownload = false;
 	export let dark = false;
-	export let img;
+	export let imgSrc;
+	export let width;
+	export let height;
+	export let backgroundColor;
 
 	onMount(() => {
 		const handleKeyDown = (event) => {
@@ -46,9 +49,16 @@
 <blurred-background on:mousedown|self={onClose} on:touchend|self={onClose}>
 	<modal
 		class:dark
-		style={img
-			? `background-image: url('${img}'); background-size: cover; background-position: center;`
-			: ''}
+		style={`
+			${
+				imgSrc
+					? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;`
+					: ''
+			}
+			${width ? `width: ${width};` : ''}
+			${height ? `height: ${height};` : ''}
+			${backgroundColor ? `background-color: ${backgroundColor};` : ''}
+		`}
 	>
 		<button class="close" on:click={onClose}>
 			<Close size="24" />
