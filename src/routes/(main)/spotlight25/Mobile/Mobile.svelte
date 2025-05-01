@@ -13,6 +13,7 @@
 
 	export let guid;
 	export let broadcastingBlock;
+	export let controlGuid;
 	let showInstructions = false;
 </script>
 
@@ -32,7 +33,7 @@
 
 <container>
 	<div class="roster" class:show={currentScreen === 'roster'}>
-		<Roster {guid} {broadcastingBlock} bind:showInstructions />
+		<Roster {guid} {controlGuid} {broadcastingBlock} bind:showInstructions />
 	</div>
 	<div class:show={currentScreen === 'video'}>
 		<Video />

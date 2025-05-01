@@ -16,6 +16,7 @@
 	let activeBlock = {};
 	export let broadcastingBlock;
 	export let showInstructions;
+	export let controlGuid;
 	let paymentType;
 
 	$: console.log(paymentType);
@@ -53,6 +54,7 @@
 			block={broadcastingBlock?.img ? broadcastingBlock : $liveBlocks[0]}
 			bind:showModal
 			bind:activeBlock
+			eventGuid="0dfce62a-2a4c-4a48-a559-cb93d2390b20"
 			class="banner"
 		/>
 

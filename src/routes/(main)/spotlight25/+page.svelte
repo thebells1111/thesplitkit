@@ -1,10 +1,12 @@
 <script>
+	import io from 'socket.io-client';
 	import { onMount } from 'svelte';
 	import Desktop from './Desktop/Desktop.svelte';
 	import Mobile from './Mobile/Mobile.svelte';
 	import { remoteServer, liveBlocks, mainSettings } from '$/stores';
 
 	export let guid = '1e34e11b-f536-4280-b068-7dd1a9399b12';
+	export let controlGuid = '0dfce62a-2a4c-4a48-a559-cb93d2390b20';
 
 	let isMobile = false;
 	let broadcastingBlock = {};
@@ -21,7 +23,7 @@
 
 	onMount(async () => {
 		loadBlocks();
-		const url = remoteServer + '/event?event_id=' + guid;
+		const url = remoteServer + '/event?event_id=' + controlGuid;
 		const liveItemSocket = io.connect(url);
 
 		liveItemSocket.on('remoteValue', function (data) {
@@ -45,7 +47,7 @@
 </script>
 
 {#if isMobile}
-	<Mobile {guid} {broadcastingBlock} />
+	<Mobile {guid} {broadcastingBlock} {controlGuid} />
 {:else}
-	<Desktop {guid} {broadcastingBlock} />
+	<Desktop {guid} {broadcastingBlock} {controlGuid} />
 {/if}

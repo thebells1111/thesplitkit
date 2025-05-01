@@ -10,6 +10,7 @@
 	let activeBlock = {};
 	export let broadcastingBlock;
 	export let showInstructions;
+	export let controlGuid;
 </script>
 
 <p
