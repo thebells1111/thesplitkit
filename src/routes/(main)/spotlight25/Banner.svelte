@@ -10,7 +10,7 @@
 
 <div>
 	<img
-		src={imgSrc || block?.image || $liveBlocks[0].image}
+		src={imgSrc || block?.image || $liveBlocks[0]?.image}
 		alt={block?.title}
 		on:click={() => {
 			showModal = true;
