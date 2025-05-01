@@ -51,7 +51,7 @@
 		{/each}
 
 		<Banner
-			block={broadcastingBlock?.img ? broadcastingBlock : $liveBlocks[0]}
+			block={broadcastingBlock?.value ? broadcastingBlock : $liveBlocks[0]}
 			bind:showModal
 			bind:activeBlock
 			eventGuid="0dfce62a-2a4c-4a48-a559-cb93d2390b20"

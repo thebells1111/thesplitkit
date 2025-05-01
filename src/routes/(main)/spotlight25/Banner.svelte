@@ -9,8 +9,8 @@
 
 <div>
 	<img
-		src={imgSrc || block.image}
-		alt={block.title}
+		src={imgSrc || block?.image}
+		alt={block?.title}
 		on:click={() => {
 			showModal = true;
 			activeBlock = clone(block);
