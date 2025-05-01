@@ -61,9 +61,9 @@
 			class="banner"
 		/>
 
-		<div class="qr-wrapper">
+		<!-- <div class="qr-wrapper">
 			<QR imgSrc="./qrbg.png" />
-		</div>
+		</div> -->
 	</div>
 </div>
 
