@@ -102,29 +102,31 @@
 	<button type="button" on:click={addPerson}>Add Person</button>
 </value-header>
 
-{#each data.value.destinations as person, index}
-	<person
-		on:click={() => {
-			editingIndex = index;
-			showWalletModal = true;
-		}}
-	>
-		<button class="copy" on:click|stopPropagation={copyValueRecipient.bind(this, person, index)}>
-			<CopyIcon />
-		</button>
-		<info>
-			<p style={person.name ? '' : 'color:red'}>
-				{person.name || 'a name is required for this person'}
-			</p>
-			<p class="percentage" style={person.split ? '' : 'color:red'}>
-				{person.split || 0}% {person.fee ? '(fee)' : ''}
-			</p>
-		</info>
-		<button on:click|stopPropagation={deletePerson.bind(this, index)}>
-			<Delete size={24} />
-		</button>
-	</person>
-{/each}
+<div class="person-container">
+	{#each data.value.destinations as person, index}
+		<person
+			on:click={() => {
+				editingIndex = index;
+				showWalletModal = true;
+			}}
+		>
+			<button class="copy" on:click|stopPropagation={copyValueRecipient.bind(this, person, index)}>
+				<CopyIcon />
+			</button>
+			<info>
+				<p style={person.name ? '' : 'color:red'}>
+					{person.name || 'a name is required for this person'}
+				</p>
+				<p class="percentage" style={person.split ? '' : 'color:red'}>
+					{person.split || 0}% {person.fee ? '(fee)' : ''}
+				</p>
+			</info>
+			<button on:click|stopPropagation={deletePerson.bind(this, index)}>
+				<Delete size={24} />
+			</button>
+		</person>
+	{/each}
+</div>
 
 {#if showWalletModal}
 	<blurred-background on:mousedown|self={closeWalletModal} on:touchend|self={closeWalletModal}>
@@ -163,6 +165,12 @@
 		font-size: 0.9em;
 		text-align: center;
 		min-height: 32px;
+	}
+
+	.person-container {
+		height: calc(100% - 98px);
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
 
 	value-header {
