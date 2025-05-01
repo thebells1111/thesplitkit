@@ -47,7 +47,7 @@
 			let res = await fetch(
 				`https://thesplitbox.com/lnurlp/tsk-1e34e11b-f536-4280-b068-7dd1a9399b12/callback?amount=${
 					amount * 1000
-				}&comment=${boostagram}&name=${senderName}&blockGuid=${activeBlock.blockGuid}`
+				}&comment=${boostagram}&senderName=${senderName}&blockGuid=${activeBlock.blockGuid}`
 			);
 			let data = await res.json();
 			invoice = data.pr;
