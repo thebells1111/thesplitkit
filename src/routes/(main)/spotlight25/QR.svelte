@@ -4,7 +4,8 @@
 
 	let qrCodeCanvas;
 	let container;
-	let code = 'tsk-1e34e11b-f536-4280-b068-7dd1a9399b12@thesplitbox.com';
+	export let code = 'tsk-1e34e11b-f536-4280-b068-7dd1a9399b12@thesplitbox.com';
+	export let imgSrc = '';
 	let observer;
 
 	function generateQRCode() {
@@ -34,7 +35,9 @@
 </script>
 
 <div class="qr-wrapper" bind:this={container}>
-	<img src="./qrbg.png" alt="QR Background" />
+	{#if imgSrc}
+		<img src="./qrbg.png" alt="QR Background" />
+	{/if}
 	<canvas bind:this={qrCodeCanvas} />
 </div>
 

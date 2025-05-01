@@ -14,7 +14,7 @@
 	redirectUrl += `&scope=account:read%20balance:read%20payments:send%20invoices:read`;
 </script>
 
-<Modal bind:showModal img="./main-bg.png">
+<Modal bind:showModal imgSrc="./main-bg.png">
 	<boost-container>
 		<button
 			on:click={() => {
