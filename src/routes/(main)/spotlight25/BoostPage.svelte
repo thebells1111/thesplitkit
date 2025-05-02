@@ -4,7 +4,7 @@
 	import Modal from '$lib/Modal/Modal.svelte';
 	import QR from './QR.svelte';
 
-	import { user } from '$/stores';
+	import { user, remoteServer } from '$/stores';
 
 	export let showModal;
 	export let activeBlock;
@@ -27,11 +27,26 @@
 		senderName = localStorage.getItem('senderName') || 'anonymous';
 
 		const url = remoteServer + '/event?event_id=' + activeBlock.eventGuid;
-		const liveItemSocket = io.connect(url);
+		const socket = io.connect(url);
+
+		socket.on('connect', () => {
+			console.log(activeBlock.eventGuid);
+			console.log('Connected with clientId:', socket.id);
+		});
+
+		socket.on('invoiceVerify', function (data) {
+			console.log('dude');
+			console.log(data);
+
+			if (invoice === data) {
+				throwConfetti();
+				showQR = false;
+			}
+		});
 
 		// return cleanup function
 		return () => {
-			liveItemSocket.disconnect();
+			socket.disconnect();
 		};
 	});
 
