@@ -176,10 +176,10 @@
 			</right>
 		</panels>
 		<btn-container>
-			<button on:click={() => setAmount(1000)}>1k</button>
-			<button on:click={() => setAmount(5000)}>5k</button>
-			<button on:click={() => setAmount(10000)}>10k</button>
-			<button on:click={() => setAmount(25000)}>25k</button>
+			<button on:click={() => setAmount(1000)}>1,000</button>
+			<button on:click={() => setAmount(5000)}>5,000</button>
+			<button on:click={() => setAmount(10000)}>10,000</button>
+			<button on:click={() => setAmount(25000)}>25,000</button>
 		</btn-container>
 		<button class="boost" on:click={handleBoost}>Boost </button>
 	</boost-container>
@@ -321,10 +321,11 @@
 	.amount {
 		width: calc(100% - 16px);
 		padding: 2px 8px 20px 8px;
+		font-size: 1.3em;
 	}
 	amount-container p {
 		position: absolute;
-		top: -6px;
+		top: 4px;
 		padding: 0 8px;
 	}
 	amount-container .sats {
@@ -348,12 +349,12 @@
 		padding: 4px 12px;
 		border: none;
 		border-radius: 25px;
-		font-size: 1.6em;
+		font-size: 1.2em;
 		cursor: pointer;
 		margin: 8px 0;
 		height: 50px;
 		box-shadow: none;
-		font-family: 'LoversQuarrel';
+		font-family: 'Berkshire';
 	}
 
 	.boost {
@@ -364,6 +365,7 @@
 		margin: 8px 0 16px 0;
 		box-shadow: none;
 		font-family: WindSongBold;
+		font-size: 1.6em;
 	}
 	input,
 	textarea {
