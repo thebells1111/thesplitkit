@@ -77,7 +77,7 @@
 			}
 			const urlWithoutQuery = window.location.href.split('?')[0];
 			window.history.replaceState(null, null, urlWithoutQuery);
-		} else if (!$user.loggedIn) {
+		} else if (!$user.loggedIn && !['/(main)/spotlight25'].find((v) => v === $page?.route?.id)) {
 			console.log('refresh');
 			let res = await fetch(remoteServer + '/api/alby/refresh', {
 				credentials: 'include'
