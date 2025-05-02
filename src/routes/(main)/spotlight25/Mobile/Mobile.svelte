@@ -38,7 +38,7 @@
 		<Video />
 	</div>
 
-	<div class:show={currentScreen === 'boostBoard'}>
+	<div class="boost-board" class:show={currentScreen === 'boostBoard'}>
 		<BoostBoard />
 	</div>
 	<div class="chat" class:show={currentScreen === 'chat'}>
@@ -92,6 +92,10 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.boost-board {
+		height: 100%;
 	}
 
 	.chat {
