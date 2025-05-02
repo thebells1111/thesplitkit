@@ -1,4 +1,5 @@
 <script>
+	import io from 'socket.io-client';
 	import { onMount } from 'svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
 	import QR from './QR.svelte';
@@ -24,7 +25,14 @@
 	onMount(() => {
 		fetchConversionRate();
 		senderName = localStorage.getItem('senderName') || 'anonymous';
-		console.log(senderName);
+
+		const url = remoteServer + '/event?event_id=' + activeBlock.eventGuid;
+		const liveItemSocket = io.connect(url);
+
+		// return cleanup function
+		return () => {
+			liveItemSocket.disconnect();
+		};
 	});
 
 	async function fetchConversionRate() {
