@@ -72,7 +72,8 @@
 		}, 3000);
 	}
 	async function handleBoost() {
-		if (paymentType === 'qr') {
+		throwConfetti();
+		if (paymentType === 'qr' && false) {
 			localStorage.setItem('senderName', senderName);
 			console.log(activeBlock);
 			let res = await fetch(
@@ -140,7 +141,7 @@
 					duration={3000}
 					x={[0, 1]}
 					y={[0, 2]}
-					colorArray={['url(https://svelte.dev/favicon.png)']}
+					colorArray={['url(./flower.png)', 'url(./flower2.png)', 'url(./flower3.png)']}
 				/>
 			</div>
 			<div class="confetti right">
@@ -150,7 +151,7 @@
 					duration={3000}
 					x={[-1, 0]}
 					y={[0, 2]}
-					colorArray={['url(https://svelte.dev/favicon.png)']}
+					colorArray={['url(./flower.png)', 'url(./flower2.png)', 'url(./flower3.png)']}
 				/>
 			</div>
 		{/if}
