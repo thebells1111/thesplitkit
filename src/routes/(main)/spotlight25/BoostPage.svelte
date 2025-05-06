@@ -24,6 +24,24 @@
 	let activeScreen = 'boost';
 	let showConfetti = false;
 
+	const boostArt = {
+		default: ['url(./flower.png)', 'url(./flower2.png)', 'url(./flower3.png)'],
+		weed: ['url(./weed.png)'],
+		boob: ['url(./boobs.png)'],
+		dick: ['url(./dick.png)']
+	};
+
+	function selectBoostArt() {
+		if (amount >= 1111 && /^1+$/.test(String(amount))) {
+			return boostArt.dick;
+		} else if (String(amount).includes('420')) {
+			return boostArt.weed;
+		} else if (amount === 8008 || amount === 80085) {
+			return boostArt.boob;
+		} else {
+			return boostArt.default;
+		}
+	}
 	onMount(() => {
 		fetchConversionRate();
 		senderName = localStorage.getItem('senderName') || 'anonymous';
@@ -72,8 +90,8 @@
 		}, 3000);
 	}
 	async function handleBoost() {
-		throwConfetti();
-		if (paymentType === 'qr' && false) {
+		// throwConfetti();
+		if (paymentType === 'qr') {
 			localStorage.setItem('senderName', senderName);
 			console.log(activeBlock);
 			let res = await fetch(
@@ -141,7 +159,7 @@
 					duration={3000}
 					x={[0, 1]}
 					y={[0, 2]}
-					colorArray={['url(./flower.png)', 'url(./flower2.png)', 'url(./flower3.png)']}
+					colorArray={selectBoostArt()}
 				/>
 			</div>
 			<div class="confetti right">
@@ -151,7 +169,7 @@
 					duration={3000}
 					x={[-1, 0]}
 					y={[0, 2]}
-					colorArray={['url(./flower.png)', 'url(./flower2.png)', 'url(./flower3.png)']}
+					colorArray={selectBoostArt()}
 				/>
 			</div>
 		{/if}
