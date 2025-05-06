@@ -70,7 +70,7 @@
 
 {#if showModal}
 	{#if !paymentType && !$user.loggedIn}
-		<PaymentSelector bind:paymentType />
+		<PaymentSelector bind:paymentType bind:showModal />
 	{:else}
 		<BoostPage bind:showModal bind:activeBlock {paymentType} />
 	{/if}
@@ -119,5 +119,6 @@
 		backdrop-filter: blur(10px);
 		text-align: center;
 		cursor: pointer;
+		font-family: 'Berkshire';
 	}
 </style>

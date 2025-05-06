@@ -9,11 +9,11 @@
 	export let showModal;
 	export let activeBlock;
 	export let paymentType;
+	export let isMobile;
 
 	import sendBoost from '$lib/functions/sendBoost';
-	import throwConfetti from '$lib/functions/throwConfetti';
+	import { Confetti } from 'svelte-confetti';
 
-	let showInfoModal = false;
 	let senderName = 'anonymous';
 	let boostagram = '';
 	let fromIndex = true;
@@ -21,6 +21,8 @@
 	let btcPrice = 250000;
 	let showQR = false;
 	let invoice;
+	let activeScreen = 'boost';
+	let showConfetti = false;
 
 	onMount(() => {
 		fetchConversionRate();
@@ -63,6 +65,12 @@
 		return amount;
 	}
 
+	function throwConfetti() {
+		showConfetti = true;
+		setTimeout(() => {
+			showConfetti = false;
+		}, 3000);
+	}
 	async function handleBoost() {
 		if (paymentType === 'qr') {
 			localStorage.setItem('senderName', senderName);
@@ -118,16 +126,56 @@
 		amount = value;
 	}
 
-	function closeInfoModal() {
-		showInfoModal = false;
-	}
+	$: console.log(activeScreen);
 </script>
 
 <Modal bind:showModal imgSrc="./main-bg.png">
 	<boost-container>
 		<h2>{activeBlock.title}</h2>
+		{#if showConfetti}
+			<div class="confetti left">
+				<Confetti
+					cone
+					size="30"
+					duration={3000}
+					x={[0, 1]}
+					y={[0, 2]}
+					colorArray={['url(https://svelte.dev/favicon.png)']}
+				/>
+			</div>
+			<div class="confetti right">
+				<Confetti
+					cone
+					size="30"
+					duration={3000}
+					x={[-1, 0]}
+					y={[0, 2]}
+					colorArray={['url(https://svelte.dev/favicon.png)']}
+				/>
+			</div>
+		{/if}
+		{#if isMobile}
+			<div class="screen-select">
+				<button
+					on:click={() => {
+						activeScreen = 'boost';
+					}}
+					class:active={activeScreen === 'boost'}
+				>
+					Boostagram
+				</button>
+				<button
+					on:click={() => {
+						activeScreen = 'splits';
+					}}
+					class:active={activeScreen === 'splits'}
+				>
+					Splits
+				</button>
+			</div>
+		{/if}
 		<panels>
-			<left>
+			<left class:hide={isMobile && activeScreen === 'splits'} class:fullwidth={isMobile}>
 				{#if $user.loggedIn}
 					<balance-text>
 						<h3>Balance:</h3>
@@ -160,7 +208,7 @@
 					<p class="conversion">~${satsToDollars(amount)}</p>
 				</amount-container>
 			</left>
-			<right>
+			<right class:hide={isMobile && activeScreen === 'boost'} class:fullwidth={isMobile}>
 				<header>
 					<p>Name</p>
 					<p>Split</p>
@@ -175,13 +223,20 @@
 				</ul>
 			</right>
 		</panels>
-		<btn-container>
+		<btn-container class:hide={isMobile && activeScreen === 'splits'}>
 			<button on:click={() => setAmount(1000)}>1,000</button>
 			<button on:click={() => setAmount(5000)}>5,000</button>
 			<button on:click={() => setAmount(10000)}>10,000</button>
 			<button on:click={() => setAmount(25000)}>25,000</button>
 		</btn-container>
-		<button class="boost" on:click={handleBoost}>Boost </button>
+		<button
+			class:hide={isMobile && activeScreen === 'splits'}
+			class="boost"
+			on:click={handleBoost}
+			disabled={showConfetti}
+		>
+			Boost
+		</button>
 	</boost-container>
 </Modal>
 
@@ -233,10 +288,12 @@
 	}
 	left,
 	right {
-		display: block;
+		display: flex;
 		width: calc(50% - 8px);
 		margin-bottom: 8px;
+		flex-direction: column;
 	}
+
 	header {
 		display: flex;
 		justify-content: space-between;
@@ -367,6 +424,11 @@
 		font-family: WindSongBold;
 		font-size: 1.6em;
 	}
+
+	.boost:disabled {
+		width: calc(100% - 16px);
+		background-color: hsl(0, 52%, 59%);
+	}
 	input,
 	textarea {
 		background-color: transparent;
@@ -407,5 +469,41 @@
 	.qr {
 		width: 260px;
 		height: 260px;
+	}
+
+	.screen-select {
+		width: 100%;
+		display: flex;
+		justify-content: space-evenly;
+	}
+
+	.screen-select > button {
+		width: 108px;
+		height: auto;
+		padding: 0;
+		border-radius: 0;
+		background-color: transparent;
+		color: #222;
+	}
+
+	.screen-select > button.active {
+		border-bottom: 2px solid #222;
+	}
+
+	.fullwidth {
+		width: 100%;
+	}
+
+	.hide {
+		display: none;
+	}
+
+	.confetti {
+		position: absolute;
+		bottom: 0;
+	}
+
+	.confetti.right {
+		right: 0;
 	}
 </style>
