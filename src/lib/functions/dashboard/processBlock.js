@@ -110,7 +110,7 @@ function addFees(destinations, isDefault) {
 	let episodeestinations = destinations?.filter((v) => v.fee) || [];
 
 	if (!isDefault) {
-		episodeestinations.push(splitKitObject);
+		// episodeestinations.push(splitKitObject);
 	}
 	episodeestinations.forEach((v) => (v.split = v.split.toString()));
 	return episodeestinations;

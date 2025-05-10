@@ -25,7 +25,7 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 		!isDefault
 	) {
 		console.log(feesDestinations);
-		feesDestinations = feesDestinations.concat(splitKitObject);
+		// feesDestinations = feesDestinations.concat(splitKitObject);
 	}
 
 	let payments = [];
