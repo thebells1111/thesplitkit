@@ -19,7 +19,8 @@
 				$page.route.id === '/(main)/live/[guid]' ||
 				$page.route.id === '/(main)/roster/[guid]' ||
 				$page.route.id === '/(main)/roster/[guid]/boo' ||
-				$page.route.id === '/(main)/live/[guid]/video'
+				$page.route.id === '/(main)/live/[guid]/video' ||
+				$page.route.id === '/(main)/spotlight25'
 			) {
 				console.log('loadAlby');
 				loadAlby();
@@ -39,6 +40,7 @@
 			credentials: 'include'
 		});
 		let data = await res.json();
+		console.log(data);
 		return data.status === 'success';
 	}
 

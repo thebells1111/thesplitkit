@@ -25,10 +25,10 @@
 	let showConfetti = false;
 
 	const boostArt = {
-		default: ['url(./flower.png)', 'url(./flower2.png)', 'url(./flower3.png)'],
-		weed: ['url(./weed.png)'],
-		boob: ['url(./boobs.png)'],
-		dick: ['url(./dick.png)']
+		default: ['url(/flower.png)', 'url(/flower2.png)', 'url(/flower3.png)'],
+		weed: ['url(/weed.png)'],
+		boob: ['url(/boobs.png)'],
+		dick: ['url(/dick.png)']
 	};
 
 	function selectBoostArt() {
@@ -54,7 +54,7 @@
 			console.log('Connected with clientId:', socket.id);
 		});
 
-		socket.on('webhookInvoice', function (data) {
+		socket.on('invoiceVerify', function (data) {
 			console.log('dude');
 			console.log(data);
 
@@ -91,6 +91,7 @@
 	}
 	async function handleBoost() {
 		// throwConfetti();
+		// return;
 		if (paymentType === 'qr') {
 			localStorage.setItem('senderName', senderName);
 			console.log(activeBlock);
