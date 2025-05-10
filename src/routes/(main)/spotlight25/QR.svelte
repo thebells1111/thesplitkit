@@ -32,20 +32,29 @@
 	onDestroy(() => {
 		if (observer && container) observer.unobserve(container);
 	});
+
+	function copyCodeToClipboard() {
+		navigator.clipboard.writeText(code);
+		alert('Copied Link to clipboard');
+	}
 </script>
 
-<div class="qr-wrapper" bind:this={container}>
+<button class="qr-wrapper" bind:this={container} on:click={copyCodeToClipboard}>
 	{#if imgSrc}
 		<img src="./qrbg.png" alt="QR Background" />
 	{/if}
 	<canvas bind:this={qrCodeCanvas} />
-</div>
+	<p>- click invoice to copy to clipboard -</p>
+</button>
 
 <style>
 	.qr-wrapper {
 		position: relative;
 		width: 100%;
 		height: 100%;
+		background-color: transparent;
+		border: none;
+		box-shadow: none;
 	}
 
 	img,
@@ -55,5 +64,13 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	p {
+		position: absolute;
+		bottom: -12px;
+		color: #430109;
+		padding: 0;
+		margin: 0;
 	}
 </style>

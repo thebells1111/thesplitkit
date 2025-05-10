@@ -54,7 +54,7 @@
 			console.log('Connected with clientId:', socket.id);
 		});
 
-		socket.on('invoiceVerify', function (data) {
+		socket.on('webhookInvoice', function (data) {
 			console.log('dude');
 			console.log(data);
 
