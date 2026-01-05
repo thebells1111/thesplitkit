@@ -10,9 +10,9 @@
 	export let activeBlock;
 	export let paymentType;
 	export let isMobile;
+	export let throwConfetti;
 
 	import sendBoost from '$lib/functions/sendBoost';
-	import { Confetti } from 'svelte-confetti';
 
 	let senderName = 'anonymous';
 	let boostagram = '';
@@ -22,26 +22,7 @@
 	let showQR = false;
 	let invoice;
 	let activeScreen = 'boost';
-	let showConfetti = false;
 
-	const boostArt = {
-		default: ['url(/flower.png)', 'url(/flower2.png)', 'url(/flower3.png)'],
-		weed: ['url(/weed.png)'],
-		boob: ['url(/boobs.png)'],
-		dick: ['url(/dick.png)']
-	};
-
-	function selectBoostArt() {
-		if (amount >= 1111 && /^1+$/.test(String(amount))) {
-			return boostArt.dick;
-		} else if (String(amount).includes('420')) {
-			return boostArt.weed;
-		} else if (amount === 8008 || amount === 80085) {
-			return boostArt.boob;
-		} else {
-			return boostArt.default;
-		}
-	}
 	onMount(() => {
 		fetchConversionRate();
 		senderName = localStorage.getItem('senderName') || 'anonymous';
@@ -59,8 +40,10 @@
 			console.log(data);
 
 			if (invoice === data) {
-				throwConfetti();
+				throwConfetti(amount);
+				boostagram = '';
 				showQR = false;
+				showModal = false;
 			}
 		});
 
@@ -83,14 +66,9 @@
 		return amount;
 	}
 
-	function throwConfetti() {
-		showConfetti = true;
-		setTimeout(() => {
-			showConfetti = false;
-		}, 3000);
-	}
 	async function handleBoost() {
-		// throwConfetti();
+		// throwConfetti(amount);
+		// showModal = false;
 		// return;
 		if (paymentType === 'qr') {
 			localStorage.setItem('senderName', senderName);
@@ -113,7 +91,7 @@
 					console.log(err);
 				});
 
-			throwConfetti();
+			throwConfetti(amount);
 			console.log('Boost button pressed');
 			localStorage.setItem('senderName', senderName);
 			boostagram = '';
@@ -152,28 +130,7 @@
 <Modal bind:showModal imgSrc="./main-bg.png">
 	<boost-container>
 		<h2>{activeBlock.title}</h2>
-		{#if showConfetti}
-			<div class="confetti left">
-				<Confetti
-					cone
-					size="30"
-					duration={3000}
-					x={[0, 1]}
-					y={[0, 2]}
-					colorArray={selectBoostArt()}
-				/>
-			</div>
-			<div class="confetti right">
-				<Confetti
-					cone
-					size="30"
-					duration={3000}
-					x={[-1, 0]}
-					y={[0, 2]}
-					colorArray={selectBoostArt()}
-				/>
-			</div>
-		{/if}
+
 		{#if isMobile}
 			<div class="screen-select">
 				<button
@@ -249,12 +206,7 @@
 			<button on:click={() => setAmount(10000)}>10,000</button>
 			<button on:click={() => setAmount(25000)}>25,000</button>
 		</btn-container>
-		<button
-			class:hide={isMobile && activeScreen === 'splits'}
-			class="boost"
-			on:click={handleBoost}
-			disabled={showConfetti}
-		>
+		<button class:hide={isMobile && activeScreen === 'splits'} class="boost" on:click={handleBoost}>
 			Boost
 		</button>
 	</boost-container>
@@ -516,14 +468,5 @@
 
 	.hide {
 		display: none;
-	}
-
-	.confetti {
-		position: absolute;
-		bottom: 0;
-	}
-
-	.confetti.right {
-		right: 0;
 	}
 </style>

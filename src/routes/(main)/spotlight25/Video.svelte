@@ -13,6 +13,8 @@
 
 	$: setSource(sourceVideo, player);
 
+	$: console.log($mainSettings);
+
 	function setSource(src, player) {
 		console.log(player);
 		console.log(src);

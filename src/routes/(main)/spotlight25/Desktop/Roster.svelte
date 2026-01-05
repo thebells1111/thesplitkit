@@ -16,6 +16,7 @@
 	let activeBlock = {};
 	export let broadcastingBlock;
 	export let showInstructions;
+	export let throwConfetti;
 	let paymentType;
 
 	$: console.log(paymentType);
@@ -72,7 +73,7 @@
 	{#if !paymentType && !$user.loggedIn}
 		<PaymentSelector bind:paymentType bind:showModal />
 	{:else}
-		<BoostPage bind:showModal bind:activeBlock {paymentType} />
+		<BoostPage bind:showModal bind:activeBlock {paymentType} {throwConfetti} />
 	{/if}
 {/if}
 

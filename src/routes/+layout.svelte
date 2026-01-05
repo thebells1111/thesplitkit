@@ -131,7 +131,7 @@
 </script>
 
 <div class="app">
-	{#if !['/(main)/spotlight25', '/(main)/roster/[guid]/boo', '/(main)/live/[guid]/video'].find((v) => v === $page?.route?.id)}
+	{#if !['/(main)/spotlight25', '/(main)/boostbeach', '/(main)/roster/[guid]/boo', '/(main)/live/[guid]/video'].find((v) => v === $page?.route?.id)}
 		<Header />
 	{/if}
 	<main>
@@ -155,6 +155,7 @@
 		box-sizing: border-box;
 		overflow: hidden;
 		height: calc(100% - 42px);
+		position: relative;
 	}
 
 	credentials {
