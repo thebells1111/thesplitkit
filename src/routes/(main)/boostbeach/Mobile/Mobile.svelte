@@ -1,10 +1,10 @@
 <script>
-	import Roster from './Roster.svelte';
 	import Video from '../Video.svelte';
 	import BoostBoard from '../BoostBoard.svelte';
+	import Boost from '../Boost.svelte';
 	import Chat from '../Chat.svelte';
 	import Instructions from '../Instructions.svelte';
-	let currentScreen = 'roster';
+	let currentScreen = 'video';
 	import { mainSettings } from '$/stores';
 
 	function changeScreen(screenName) {
@@ -25,22 +25,21 @@
 		: 'https://images.pexels.com/photos/10819642/pexels-photo-10819642.jpeg'}
 />
 <nav>
-	<button on:click={changeScreen.bind(this, 'boostBoard')}>Boost<br /> Board</button>
+	<button on:click={changeScreen.bind(this, 'boostBoard')}>Boost Board</button>
 	<button on:click={changeScreen.bind(this, 'video')}>Video</button>
 	<button on:click={changeScreen.bind(this, 'chat')}>Chat</button>
-	<button on:click={changeScreen.bind(this, 'roster')}>Boost <br /> Bands</button>
 </nav>
 
 <container>
-	<div class="roster" class:show={currentScreen === 'roster'}>
-		<Roster {guid} {broadcastingBlock} bind:showInstructions {throwConfetti} />
-	</div>
 	<div class:show={currentScreen === 'video'}>
 		<Video />
 	</div>
 
 	<div class="boost-board" class:show={currentScreen === 'boostBoard'}>
-		<BoostBoard />
+		<div class="boost-board-container">
+			<BoostBoard />
+		</div>
+		<Boost isMobile={true} {guid} {broadcastingBlock} bind:showInstructions {throwConfetti} />
 	</div>
 	<div class="chat" class:show={currentScreen === 'chat'}>
 		<Chat />
@@ -64,15 +63,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-around;
-
-		background-color: hsla(20, 39%, 88%, 0.5);
+		background-color: hsla(228, 16%, 70%, 0.5);
 	}
 
 	nav > button {
-		width: 25%;
+		width: 33%;
 		background-color: transparent;
 		box-shadow: none;
-		color: rgb(67, 1, 9);
+		color: rgb(255, 255, 255);
+		padding: 12px 0;
 	}
 
 	container {
@@ -89,21 +88,24 @@
 		height: calc(100% - 40px);
 	}
 
-	.show {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+	.boost-board {
+		flex-direction: column;
+		height: 100%;
+		width: 100%;
 	}
 
-	.boost-board {
-		height: 100%;
+	.boost-board-container {
+		display: block;
+		width: 300px;
 	}
 
 	.chat {
 		margin: 8px;
 	}
 
-	.roster {
-		flex-direction: column;
+	.show {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 </style>

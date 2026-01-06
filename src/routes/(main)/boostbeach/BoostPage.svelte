@@ -22,6 +22,7 @@
 	let showQR = false;
 	let invoice;
 	let activeScreen = 'boost';
+	$: console.log(broadcastingBlock);
 
 	onMount(() => {
 		fetchConversionRate();
@@ -164,7 +165,7 @@
 				</button>
 			</div>
 		{/if}
-		<panels>
+		<panels class:mobile={isMobile}>
 			<left class:hide={isMobile && activeScreen === 'splits'} class:fullwidth={isMobile}>
 				{#if $user.loggedIn}
 					<balance-text>
@@ -173,8 +174,7 @@
 					</balance-text>
 				{/if}
 				<label>
-					Your Name
-					<input type="text" bind:value={senderName} />
+					<input type="text" bind:value={senderName} placeholder="Enter your name here..." />
 				</label>
 				<textarea bind:value={boostagram} rows="4" placeholder="Enter your message here..." />
 				<amount-text>
@@ -268,6 +268,7 @@
 		width: 100%;
 		justify-content: space-between;
 		height: calc(100% - 204px);
+		flex: 1;
 	}
 	left,
 	right {
@@ -319,7 +320,6 @@
 	}
 	boost-container textarea::placeholder {
 		font-weight: 600;
-		color: white;
 	}
 	balance-text,
 	amount-text {
@@ -433,11 +433,9 @@
 		-moz-appearance: textfield;
 	}
 	label {
-		align-self: flex-start;
 		display: flex;
 		flex-direction: column;
 		font-weight: 600;
-		font-size: 1.5em;
 	}
 
 	.qr-container {
@@ -459,6 +457,7 @@
 		width: 100%;
 		display: flex;
 		justify-content: space-evenly;
+		height: 50px;
 	}
 
 	.screen-select > button {

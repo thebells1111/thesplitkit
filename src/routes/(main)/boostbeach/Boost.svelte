@@ -1,9 +1,9 @@
 <script>
-	import Card from '../Card.svelte';
-	import Banner from '../Banner.svelte';
-	import QR from '../QR.svelte';
-	import BoostPage from '../BoostPage.svelte';
-	import PaymentSelector from '../PaymentSelector.svelte';
+	import Card from './Card.svelte';
+	import Banner from './Banner.svelte';
+	import QR from './QR.svelte';
+	import BoostPage from './BoostPage.svelte';
+	import PaymentSelector from './PaymentSelector.svelte';
 	import { page } from '$app/stores';
 
 	import { liveBlocks, albyClientId, user } from '$/stores';
@@ -16,6 +16,7 @@
 	export let broadcastingBlock;
 	export let showInstructions;
 	export let throwConfetti;
+	export let isMobile;
 	let paymentType;
 
 	$: console.log(paymentType);
@@ -25,6 +26,7 @@
 <div class="container">
 	<button
 		class="boost-btn boost"
+		class:mobile={isMobile}
 		on:click={() => {
 			showModal = true;
 		}}
@@ -37,7 +39,7 @@
 	{#if !paymentType && !$user.loggedIn}
 		<PaymentSelector bind:paymentType bind:showModal />
 	{:else}
-		<BoostPage bind:showModal {broadcastingBlock} {paymentType} {throwConfetti} />
+		<BoostPage bind:showModal {broadcastingBlock} {paymentType} {throwConfetti} {isMobile} />
 	{/if}
 {/if}
 
@@ -68,5 +70,12 @@
 
 	.boost-btn:hover {
 		background: #e8850f;
+	}
+
+	.mobile {
+		padding: 8px 18px;
+		border-radius: 8px;
+		font-size: 36px;
+		font-weight: 500;
 	}
 </style>

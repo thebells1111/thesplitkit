@@ -1,5 +1,5 @@
 <script>
-	import Boost from './Boost.svelte';
+	import Boost from '../Boost.svelte';
 	import Video from '../Video.svelte';
 	import Chat from '../Chat.svelte';
 	import BoostBoard from '../BoostBoard.svelte';

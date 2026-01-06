@@ -126,5 +126,10 @@
 			overflow-x: hidden;
 			border-radius: 0;
 		}
+
+		.close {
+			top: 24px;
+			right: 0;
+		}
 	}
 </style>

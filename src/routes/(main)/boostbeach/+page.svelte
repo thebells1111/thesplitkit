@@ -15,9 +15,11 @@
 
 	let showConfetti = false;
 	let confettiAmount = 1;
+	let loaded = false;
 
 	const checkScreenWidth = () => {
-		isMobile = window.innerWidth < 720;
+		isMobile = window.innerWidth < 996;
+		loaded = true;
 	};
 
 	onMount(async () => {
@@ -35,6 +37,7 @@
 			} else {
 				broadcastingBlock = $liveBlocks[0];
 			}
+			console.log(broadcastingBlock);
 		});
 		liveItemSocket.on('playerPause', function (data) {
 			// You will need to adjust this part based on the actual format of the data sent by the server
@@ -81,7 +84,7 @@
 	}
 </script>
 
-<div class="container">
+<div class="container" class:loaded>
 	{#if isMobile}
 		<Mobile {guid} {broadcastingBlock} {throwConfetti} />
 	{:else}
@@ -104,6 +107,10 @@
 		height: 100%;
 		width: 100%;
 		overflow: hidden;
+		display: none;
+	}
+	.loaded {
+		display: initial;
 	}
 	.confetti {
 		position: absolute;
