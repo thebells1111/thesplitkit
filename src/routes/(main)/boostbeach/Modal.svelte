@@ -8,6 +8,7 @@
 	export let width;
 	export let height;
 	export let backgroundColor;
+	export let closeColor;
 
 	onMount(() => {
 		const handleKeyDown = (event) => {
@@ -41,7 +42,14 @@
 			${backgroundColor ? `background-color: ${backgroundColor};` : ''}
 		`}
 	>
-		<button class="close" on:click={onClose}>
+		<button
+			class="close"
+			on:click={onClose}
+			style={`
+			
+			${closeColor ? `color: ${closeColor};` : ''}
+		`}
+		>
 			<Close size="24" />
 		</button>
 

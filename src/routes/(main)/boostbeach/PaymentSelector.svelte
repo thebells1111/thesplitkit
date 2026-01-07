@@ -33,6 +33,13 @@
 			>
 				Scan QR Code
 			</button>
+			<button
+				on:click={() => {
+					paymentType = 'venmo';
+				}}
+			>
+				Venmo
+			</button>
 		</div>
 	</boost-container>
 </Modal>

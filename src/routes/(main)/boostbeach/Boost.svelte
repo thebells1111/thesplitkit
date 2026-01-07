@@ -1,8 +1,7 @@
 <script>
-	import Card from './Card.svelte';
-	import Banner from './Banner.svelte';
 	import QR from './QR.svelte';
 	import BoostPage from './BoostPage.svelte';
+	import Venmo from './Venmo.svelte';
 	import PaymentSelector from './PaymentSelector.svelte';
 	import { page } from '$app/stores';
 
@@ -38,6 +37,8 @@
 {#if showModal}
 	{#if !paymentType && !$user.loggedIn}
 		<PaymentSelector bind:paymentType bind:showModal />
+	{:else if paymentType === 'venmo'}
+		<Venmo bind:showModal />
 	{:else}
 		<BoostPage bind:showModal {broadcastingBlock} {paymentType} {throwConfetti} {isMobile} />
 	{/if}
