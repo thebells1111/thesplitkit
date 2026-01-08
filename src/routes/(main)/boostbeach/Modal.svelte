@@ -9,6 +9,8 @@
 	export let height;
 	export let backgroundColor;
 	export let closeColor;
+	export let showNewPaymentType;
+	export let paymentType;
 
 	onMount(() => {
 		const handleKeyDown = (event) => {
@@ -42,6 +44,18 @@
 			${backgroundColor ? `background-color: ${backgroundColor};` : ''}
 		`}
 	>
+		{#if showNewPaymentType}
+			<button
+				class="new-payment-type"
+				style={`
+			
+			${closeColor ? `color: ${closeColor};` : ''}
+		`}
+				on:click={() => {
+					paymentType = '';
+				}}>Choose New Payment</button
+			>
+		{/if}
 		<button
 			class="close"
 			on:click={onClose}
@@ -125,6 +139,18 @@
 		box-shadow: none;
 	}
 
+	.new-payment-type {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: transparent;
+		padding: 8px;
+		color: rgba(255, 255, 255, 0.75);
+		z-index: 33;
+		border: 1px solid transparent;
+		box-shadow: none;
+	}
+
 	@media screen and (max-width: 992px) {
 		modal {
 			position: relative;
@@ -138,6 +164,11 @@
 		.close {
 			top: 24px;
 			right: 0;
+		}
+
+		.new-payment-type {
+			top: 24px;
+			left: 0;
 		}
 	}
 </style>

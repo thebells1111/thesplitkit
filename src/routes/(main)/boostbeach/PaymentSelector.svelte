@@ -7,7 +7,7 @@
 
 	import { page } from '$app/stores';
 
-	import { albyClientId } from '$/stores';
+	import { albyClientId, user } from '$/stores';
 
 	let redirectUrl = `https://getalby.com/oauth?client_id=${albyClientId}`;
 	redirectUrl += `&response_type=code&redirect_uri=${$page.url.href}`;
@@ -21,7 +21,11 @@
 		<div class="buttons">
 			<button
 				on:click={() => {
-					goto(redirectUrl);
+					if ($user.loggedIn) {
+						paymentType = 'alby';
+					} else {
+						goto(redirectUrl);
+					}
 				}}
 			>
 				Alby

@@ -30,6 +30,8 @@
 
 <Modal
 	bind:showModal
+	bind:paymentType
+	showNewPaymentType={true}
 	backgroundColor="white"
 	closeColor="black"
 	width={isDesktop ? '300px' : undefined}

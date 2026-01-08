@@ -141,7 +141,7 @@
 	$: console.log(activeScreen);
 </script>
 
-<Modal bind:showModal>
+<Modal bind:showModal bind:paymentType showNewPaymentType={true}>
 	<boost-container>
 		<h2>{broadcastingBlock.title}</h2>
 
@@ -167,7 +167,7 @@
 		{/if}
 		<panels class:mobile={isMobile}>
 			<left class:hide={isMobile && activeScreen === 'splits'} class:fullwidth={isMobile}>
-				{#if $user.loggedIn}
+				{#if $user.loggedIn && paymentType === 'alby'}
 					<balance-text>
 						<h3>Balance:</h3>
 						<p>{$user.balance || 0} sats</p>

@@ -35,12 +35,12 @@
 </div>
 
 {#if showModal}
-	{#if !paymentType && !$user.loggedIn}
+	{#if !paymentType}
 		<PaymentSelector bind:paymentType bind:showModal />
 	{:else if paymentType === 'venmo'}
-		<Venmo bind:showModal />
+		<Venmo bind:showModal bind:paymentType />
 	{:else}
-		<BoostPage bind:showModal {broadcastingBlock} {paymentType} {throwConfetti} {isMobile} />
+		<BoostPage bind:showModal {broadcastingBlock} bind:paymentType {throwConfetti} {isMobile} />
 	{/if}
 {/if}
 
