@@ -81,17 +81,17 @@
 					amount * 1000
 				}&comment=${fountainGram}}`
 			);
-			// let res = await fetch(
-			// 	`https://thesplitbox.com/lnurlp/tsk-${broadcastingBlock.eventGuid}/callback?amount=${
-			// 		amount * 1000
-			// 	}&comment=${boostagram}&senderName=${senderName}&blockGuid=${broadcastingBlock.blockGuid}`
-			// );
-
 			let res = await fetch(
-				`https://api.fountain.fm/v1/lnurlp/sobig/pay?amount=${
+				`https://splitbox.ericpp.dev/lnurlp/tsk-58eb81f8-caeb-4c77-a326-36e406207fe0/callback?amount=${
 					amount * 1000
-				}&comment=${fountainGram}}`
+				}&comment=${boostagram}&senderName=${senderName}&blockGuid=${broadcastingBlock.blockGuid}`
 			);
+
+			// let res = await fetch(
+			// 	`https://api.fountain.fm/v1/lnurlp/sobig/pay?amount=${
+			// 		amount * 1000
+			// 	}&comment=${fountainGram}}`
+			// );
 			let data = await res.json();
 			invoice = data.pr;
 			showQR = true;
