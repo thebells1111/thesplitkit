@@ -4,7 +4,7 @@
 
 	let qrCodeCanvas;
 	let container;
-	export let code = 'tsk-58eb81f8-caeb-4c77-a326-36e406207fe0@splitbox.ericpp.dev';
+	export let code = 'tsk-58eb81f8-caeb-4c77-a326-36e406207fe0@boostbeach.xyz';
 	export let imgSrc = '';
 	let observer;
 
