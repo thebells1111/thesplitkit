@@ -53,7 +53,7 @@
 		`}
 				on:click={() => {
 					paymentType = '';
-				}}>Choose New Payment</button
+				}}>Change Payment Type</button
 			>
 		{/if}
 		<button
@@ -149,6 +149,8 @@
 		z-index: 33;
 		border: 1px solid transparent;
 		box-shadow: none;
+		border: 1px solid;
+		margin: 8px;
 	}
 
 	@media screen and (max-width: 992px) {
