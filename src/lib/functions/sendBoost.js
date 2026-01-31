@@ -47,7 +47,7 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 	}
 
 	console.log(payments);
-	let res = await fetch(remoteServer + '/api/alby/boost', {
+	let res = await fetch(remoteServer + '/api/alby/handlePayments', {
 		method: 'POST',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
@@ -69,6 +69,7 @@ export default async function sendBoost({ block, satAmount, boostagram, senderNa
 		}
 
 		let payload = {
+			type: dest.type,
 			destination: dest.address,
 			amount: amount,
 			customRecords: customRecords
