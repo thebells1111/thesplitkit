@@ -1,4 +1,5 @@
 <script>
+	import { onMount } from 'svelte';
 	import Card from './Card.svelte';
 	import { page } from '$app/stores';
 

@@ -2,7 +2,7 @@
 	import { onMount, tick } from 'svelte';
 	import io from 'socket.io-client';
 	import clone from 'just-clone';
-	import { saveAs } from 'file-saver';
+	import saveAs from 'file-saver';
 	import { ID3Writer } from 'browser-id3-writer';
 
 	import SaveModal from '$lib/Modal/SaveModal.svelte';

@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import QRCode from 'qrcode';
-	import { saveAs } from 'file-saver';
+	import saveAs from 'file-saver';
 	import { page } from '$app/stores';
 	import CopyIcon from '$lib/icons/Copy.svelte';
 	import LinkIcon from '$lib/icons/Link.svelte';

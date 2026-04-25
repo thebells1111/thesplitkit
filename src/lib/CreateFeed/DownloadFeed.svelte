@@ -1,7 +1,7 @@
 <script>
 	import { v4 as uuidv4 } from 'uuid';
 	import { XMLParser, XMLBuilder } from 'fast-xml-parser';
-	import { saveAs } from 'file-saver';
+	import saveAs from 'file-saver';
 	import { onMount } from 'svelte';
 	import { liveBlocks } from '$/stores';
 
