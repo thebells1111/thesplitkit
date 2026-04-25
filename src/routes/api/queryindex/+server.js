@@ -1,12 +1,8 @@
 import { json, error } from '@sveltejs/kit';
-import dotenv from 'dotenv';
-import crypto from 'crypto-browserify';
+import crypto from 'node:crypto';
+import { env } from '$env/dynamic/private';
 
-if (!process.env.PI_API_KEY) {
-	dotenv.config();
-}
-
-const { PI_API_KEY, PI_API_SECRET } = process.env;
+const { PI_API_KEY, PI_API_SECRET } = env;
 
 export async function GET({ url }) {
 	try {

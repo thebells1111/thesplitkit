@@ -2,7 +2,7 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { saveAs } from 'file-saver';
+	import saveAs from 'file-saver';
 	import SaveModal from '$lib/Modal/SaveModal.svelte';
 
 	import AddFeed from '$lib/Creator/AddFeed.svelte';

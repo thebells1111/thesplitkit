@@ -1,5 +1,5 @@
 <script>
-	import { saveAs } from 'file-saver';
+	import saveAs from 'file-saver';
 	import { ID3Writer } from 'browser-id3-writer';
 	import BlockSettings from '$lib/Settings/BlockSettings/BlockSettings.svelte';
 	import Modal from '$lib/Modal/Modal.svelte';
